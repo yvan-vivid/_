@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Brightness controls
+################################################################################
+# This depends on "brillo" app and the correct polkit permissions
+
+BRILLO="pkexec /usr/bin/brillo"
+case $1 in
+  (up)   $BRILLO -A 5 ;;
+  (down) $BRILLO -U 5 ;;
+esac

@@ -1,0 +1,11 @@
+# vim: ft=toml
+
+[config]
+gtk-3.0
+i3status-rs
+mako
+sway
+swaylock
+
+[home]
+gtkrc-2.0

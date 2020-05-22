@@ -1,0 +1,83 @@
+[core]
+	editor = $EDITOR
+	pager = $PAGER
+	whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+  excludesfile = ~/.config/git/global.gitignore
+
+[init]
+  # Maybe use some templates later
+  # templatedir = <template directory>
+
+################################################################################
+# Actions (push/pull)
+################################################################################
+
+[pull]
+	rebase = true
+
+[push]
+	default = tracking
+	followtags = true
+
+[commit]
+  # one day get this together
+  # gpgsign = true
+	verbose = true
+
+[status]
+	short = true
+	branch = true
+
+[apply]
+	whitespace = error
+
+[branch]
+  autosetupmerge = true
+
+################################################################################
+# Diffing
+################################################################################
+
+[diff]
+  # Git diff will use (i)ndex, (w)ork tree, (c)ommit and (o)bject
+  # instead of a/b/c/d as prefixes for patches
+  mnemonicprefix = true
+	algorithm = patience
+	tool = nvimdiff
+	renames = copies
+  submodule = log
+
+[difftool "nvimdiff"]
+	cmd = nvim -d $LOCAL $REMOTE
+	trustexitcode = true
+
+################################################################################
+# Merging
+################################################################################
+
+[merge]
+	tool = nvimmerge
+	log = true
+
+[mergetool "nvimmerge"]
+	cmd = nvim -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+	trustexitcode = true
+
+################################################################################
+# Other
+################################################################################
+
+[grep]
+	linenumber = true
+	patterntype = perl
+
+[column]
+	ui = auto
+  tag = never
+
+[rerere]
+  # Remember my merges
+  # http://gitfu.wordpress.com/2008/04/20/git-rerere-rereremember-what-you-did-last-time/
+  enabled = true
+
+# vim: ft=gitconfig

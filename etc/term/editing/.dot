@@ -1,0 +1,5 @@
+# vim: ft=toml
+[home]
+editrc
+inputrc
+selected_editor

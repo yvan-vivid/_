@@ -1,0 +1,14 @@
+# Excluded paths
+# not committed dotfiles - managed by tools or manually
+
+# state data
+/var
+
+# managed tool distributions
+/lib/distro
+
+# mountpoint for filesystems
+/mount
+
+# cache and temporary
+/temp

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Status bar
+################################################################################
+# This depends on "i3status-ra" app
+
+i3status="/usr/local/bin/i3status-rs"
+config="$HOME/.config/i3status-rs/config.toml"
+
+$i3status "$config"

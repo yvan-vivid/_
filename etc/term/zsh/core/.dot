@@ -1,0 +1,6 @@
+# vim: ft=toml
+[home]
+zlogin
+zlogout
+zshenv
+zshrc

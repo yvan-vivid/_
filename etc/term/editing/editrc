@@ -1,0 +1,16 @@
+################################################################################
+## Yvan Vivid - editrc
+################################################################################
+
+# Config for "editline" programs
+# could use some tuning
+
+# Use vim keybindings
+bind -v
+
+# Some other common bindings
+bind "^R" em-inc-search-prev
+bind \\t rl_complete
+edit on
+
+# vim: ft=sh

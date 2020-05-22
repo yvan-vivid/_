@@ -1,0 +1,20 @@
+# YV -- derived from kutsan/dotfiles
+
+[include]
+  path = ./modules/user.gitconfig
+  path = ./modules/settings.gitconfig
+  path = ./modules/aliases.gitconfig
+  path = ./modules/colors.gitconfig
+  path = ./modules/urls.gitconfig
+  path = ~/._/var/secure/git/user.gitconfig
+
+[status]
+	submoduleSummary = true
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+# vim: ft=gitconfig

@@ -1,0 +1,22 @@
+# shellcheck shell=sh
+# =============================================================================
+# Yvan Vivid - dotfiles - sh Login
+# =============================================================================
+
+echo "Logging into sh/bash..."
+
+# Common environment file
+env="$HOME/.env"
+
+# Try loading common variables
+if [ -f "$env" ]
+then . "$env"
+else echo "WARNING: no [$env]."
+fi
+
+# Export for sh and bash to pick when not login
+export ENV="$env"
+export BASH_ENV="$env"
+
+# =============================================================================
+# vim: et fenc=utf-8 ft=sh sts=4 sw=4 ts=8 tw=80 fdm=marker

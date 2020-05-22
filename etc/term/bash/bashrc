@@ -1,0 +1,15 @@
+# shellcheck shell=bash
+echo "Loading bash settings."
+
+# Common environment file
+env="$HOME/.env"
+
+# Try loading common variables
+if [ -f "$env" ]
+then source "$env"
+else echo "WARNING: no [$env]."
+fi
+
+# Export for sh and bash to pick when not login
+export ENV="$env"
+export BASH_ENV="$env"

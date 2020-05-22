@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Launcher
+################################################################################
+# Uses dmenu (unfortunately X11)
+# Must updated this to use a better tool
+
+# Theming
+FONT='DejaVuSansMono Nerd Font-14'
+BG='#200000'
+FG='#FF9000'
+SBG='#300020'
+
+runner() {
+  read -ar params
+  case ${params[0]} in
+    (':nag') swaynag -m "${params[*]}" ;;
+    (*) swaymsg exec "${params[*]}" ;;
+  esac
+}
+
+# Send commands to dmenu and pipe to sway
+dmenu_path \
+  | (echo ":nag"; cat -) \
+  | dmenu -p Run -fn "$FONT" -nb "$BG" -nf "$FG" -sb "$SBG" -l 15 \
+  | runner

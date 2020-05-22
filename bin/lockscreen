@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Lockscreen
+################################################################################
+# Uses sway's swaylock lockscreen
+
+declare lockscreen
+lockscreen="$DOT_IMAGES/lockscreen"
+
+if [[ -e "$lockscreen" ]]
+then swaylock --image ~/images/lockscreen
+else swaylock
+fi

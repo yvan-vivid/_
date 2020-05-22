@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Downloader/Installer for firefox
+################################################################################
+
+# Install locations
+declare bins apps
+bins="/usr/local/bin"
+apps="/usr/local/apps"
+
+# Redirecting URI for firefox
+declare firefox_redir_uri download_regex
+firefox_redir_uri="https://download.mozilla.org/?product=firefox-devedition-latest-ssl&os=linux64&lang=en-US"
+download_regex='^Location:[[:space:]]*(https?://[A-Za-z0-9./_-]+)'
+
+declare -i _dry_run
+_dry_run=0
+
+set -e
+
+# Cmd options parsing
+while (( $# > 0 )); do case "$1" in
+  # Options
+  (--dry-run) _dry_run=1; shift 1;;
+
+  # Error/Defaults
+  (-*) echo "unkown option: $1" >&2; exit 1;;
+  (*) echo "invalid syntax" >&2; exit 1;;
+esac done
+
+# Check requirements
+if [[ ! -w "$bins" ]]; then
+  echo "No permission to write link to [$bins]."
+  exit 1
+fi
+
+if [[ ! -w "$apps" ]]; then
+  echo "No permission to install firefox to [$apps]."
+  exit 1
+fi
+
+# Get actual file from link header
+declare location_line firefox_uri ff_file
+location_line=$(curl -sSI "$firefox_redir_uri" | \grep Location)
+if [[ -z "$location_line" ]]; then
+  echo "Location not found from uri."
+  exit 1
+elif [[ ! "$location_line" =~ $download_regex ]]; then
+  echo "Location given not valid = [$location_line]" 
+  exit 1
+fi
+firefox_uri="${BASH_REMATCH[1]}"
+
+# Get the file from the uri
+ff_file=$(basename "$firefox_uri")
+echo "Firefox '$ff_file' found at '$firefox_uri'."
+
+declare _temp_dir ff_path
+if [[ -z $_dry_run ]]; then
+  _temp_dir=$(mktemp -d)
+  ff_path=$_temp_dir/$ff_file
+  
+  echo "Downloading firefox from $firefox_uri into $_temp_dir"
+  curl "$firefox_uri" -o "$ff_path"
+
+  echo "Expanding $ff_path"
+  tar -C "$_temp_dir" -jxf "$ff_path"
+
+  echo "Moving to $apps"
+  mv "$_temp_dir/firefox" "$apps/"
+
+  echo "Creating symlink to executable"
+  ln -sf "$apps/firefox/firefox" "$bins/"
+
+  echo "Cleanup"
+  rm -rf "$ff_path"
+
+  echo "Done"
+
+else
+  echo "Getting headers for firefox download"
+  curl -I "$firefox_uri"
+
+  echo "Would have done:"
+  echo "  tar -C <temp_dir> -jxf <temp_dir>/$ff_file"
+  echo "  mv <temp_dir>/firefox $apps/"
+  echo "  ln -sf $apps/firefox/firefox $bins/"
+  echo "  rm -rf <temp_dir>"
+fi
+

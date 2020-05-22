@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Browser startup script
+################################################################################
+
+declare log
+log="$DOT_LOGS/apps/firefox.log"
+
+logit() { echo "$1" >> "$log"; }
+
+[[ -z "$DISPLAY" ]] && export DISPLAY=":0"
+
+# Use Wayland
+export MOZ_ENABLE_WAYLAND=1
+
+# Use touchscreen as scroll
+export MOZ_USE_XINPUT2=1
+
+# Needed for dbus
+export MOZ_APP_REPORTINGNAME=firefox
+
+# Timestamp run
+logit ""
+logit "------------------------------------------------------------"
+logit "$(date -Is): running 'firefox'..."
+logit "------------------------------------------------------------"
+
+# Entry
+firefox >> "$log" 2>&1
+ex=$?
+
+# Exit
+logit "------------------------------------------------------------"
+logit "$(date -Is): ended 'firefox' with = $ex"
+logit "------------------------------------------------------------"
+logit ""

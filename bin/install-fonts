@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Downloader/Installer for preferred fonts
+################################################################################
+
+# Install locations
+#fonts=/usr/local/share/fonts
+fonts=/usr/local/share/fonts
+
+# URI for font
+font_uri='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.0.0/DejaVuSansMono.zip'
+
+_dry_run=
+
+set -e
+shopt -s nullglob
+
+# Cmd options parsing
+while [ "$#" -gt 0 ]; do case "$1" in
+  # Options
+  (--dry-run) _dry_run=1; shift 1;;
+
+  # Error/Defaults
+  (-*) echo "unkown option: $1" >&2; exit 1;;
+  (*) echo "invalid syntax" >&2; exit 1;;
+esac done
+
+install_font() {
+  local uri=$1
+  local font_container=$(basename $uri)
+
+  echo "Creating temp dir"
+  temp_dir=$(mktemp -d)
+  container_path=$temp_dir/$font_container
+
+  echo "Downloading font from $uri into $temp_dir"
+  curl -L --max-redirs 2 $uri -o $container_path
+  
+  case $font_container in
+    # Archive
+    (*.zip)
+      echo "installing font into $fonts"
+      unzip -u -d $fonts $container_path
+      ;;
+
+    (*) echo "Unrecognized format for $font_container" >&2; exit 1 ;;
+  esac
+
+  echo "Removing temp dir"
+  rm -rf $temp_dir
+}
+
+install_font $font_uri
+
+echo "Rebuilding font cache."
+fc-cache
+
+echo "Done"

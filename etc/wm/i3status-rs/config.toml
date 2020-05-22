@@ -1,0 +1,91 @@
+################################################################################
+# Yvan Vivid -- i3status bar config for i3status-rs
+################################################################################
+
+icons = "awesome"
+
+[theme]
+name = "slick"
+[theme.overrides]
+idle_bg = "#700000"
+idle_fg = "#00ff10"
+info_bg = "#600000"
+info_fg = "#10ff10"
+good_bg = "#200050"
+good_fg = "#ffa000"
+warning_bg = "#002060"
+warning_fg = "#f0ff10"
+alternating_tint_fg = "#400000"
+alternating_tint_bg = "#004050"
+
+[[block]]
+block = "custom"
+command = "bar-vivid-time"
+interval = 5
+
+# cycle = -- cycle with regular time
+
+
+[[block]]
+block = "time"
+interval = 60
+format = "%a %d/%m %R"
+
+
+[[block]]
+block = "cpu"
+interval = 3
+frequency = true
+info = 40
+warning = 65
+critical = 90
+
+
+[[block]]
+block = "memory"
+display_type = "memory"
+icons = true
+clickable = true
+interval = 1
+critical_mem = 95
+critical_swap = 80
+
+format_mem = "MTg {Mup}%"
+format_swap = "SUg {SUp}%"
+
+
+[[block]]
+block = "load"
+interval = 1
+
+# fields in {1m, 5m, 10m}
+format = "{5m}/5s"
+
+
+[[block]]
+block = "net"
+device = "wlp59s0"
+ssid = true
+interval = 5
+speed_up = false
+speed_down = false
+
+
+[[block]]
+block = "backlight"
+
+
+[[block]]
+block = "sound"
+driver = "auto"
+step_width = 5
+on_click = "volume mute"
+
+
+[[block]]
+block = "battery"
+upower = true
+interval = 10
+
+# fields in {percentage, time, power}
+format = "{percentage}% ({time}) {power}W"

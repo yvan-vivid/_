@@ -1,0 +1,46 @@
+################################################################################
+# Yvan Vivid -- Mako Notifications
+################################################################################
+
+# Font settings
+font=DejaVuSansMono Nerd Font 18
+
+# Default colors and sizes
+background-color=#200000C0
+text-color=#FF9000D0
+border-color=#FF4060
+width=500
+height=300
+padding=20
+border-size=2
+
+# Other settings
+icons=1
+markup=1
+actions=1
+default-timeout=0
+
+# Placement
+layer=overlay
+anchor=top-right
+
+
+################################################################################
+[app-name="Spotify"]
+default-timeout=2000
+background-color=#808080C0
+text-color=#FFB0FFD0
+
+
+################################################################################
+# Settings for media button activity
+[category=xmedia]
+default-timeout=600
+background-color=#808080C0
+text-color=#FF90FFD0
+
+# This would be nice eventually
+# anchor=center
+
+################################################################################
+# vim: ft=config

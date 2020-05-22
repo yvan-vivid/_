@@ -1,0 +1,7 @@
+# vim: ft=toml
+[home]
+env
+profile
+
+[ignore]
+README.md

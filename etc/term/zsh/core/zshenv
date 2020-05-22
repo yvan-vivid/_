@@ -1,0 +1,32 @@
+# shellcheck shell=zsh
+# =============================================================================
+# Yvan Vivid - dotfiles - Zsh RC
+# =============================================================================
+
+typeset -gU cdpath fpath path
+
+# =============================================================================
+# Common Env
+# =============================================================================
+
+declare env
+env="$HOME/.env"
+
+# Try loading common variables
+if [[ -f "$env" ]]
+then source "$env"
+else echo "WARNING: no [$env]."
+fi
+
+# Export for sh and bash to pick when not login
+export ENV="$env"
+export BASH_ENV="$env"
+
+# =============================================================================
+# ZSH specific
+# =============================================================================
+
+export KEYTIMEOUT=1
+
+# =============================================================================
+# vim: et fenc=utf-8 ft=zsh sts=4 sw=4 ts=8 tw=80 fdm=marker

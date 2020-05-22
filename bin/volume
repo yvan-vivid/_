@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Audio toggle control script
+################################################################################
+
+# Need a better way of doing this.
+case $1 in
+  (up)   pactl set-sink-volume 0 +5%    ;;
+  (down) pactl set-sink-volume 0 -5%    ;;
+  (mute) pactl set-sink-mute   0 toggle ;;
+esac
+
+# Notify i3blocks with signal
+pkill -RTMIN+10 i3blocks
+
+# Notification
+# TODO: Check that this exists and do a specific notify
+notify-send --category xmedia "Volume Action: $1"

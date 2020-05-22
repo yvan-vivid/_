@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Run program as Wayland
+################################################################################
+
+# Get program
+X="$1"; shift 1
+
+if [[ -z "$X" ]]; then
+  echo "Pass program with params to run in Wayland."
+fi
+
+# Env vars for QT
+export QT_QPA_PLATFORM=wayland-egl
+export QT_WAYLAND_FORCE_DPI=physical
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+# Env vars for EFL
+export ECORE_EVAS_ENGINE=wayland_egl
+export ELM_ENGINE=wayland_egl
+
+# Env vars for SDL
+export SDL_VIDEODRIVER=wayland
+
+# Java AWT
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# Firefox
+export MOZ_ENABLE_WAYLAND=1
+
+# Running
+$X "$@"

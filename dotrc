@@ -1,0 +1,12 @@
+# vim: ft=toml
+[dot]
+repo_https = "https://HeXXiiiZ@bitbucket.org/HeXXiiiZ/_.git"
+repo_ssh = "git@bitbucket.org:HeXXiiiZ/_.git"
+
+[dot.layout]
+var     # state data
+src     # repositories
+lib     # local distributions lang and tool environments
+mount   # cloud/remote filesystems
+temp    # cache and temporary
+secure  # secure data and keys

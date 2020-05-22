@@ -1,0 +1,19 @@
+[submodule "lib/tools/fzf"]
+	path = lib/tools/fzf
+	url = git@github.com:junegunn/fzf
+	branch = master
+[submodule "lib/tools/zsh-completions"]
+	path = lib/tools/zsh-completions
+	url = git@github.com:zsh-users/zsh-completions
+	branch = master
+[submodule "lib/tools/zsh-autosuggestions"]
+	path = lib/tools/zsh-autosuggestions
+	url = git@github.com:zsh-users/zsh-autosuggestions
+	branch = master
+[submodule "lib/tools/zsh-syntax-highlighting"]
+	path = lib/tools/zsh-syntax-highlighting
+	url = git@github.com:zsh-users/zsh-syntax-highlighting
+	branch = master
+[submodule "lib/tools/powerlevel10k"]
+	path = lib/tools/powerlevel10k
+	url = git@github.com:romkatv/powerlevel10k.git
