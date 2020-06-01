@@ -3,4 +3,7 @@
 # Yvan Vivid -- Vivid Time for bar
 ################################################################################
 
-printf " %-32s" "$(vivid-time now)"
+if command vivid-time
+then printf " %-32s" "$(vivid-time now)"
+else printf " %-32s" " install vivid-time "
+fi

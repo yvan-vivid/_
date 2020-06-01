@@ -4,7 +4,8 @@
 ################################################################################
 
 declare log
-log="$DOT_LOGS/apps/firefox.log"
+mkdir -p "$DOT_LOGS_APPS"
+log="$DOT_LOGS_APPS/firefox.log"
 
 logit() { echo "$1" >> "$log"; }
 
@@ -15,9 +16,6 @@ export MOZ_ENABLE_WAYLAND=1
 
 # Use touchscreen as scroll
 export MOZ_USE_XINPUT2=1
-
-# Needed for dbus
-export MOZ_APP_REPORTINGNAME=firefox
 
 # Timestamp run
 logit ""

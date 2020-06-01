@@ -15,4 +15,6 @@ pkill -RTMIN+10 i3blocks
 
 # Notification
 # TODO: Check that this exists and do a specific notify
-notify-send --category xmedia "Volume Action: $1"
+if command -v notify-send
+then notify-send --category xmedia "Volume Action: $1"
+fi

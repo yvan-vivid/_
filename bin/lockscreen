@@ -8,6 +8,6 @@ declare lockscreen
 lockscreen="$DOT_IMAGES/lockscreen"
 
 if [[ -e "$lockscreen" ]]
-then swaylock --image ~/images/lockscreen
+then swaylock --image "$lockscreen"
 else swaylock
 fi

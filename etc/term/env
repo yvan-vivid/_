@@ -15,6 +15,7 @@ test -s "$ENV_DOT" && . "$ENV_DOT"
 export DOT_STATE="$DOT_ROOT/var/state"
 export DOT_CACHE="$DOT_ROOT/var/cache"
 export DOT_LOGS="$DOT_ROOT/var/log"
+export DOT_LOGS_APPS="$DOT_LOGS/apps"
 export DOT_SECURE="$DOT_ROOT/var/secure"
 
 export DOT_LIB="$DOT_ROOT/lib"
@@ -22,6 +23,7 @@ export DOT_TOOLS="$DOT_ROOT/lib/tools"
 export DOT_IMAGES="$DOT_ROOT/lib/images"
 
 export DOT_ETC="$DOT_ROOT/etc"
+export DOT_BIN="$DOT_ROOT/bin"
 
 # Other important variables
 export USER="$(whoami)"
