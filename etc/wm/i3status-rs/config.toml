@@ -18,10 +18,10 @@ warning_fg = "#f0ff10"
 alternating_tint_fg = "#400000"
 alternating_tint_bg = "#004050"
 
-[[block]]
-block = "custom"
-command = "bar-vivid-time"
-interval = 5
+#[[block]]
+#block = "custom"
+#command = "bar-vivid-time"
+#interval = 5
 
 # cycle = -- cycle with regular time
 
@@ -46,7 +46,7 @@ block = "memory"
 display_type = "memory"
 icons = true
 clickable = true
-interval = 1
+interval = 5
 critical_mem = 95
 critical_swap = 80
 
@@ -56,7 +56,7 @@ format_swap = "SUg {SUp}%"
 
 [[block]]
 block = "load"
-interval = 1
+interval = 5
 
 # fields in {1m, 5m, 10m}
 format = "{5m}/5s"
@@ -84,7 +84,7 @@ on_click = "volume mute"
 
 [[block]]
 block = "battery"
-upower = true
+#upower = true
 interval = 10
 
 # fields in {percentage, time, power}

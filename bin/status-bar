@@ -5,4 +5,4 @@
 # This depends on "i3status-ra" app
 
 config="$DOT_ETC/wm/i3status-rs/config.toml"
-i3status "$config"
+i3status-rs "$config"

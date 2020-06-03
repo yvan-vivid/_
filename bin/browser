@@ -11,6 +11,17 @@ logit() { echo "$1" >> "$log"; }
 
 [[ -z "$DISPLAY" ]] && export DISPLAY=":0"
 
+# Build lib ref
+# declare libpath
+# libpath="/usr/local/apps/firefox"
+# while read -r lib; do
+#   libpath+=":$lib"
+# done < "$DOT_STATE/firefox/firefox-loader-path"
+# export LD_LIBRARY_PATH="$libpath"
+
+# GTK3 Scaling
+export GDK_SCALE=2
+
 # Use Wayland
 export MOZ_ENABLE_WAYLAND=1
 
