@@ -1,9 +1,18 @@
 " Yvan Vivid - NEO/VIM RC
-set nocompatible
+if &compatible
+  set nocompatible
+endif
 
 " ================ Paths ====================
 
 let state_path = expand(getenv("DOT_STATE")) . "/nvim"
+let plugins_path = state_path . "/plugins"
+let dein_path = plugins_path . "/repos/github.com/Shougo/dein.vim"
+
+exe 'set rtp+=' . dein_path
+
+" ================ Cache/backup ====================
+
 let &directory = state_path . "/swap//"
 let &backupdir = state_path . "/backup//"
 let &spellfile = state_path . "/spell/en.utf-8.add"
@@ -23,8 +32,9 @@ set history=1000
 set laststatus=2
 set showtabline=0
 
-set conceallevel=0
-set colorcolumn=87
+" set colorcolumn=87
+
+set background=dark
 
 " ================ Searching ====================
 
@@ -33,38 +43,64 @@ set incsearch
 set hlsearch
 set nowrapscan
 
+set foldmethod=indent
+set foldnestmax=8
+set foldenable
+
 " ================ Plugins ====================
 
-"call plug#begin('~/.vim/plugged')
+"let g:dein#auto_recache = 1
 
-"Plug 'ryanoasis/vim-devicons'
-"Plug 'junegunn/vim-easy-align'
-"Plug 'scrooloose/nerdtree' 
-"Plug 'itchyny/lightline.vim'
-"Plug 'Valloric/YouCompleteMe', { 'do': './install.sh --all' }
-"Plug 'christoomey/vim-tmux-navigator'
-"Plug 'tpope/vim-surround'
-"Plug 'mattn/emmet-vim'
-"Plug 'keith/tmux.vim'
-"Plug 'godlygeek/tabular'
-"Plug 'nathanaelkane/vim-indent-guides'
-"Plug 'pangloss/vim-javascript'
-"Plug 'mxw/vim-jsx'
-"Plug 'epdtry/neovim-coq'
-"Plug 'othree/html5.vim'
-"Plug 'tpope/vim-haml'
-"Plug 'trefis/coquille'
-"Plug 'lervag/vimtex'
-"Plug 'hdima/python-syntax'
-"Plug 'tpope/vim-obsession'
-"Plug 'SirVer/ultisnips'
-"Plug 'honza/vim-snippets'
-"Plug 'tmux-plugins/vim-tmux'
-"Plug 'vim-syntastic/syntastic'
+if dein#load_state(plugins_path)
+  call dein#begin(plugins_path)
+  call dein#add(dein_path)
+  call dein#add('christoomey/vim-tmux-navigator')
+  call dein#add('itchyny/lightline.vim')
+  call dein#add('flazz/vim-colorschemes')
+  call dein#add('ryanoasis/vim-devicons')
+  call dein#add('godlygeek/tabular')
+  "call dein#add('plasticboy/vim-markdown', { 'depends': 'tabular' })
+  call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
+  call dein#end()
+  call dein#save_state()
+endif
+filetype plugin indent on
+syntax enable
 
-"call plug#end()
+if dein#check_install()
+  call dein#install()
+endif
 
-autocmd BufNewFile,BufRead dot.tmux.conf setfiletype tmux
+" ============ Lightline Options ==============
+ 
+let g:lightline = { 'colorscheme' : 'molokai' }
+
+" ============ Vim Markdown Options ==============
+
+let g:vim_markdown_math = 1
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_conceal = 0
+let g:tex_conceal = ""
+let g:vim_markdown_math = 1
+
+" ============ Coc Options ==============
+
+let g:coc_explorer_global_presets = {
+\   'floating': {
+\      'position': 'floating',
+\   },
+\   'right': {
+\      'position': 'right',
+\   },
+\   'left': {
+\      'position': 'right',
+\   }
+\ }
+
+
+" ============ Lightline Options ==============
+
+colorscheme molokai_dark
 
 " ================ Indentation ======================
 
@@ -72,9 +108,6 @@ set autoindent smartindent smarttab
 set nolist wrap linebreak breakindent
 set tabstop=2 shiftwidth=2 softtabstop=2 expandtab shiftround
 set virtualedit=block
-
-filetype plugin on
-filetype indent on
 
 fu CodingIndents()
 	set nowrap list listchars=tab:\|\ 
@@ -89,13 +122,6 @@ endfu
 fu WritingIndents()
 	set nolist wrap linebreak
 endfu
-
-
-" ================ Folds ============================
-
-set foldmethod=indent
-set foldnestmax=8
-set foldenable
 
 " ================ Completion =======================
 
@@ -124,16 +150,8 @@ set scrolloff=1 sidescrolloff=5 sidescroll=1
 syntax on
 let mapleader="\<Space>"
 
-"nnoremap <silent> <leader>d :bp\|bd #<CR>
-"nnoremap <silent> <leader>vvj 80i_<ESC>o<ESC>:read !vivid-time today<CR><ESC>IDate <ESC>2o<ESC>
-
 nnoremap <silent> <leader>f za
 nnoremap <silent> <leader>t zt
-
-nmap <silent> <C-h> <C-w> l
-nmap <silent> <C-j> <C-w> j
-nmap <silent> <C-k> <C-w> k
-nmap <silent> <C-l> <C-w> l
 
 augroup rc_extras 
   au BufNewFile,BufRead *.jazz set filetype=javascript
