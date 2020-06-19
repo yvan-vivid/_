@@ -5,6 +5,7 @@ endif
 
 " ================ Paths ====================
 
+let config_path = expand(getenv("DOT_ETC")) . "/tools/nvim"
 let state_path = expand(getenv("DOT_STATE")) . "/nvim"
 let plugins_path = state_path . "/plugins"
 let dein_path = plugins_path . "/repos/github.com/Shougo/dein.vim"
@@ -61,6 +62,19 @@ if dein#load_state(plugins_path)
   call dein#add('godlygeek/tabular')
   "call dein#add('plasticboy/vim-markdown', { 'depends': 'tabular' })
   call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
+  call dein#add('rhysd/vim-grammarous')
+  call dein#add('ron89/thesaurus_query.vim')
+  call dein#add('masukomi/vim-markdown-folding')
+  call dein#add('Shougo/denite.nvim')
+  call dein#add('Shougo/defx.nvim')
+  call dein#add('kristijanhusak/defx-git')
+  call dein#add('kristijanhusak/defx-icons')
+  call dein#add('t9md/vim-choosewin')
+  if !has('nvim')
+    call dein#add('roxma/nvim-yarp')
+    call dein#add('roxma/vim-hug-neovim-rpc')
+  endif
+  call dein#add('LnL7/vim-nix')
   call dein#end()
   call dein#save_state()
 endif
@@ -72,7 +86,8 @@ if dein#check_install()
 endif
 
 " ============ Lightline Options ==============
- 
+
+let g:choosewin_overlay_enable = 1
 let g:lightline = { 'colorscheme' : 'molokai' }
 
 " ============ Vim Markdown Options ==============
@@ -96,7 +111,6 @@ let g:coc_explorer_global_presets = {
 \      'position': 'right',
 \   }
 \ }
-
 
 " ============ Lightline Options ==============
 
@@ -161,3 +175,8 @@ augroup rc_extras
   au BufNewFile,BufRead *.zprofile set filetype=zsh
   au BufNewFile,BufRead *.zlog* set filetype=zsh
 augroup END
+
+autocmd FileType markdown set foldexpr=NestedMarkdownFolds()
+
+runtime! defx.vim
+runtime! grammarous.vim

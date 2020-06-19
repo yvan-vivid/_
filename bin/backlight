@@ -4,7 +4,7 @@
 ################################################################################
 # This depends on "brillo" app and the correct polkit permissions
 
-BRILLO="pkexec /usr/bin/brillo"
+BRILLO="brillo"
 case $1 in
   (up)   $BRILLO -A 5 ;;
   (down) $BRILLO -U 5 ;;
