@@ -174,6 +174,7 @@ augroup rc_extras
   au BufNewFile,BufRead *.zsh* set filetype=zsh
   au BufNewFile,BufRead *.zprofile set filetype=zsh
   au BufNewFile,BufRead *.zlog* set filetype=zsh
+  au BufNewFile,BufRead *.tsx set filetype=typescript.jsx
 augroup END
 
 autocmd FileType markdown set foldexpr=NestedMarkdownFolds()

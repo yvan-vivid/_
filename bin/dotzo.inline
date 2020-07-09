@@ -1,0 +1,1851 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Dotfiles management
+################################################################################
+read -r -d '' dotzo__doc << EOF
+  These are dotzo's docs!!
+EOF
+
+show_help() {
+  help_cli
+}
+
+################################################################################
+# Constants
+################################################################################
+
+declare -ga default_dotrc_locations
+default_dotrc_locations=(
+  "$HOME/.config/dotrc"
+  "$HOME/.dotrc"
+  "$HOME/dotrc"
+  "$HOME/_/dotrc"
+)
+
+################################################################################
+# Registers
+################################################################################
+
+declare -g root home
+
+################################################################################
+# Options
+################################################################################
+
+declare -g \
+  opt__home__root \
+  opt__home__config \
+  opt__home__clobber \
+  opt__home__dot_root
+
+declare -ga opt__home
+opt__home=(root config clobber dot_root)
+
+load__opt__home() {
+  : "${opt__home__root:="$HOME"}"
+  : "${opt__home__config:="$opt__home__root/.config"}"
+  : "${opt__home__clobber:="$opt__home__root/.clobber"}"
+  : "${opt__home__dot_root:="$opt__home__root/._"}"
+  home="$opt__home__root"
+}
+
+show__opt_home() {
+  local w
+  echo "Home:"
+  for n in "${opt__home[@]}"; do
+    w="opt__home__${n}"
+    echo "    $n = ${!w}"
+  done
+}
+
+################################################################################
+
+declare -g \
+  opt__dotfiles__root \
+  opt__dotfiles__repo
+
+declare -ga opt__dotfiles
+opt__dotfiles=(root repo)
+
+load__opt__dotfiles() {
+  : "${opt__dotfiles__root:="$HOME/_"}"
+  : "${opt__dotfiles__repo:="$__dotfiles_repo"}"
+  root="$opt__dotfiles__root"
+}
+
+show__opt_dotfiles() {
+  local w
+  echo "Dotfiles:"
+  for n in "${opt__dotfiles[@]}"; do
+    w="opt__dotfiles__${n}"
+    echo "    $n = ${!w}"
+  done
+}
+
+################################################################################
+
+declare -g \
+  opt__secure__root \
+  opt__secure__ssh \
+  opt__secure__ssh_link
+
+declare -ga opt__secure
+opt__secure=(root ssh ssh_link)
+
+load__opt__secure() {
+  : "${opt__secure__root:="var/secure"}"
+  : "${opt__secure__ssh:="ssh"}"
+  : "${opt__secure__ssh_link:="$HOME/.ssh"}"
+}
+
+show__opt_secure() {
+  local w
+  echo "Secure:"
+  for n in "${opt__secure[@]}"; do
+    w="opt__secure__${n}"
+    echo "    $n = ${!w}"
+  done
+}
+
+################################################################################
+
+load_options() {
+  load__opt__dotfiles
+  load__opt__home
+  load__opt__secure
+}
+
+show_options() {
+  echo "-------------- Options -----------------"
+  echo
+  show__opt_dotfiles
+  echo
+  show__opt_home
+  echo
+  show__opt_secure
+  echo
+  echo "----------------------------------------"
+}
+
+################################################################################
+# Define CLI
+################################################################################
+
+# shellcheck disable=2034
+define_cli_params() {
+  typeset -gr ___cli__help_title='dotzo documentation'
+  typeset -gr ___cli__command_name='dotzo'
+  typeset -gr ___cli__help_message="$dotzo__doc"
+
+  # arguments
+  typeset -gr \
+    __help__n=0 \
+    __dry_run__n=0 \
+    __dotrc__n=0 \
+    __verbose__n=0 \
+    __very_verbose__n=0 \
+    __secure__n=1 \
+    __dotfiles_repo__n=1
+
+  # short forms
+  typeset -gr \
+    __help__short="h" \
+    __verbose__short="v" \
+    __dry_run__short="n"
+
+  # defaults
+  typeset -g \
+    __dry_run='' __dotrc='' __verbose='' __very_verbose='' __secure='' \
+    __dotfiles_repo=''
+
+  # docs
+  typeset -gr \
+    __dry_run__doc='do a dry-run of the operation' \
+    __help__doc="show help documentation" \
+    __dotrc__doc="specify dotrc file" \
+    __verbose__doc="show verbose messaging" \
+    __very_verbose__doc="show debugging level messaging" \
+    __secure__doc="secure source for sync" \
+    __dotfiles_repo__doc="local dotfiles repository"
+
+  # parameters declaration
+  typeset -gar ___cli__params=( \
+    __dotrc __help __dry_run __verbose __very_verbose __secure __dotfiles_repo \
+  )
+}
+define_cli_params
+
+################################################################################
+# Including library
+################################################################################
+
+
+################################################################################
+## start "lib.bash"
+################################################################################
+
+# shellcheck shell=bash
+# Loading library components
+declare -g ___lib__loaded="true"
+read -r -d '' ___lib__doc <<- EOF
+  This is the loading file for the "libzo" library.
+  It can be included by defining a variable 'libzo' with a path to the
+  library directory. The following two lines can be then dropped in
+  verbatim (without escapes):
+
+    typeset -g ___libzo=\$(cd "\$(dirname "\$0")/\$libzo" || exit 1; pwd -L)
+    source "\${___libzo}/lib.bash"
+
+  If some other variable is used for the path, the one 'libzo' reference in
+  the first line can be changed appropriately. The first line sets a global
+  variable '___libzo' to the absolute path of the library (using 'libzo'
+  which may be relative). The second line uses this variable to include
+  this file, which then pulls in all the others.
+
+  Each component in
+
+    ___libzo/<component>.bash
+
+  defines a global namespace with the prefix
+
+    ___<component>
+
+  Parameters for the component and products of the component use these
+  namespaces. Each component has, for instance, a documentation string in
+
+    ___<component>__doc
+
+  In the future, this library may be compiled into a single file.
+
+  There are a couple global variables that are used under the namespace
+
+    ___libzo
+
+  These are
+
+    ___libzo__dry_run
+
+  which if set to anything but empty will run effectful computations as
+  a dry run, printing the effects to stdout.
+EOF
+export ___lib__doc ___lib__loaded
+
+
+################################################################################
+## start "message.bash"
+################################################################################
+
+# shellcheck shell=bash
+: # noop
+
+# shellcheck disable=SC2034
+declare -g ___messages__loaded="true" ___messages__doc
+
+# shellcheck disable=SC2034
+{ read -r -d '' ___messages__doc || true; } <<- EOF
+  This library implements several messaging and logging functions.
+  It has two modes set by the functions 'set_color_mode' and 'set_log_mode'.
+  The 'color_mode' has ansi coloring while then 'log_mode' strips out these
+  colors for use text logs.
+
+  Message functions beginning in 'log_' send messages to stderr, while other
+  functions send messages to stdout.
+
+  Examples are shown in 'example_*'.
+EOF
+
+################################################################################
+# Constants
+################################################################################
+
+# Basic styles
+declare -gx _text_normal _text_bold _text_invert
+
+# Basic colors
+declare -gx _text_red _text_green _text_blue _text_yellow \
+  _text_teal _text_purple _text_white
+
+# Logging styles
+declare -gx _text_error _text_warn _text_info _text_debug
+
+# Messaging styles
+declare -gx _text_success _text_prompt _text_notify
+
+# Marks
+declare -gx _text__check_m _text__ex_m _text__prompt_m _text__notify_m
+
+# Logging levels
+declare -grix \
+  _text__level_debug=4 \
+  _text__level_info=3 \
+  _text__level_warn=2 \
+  _text__level_error=1 \
+  _text__level_silent=0
+
+# Logging flags
+declare -gix \
+  _text__show_debug=0 \
+  _text__show_info=0 \
+  _text__show_warn=0 \
+  _text__show_error=0
+
+################################################################################
+# Config functions
+################################################################################
+
+set_ascii_marks() {
+  _text__check_m="+"
+  _text__ex_m="X"
+  _text__prompt_m="?"
+  _text__notify_m="-"
+}
+
+set_uni_marks() {
+  _text__check_m="✔"
+  _text__ex_m="✗"
+  _text__prompt_m="?"
+  _text__notify_m="-"
+}
+
+set_color_mode() {
+  _text_normal="\\e[0m"
+  _text_red="\\e[31m"
+  _text_green="\\e[32m"
+  _text_yellow="\\e[33m"
+  _text_blue="\\e[34m"
+  _text_purple="\\e[35m"
+  _text_teal="\\e[36m"
+  _text_white="\\e[37m"
+  _text_bold="\\e[1m"
+  _text_invert="\\e[7m"
+  _text_error="${_text_bold}${_text_red}"
+  _text_warn="${_text_bold}${_text_yellow}"
+  _text_info="${_text_bold}${_text_white}"
+  _text_debug="${_text_bold}${_text_teal}"
+  _text_notify="${_text_bold}${_text_teal}"
+  _text_prompt="${_text_bold}${_text_blue}"
+  _text_success="${_text_bold}${_text_green}"
+}
+
+set_log_mode() {
+  _text_normal=""
+  _text_red=""
+  _text_yellow=""
+  _text_green=""
+  _text_white=""
+  _text_purple=""
+  _text_teal=""
+  _text_bold=""
+  _text_invert=""
+  _text_error=""
+  _text_warn=""
+  _text_info=""
+  _text_debug=""
+  _text_notify=""
+  _text_prompt=""
+  _text_success=""
+}
+
+set_log_level() {
+  local level named_levelR named_level
+  level="$1"; shift
+
+  # try reference if param is string
+  named_levelR="_text__level_${level}"
+  named_level="${!named_levelR}"
+  [[ -n "$named_level" ]] && level="$named_level"
+
+  # set flags
+  _text__show_debug=0
+  _text__show_info=0
+  _text__show_warn=0
+  _text__show_error=0
+  (( level >= _text__level_error )) && _text__show_error=1
+  (( level >= _text__level_warn  )) && _text__show_warn=1
+  (( level >= _text__level_info  )) && _text__show_info=1
+  (( level >= _text__level_debug )) && _text__show_debug=1
+  return 0
+}
+
+################################################################################
+# Logging
+################################################################################
+
+log_fmt() { echo -e "$1: $2${_text_normal}" >&2; }
+
+log_error() {
+  (( _text__show_error > 0 )) && log_fmt "${_text_error}ERROR" "$1"
+}
+
+log_warn() {
+  (( _text__show_warn > 0 )) && log_fmt "${_text_warn}WARN" "$1"
+}
+
+log_info() {
+  (( _text__show_info > 0 )) && log_fmt "${_text_info}INFO" "$1"
+}
+
+log_debug() {
+  (( _text__show_debug > 0 )) && log_fmt "${_text_debug}DEBUG" "$1"
+}
+
+################################################################################
+# Messages
+################################################################################
+
+message_checked() {
+  echo -e "${_text_success}[${_text__check_m}] $1${_text_normal}"
+}
+
+message_exed() {
+  echo -e "${_text_error}[${_text__ex_m}] $1${_text_normal}"
+}
+
+message_notify() {
+  echo -e "${_text_notify}[${_text__notify_m}] $1${_text_normal}"
+}
+
+prompt_confirm() {
+  local confirm; confirm=''
+  local -i rc; rc=0
+
+  echo -en "${_text_prompt}[${_text__prompt_m}] $1 (y/Y/n/N/q/Q) "
+  while true; do
+    read -rs -n 1 confirm
+    case "$confirm" in
+      (y|Y) rc=0; echo -en "${_text_green}(${_text__check_m})";;
+      (n|N) rc=1; echo -en "${_text_red}(${_text__ex_m})";;
+      (q|Q) rc=-1;;
+      (*) continue;;
+    esac
+    break
+  done
+  echo -e "${_text_normal}"
+
+  (( rc < 0 )) && fail_with "Aborting..."
+  return $rc
+}
+
+################################################################################
+# Failure
+################################################################################
+
+fail_with() { log_error "$1"; exit 1; }
+
+################################################################################
+# Defaults
+################################################################################
+
+set_color_mode
+set_log_level 0
+
+# if lofi tty use ascii marks
+if [[ "$TERM" == "linux" ]]
+then set_ascii_marks
+else set_uni_marks
+fi
+
+################################################################################
+################################################################################
+
+################################################################################
+## end "message.bash"
+################################################################################
+
+################################################################################
+## start "cli.bash"
+################################################################################
+
+# shellcheck shell=bash
+: # noop
+
+# shellcheck disable=SC2034
+declare -gx ___cli__loaded="true" ___cli__doc
+
+# shellcheck disable=SC2034
+{ read -r -d '' ___cli__doc || true; } <<- EOF
+  The CLI library parses commands with positional and named params of the forms:
+    (a) long named flags   : '--long-flag'
+    (b) long named params  : '--long-param [arg]' or '--long-param=[arg]'
+    (d) short named flags  : '-a' or multiple '-abc'
+    (e) short named params : '-a [arg]' or with short flags '-bca [arg]'
+    (f) positional params  : '[param]'
+
+  Positional params are taken as they come as words that cannot be interpreted as
+  the arguments of named params.
+
+  The cli works by being passed the relevant arguments. For instance
+
+    parse_cli "\$@"
+
+  in a script. Preprocessing can be done before this consequently.
+
+
+  SPECIFYING:
+
+  The definition of what to parse is specified in global variables. Param names
+  are given a variable prefix of the form
+
+    __param_name --> --param-name
+
+  Associated with each prefix <X> are the following suffixes:
+
+    <X>__n = number of arguments
+      This can either be set to 0 for a flag or >0 for a single arg
+
+    <X>__doc = help doc string associated with the param
+
+    <X>__short = short form param
+      i.e. "__verbose__short=v" allows "-v" to be used instead of "--verbose"
+
+  To declare an argument with prefix <X>, <X>__n must be set as a global:
+
+    typeset -g <X>__n=<M>
+
+  where <M> is 0 for a flag and 1 for a parameter with an argument. Params
+  with multiple arguments are not yet supported. To define a default value
+  just set the prefix itself
+
+    typeset -g <X>=<default>
+
+  Using a bash checker, it may be worth defining
+
+    typeset -g <X>=''
+
+  regardless, since the variable will then be globally defined.
+
+  In order to show variables in the 'help_cli' function, the params must
+  be added to an array '___cli__params'
+
+    typeset -ga ___cli__params=(<X_1> <X_2> ...)
+
+  For positional params, the variable '___cli__pos__n' must be set to
+
+     0 - for no positionals
+     N - for N positionals
+    -1 - for a variable number of parameters
+
+  Further checking is relegated to the rest of the program.
+
+  OUTPUTS:
+
+  The outputs of the parser are put into global variables. For named
+  parameters the value for <X> is simply put into global <X>. For
+  positional params, the variable '___cli__pos' contains an array of
+  these.
+
+  EXAMPLE:
+
+  Examples of this are shown in the tests.
+EOF
+
+
+use_error_cli() {
+  log_error "$1"
+  echo ""
+  help_cli
+  echo ""
+  exit 1
+}
+
+parse_cli() {
+  local short shortR
+  local remaining_pos=${___cli__pos__n:-0}
+  local -a params=${___cli__params[*]:-}
+
+  for param in $params; do
+    shortR="${param}__short"
+    short=${!shortR}
+    if [[ -n "$short" ]]; then
+      local "short__$short=$param"
+    fi
+  done
+
+  # Cmd options parsing
+  local option_flag option_name option_n args rest
+  while [ "$#" -gt 0 ]; do case "$1" in
+    # Long-form options
+    (--*=*)
+      option_flag=${1%%=*}
+      explicit_arg=${1#*=}
+
+      option_name=${option_flag//-/_}
+      option_n="${option_name}__n"
+      args=${!option_n}
+
+      # unkown option
+      if [[ -z "$args" ]];  then use_error_cli "unkown option: $option_flag"
+
+      # args cases
+      elif (( args > 0 )); then typeset -g "${option_name}=$explicit_arg"; shift 1
+
+      # error cases
+      elif (( args == 0 )); then use_error_cli "option $option_flag has no parameter"
+      else use_error_cli "$option_flag requires $args arguments."
+      fi
+    ;;
+
+    # Long-form options
+    (--*)
+      option_name=${1//-/_}
+      option_n="${option_name}__n"
+      args=${!option_n}
+
+      # unkown option
+      if [[ -z "$args" ]];  then use_error_cli "unkown option: $1"
+
+      # flag cases
+      elif (( args == 0 )); then typeset -g "${option_name}=1";  shift 1
+
+      # args cases
+      elif (( args < $# )); then typeset -g "${option_name}=$2"; shift 2
+
+      # error cases
+      else use_error_cli "$1 requires $args arguments."
+      fi
+    ;;
+
+    # Options
+    (-?*)
+      # flag itself. -abc => a
+      short_key="short__${1:1:1}"
+
+      # rest of flags. i.e. -abc => bc
+      rest="${1#-?}"
+
+      # get option for short flag
+      option_name=${!short_key}
+      [[ -z "$option_name" ]] && use_error_cli "unkown option: $1"
+
+      option_n="${option_name}__n"
+      args=${!option_n}
+
+      # unknown option
+      if [[ -z "$args" ]]; then use_error_cli "unkown option: $1"
+
+      # flag cases
+      elif (( args == 0 )); then typeset -g "${option_name}=1"; shift 1
+
+      # args cases
+      elif (( args < $# )); then
+        if [[ -z $rest ]]; then typeset -g "${option_name}=$2"; shift 2
+
+        # use rest as argument
+        else typeset -g "${option_name}=$rest"; shift 1
+        fi
+
+      # error cases
+      else use_error_cli "$1 requires $args arguments."
+      fi
+
+      # if rest exists push rest into parser
+      [[ -n $rest ]] && set -- "-$rest" "$@"
+    ;;
+
+    # Positionals
+    (*)
+      if (( remaining_pos == 0 )); then
+        fail_with "extraneous positional given: $1"
+      else
+        ___cli__pos+=("$1")
+        remaining_pos=$(( remaining_pos - 1 ))
+      fi
+      shift 1
+    ;;
+  esac done
+}
+
+help_cli() {
+  local param_str docstr_var docstr option_n_var option_n
+  local -a params=${___cli__params[*]:-}
+  local command_name=${___cli__command_name:-$(basename "$0")}
+  local help_title=${___cli__help_title:-"$command_name help"}
+  local help_message=${___cli__help_message:-""}
+
+  echo "$help_title"
+  echo "$help_message"
+
+  echo
+  echo "USAGE:"
+  echo "    $command_name [FLAGS]"
+
+  echo
+  echo "FLAGS:"
+  for param in $params; do
+    docstr_var="${param}__doc"
+    docstr=${!docstr_var}
+    option_n_var="${param}__n"
+    option_n=${!option_n_var}
+    param_str=${param//_/-}
+
+    if   (( option_n >= 1 )); then param_str="$param_str ARG"
+    elif (( option_n < 0  )); then param_str="$param_str ARG_1 .."
+    fi
+
+    printf "    %-25s -- %s\\n" "$param_str" "$docstr"
+  done
+}
+
+################################################################################
+## end "cli.bash"
+################################################################################
+
+################################################################################
+## start "paths.bash"
+################################################################################
+
+# shellcheck shell=bash
+: # noop
+
+# shellcheck disable=SC2034
+declare -g ___paths__loaded="true" ___paths__doc
+
+# shellcheck disable=SC2034
+{ read -r -d '' ___paths__doc || true; } <<- EOF
+EOF
+
+
+################################################################################
+## These functions are not used directly but test methods used inline.
+## The reason that these are inlined is that they reference local variables
+## and bash does not handle scope in a manner sophisticated enough to be
+## entrusted with this kind of dereferencing.
+################################################################################
+
+# split_path_into <array_name> <path> => void
+split_path_into() { IFS='/' read -ra "$1" <<< "$2/"; }
+
+# split_path_into <sep> <array_name> <path> => void
+split_into() { IFS="$1" read -ra "$2" <<< "$3$1"; }
+
+# join_into_path <parts> ... => stdout: joined path
+join_into_path() {
+  local x
+  IFS='/' x="$*" # inline macro
+  echo "$x"
+}
+
+# join_into <sep> <parts> .. => stdout: joined path
+join_into() {
+  local x s
+  s="$1"; shift
+  IFS="$s" x="$*" # inline macro
+  echo "$x"
+}
+
+################################################################################
+## API
+################################################################################
+
+# normalize <path> => stdout: <normed_path>
+# Normalize a path to an absolute without dereferencing symlinks
+# This removes extra '/', collapses '.' and '..' links
+normalize() {
+  local path pdir pbase normed
+  path="$1"; shift 1
+
+  if [[ -d $path ]]; then
+    pdir=$path
+  elif [[ -e $path ]]; then
+    pdir=$(dirname "$path")
+    pbase=$(basename "$path")
+  else
+    fail_with "Path $path does not exist"
+  fi
+
+  normed=$(cd "$pdir" || return 1; pwd -L)
+  if [[ -n $pbase ]]; then
+    normed=$normed/$pbase
+  fi
+
+  echo "$normed"
+}
+
+
+# factor_paths <a> <b> => stdout: "<common>:<a_suffix>:<b_suffix>"
+# Get the glb of two paths <a> <b> and factor it out.
+factor_paths() {
+  local a b a_0 b_0 a_i b_i path
+  a="$1"
+  b="$2"
+
+  # Break paths into arrays of parts
+  typeset -a a_parts b_parts common
+  IFS='/' read -ra a_parts <<< "$a/"
+  IFS='/' read -ra b_parts <<< "$b/"
+
+  typeset -i i an bn m
+  an=${#a_parts[@]}
+  bn=${#b_parts[@]}
+
+  # m = min(an, bn)
+  if (( an > bn )); then m=bn; else m=an; fi
+
+  # first elements
+  a_0="${a_parts[0]}"
+  b_0="${b_parts[0]}"
+
+  # one of the paths is empty
+  if (( m <= 1 )); then
+    if [[ -z "$a_0" ]] || [[ -z "$b_0" ]]; then
+      echo ""
+      return 0
+    fi
+  fi
+
+  # no common root at all
+  if [[ "$a_0" != "$b_0" ]]; then
+    echo ""
+    return 0
+  fi
+
+  # at least one component exists and matches
+  common=("$a_0")
+  for (( i=1 ; i < m ; i++ )); do
+    a_i=${a_parts[i]}
+    b_i=${b_parts[i]}
+    if [[ "$a_i" == "$b_i" ]]; then
+      common+=("$a_i")
+    else break
+    fi
+  done
+
+  # join prefix and return if no factor array
+  IFS='/' path="${common[*]}"
+  if [[ -z "$path" ]]; then path='/'; fi
+
+  # join suffixes
+  IFS='/' a_suffix="${a_parts[*]:i:an}"
+  IFS='/' b_suffix="${b_parts[*]:i:bn}"
+
+  # construct output string
+  echo "$path:$a_suffix:$b_suffix"
+}
+
+
+# relativize <path> [<from>] => stdout: <relativized_path>
+# Relativize a path from either a given path or from '.'
+# Example:
+#     <path> = /full/path/from/here/to/there
+#     <from> = /full/path/from/this
+#     <relativized_path> = ../here/to/there
+relativize() {
+  local path from path_fs from_fs factored
+  path="$1"; shift 1
+
+  if (( $# == 0 )); then
+    from="."
+  else
+    from="$1"; shift 1
+  fi
+
+  # Gets normed and throws on non-existent paths
+  path="$(normalize "$path")"
+  from="$(normalize "$from")"
+
+  # If <from> is not a directory get its directory
+  if [[ ! -d "$from" ]]; then
+    from=$(dirname "$from")
+  fi
+
+  # Get filesystems
+  path_fs="$(stat -c %m "$path")"
+  from_fs="$(stat -c %m "$from")"
+  if [[ "$path_fs" != "$from_fs" ]]; then
+    fail_with "$path is on different file system than $from."
+  fi
+
+  typeset -a factorize
+  factored=$(factor_paths "$path" "$from")
+  IFS=':' read -ra factorize <<< "$factored:"
+
+  typeset -i factorize_n
+  factorize_n="${#factorize[@]}"
+
+  # Single entry in factorization
+  if (( factorize_n < 3 )); then
+    fail_with "$path cannot be relativized from $from."
+  fi
+
+  local common path_rel_common from_rel_common up_to_common
+  common="${factorize[0]}"
+  path_rel_common="${factorize[1]}"
+  from_rel_common="${factorize[2]}"
+
+  common_fs="$(stat -c %m "$common")"
+  if [[ "$path_fs" != "$common_fs" ]]; then
+    fail_with "$path and $from do not have a glb in the same file system."
+  fi
+
+  if [[ -z $from_rel_common ]]; then
+    echo "$path_rel_common"
+    return 0
+  fi
+
+  typeset -a from_parts
+  IFS='/' read -ra from_parts <<< "$from_rel_common/"
+
+  typeset -i from_parts_n
+  from_parts_n=${#from_parts[@]}
+
+  up_to_common=".."
+  for (( k = 1 ; k < from_parts_n ; k++ )); do
+    up_to_common="$up_to_common/.."
+  done
+
+  echo "$up_to_common/$path_rel_common"
+}
+
+
+# check_link <mode> <link> <dest>
+# <mode> in {rel(ative), abs(olute), given}
+declare -igrx \
+  check_link__link_dne=1 \
+  check_link__link_clob=2 \
+  check_link__src_diff=3 \
+  check_link__src_dne=4
+check_link() {
+  local mode src link
+  mode="$1"; shift
+  link="$1"; shift
+  src="$1"; shift
+
+  if [[ ! -h "$link" ]]; then
+    if [[ ! -e "$link" ]]; then
+      echo "$link does not exist"
+      return $check_link__link_dne
+    else
+      echo "$link exist but is not a link"
+      return $check_link__link_clob
+    fi
+  fi
+
+  local link_dir src_from_link
+  src_from_link="$(readlink "$link")"
+  link_dir="$(dirname "$link")"
+
+  if [[ ! -e "$link_dir/$src_from_link" ]]; then
+    echo "$link is broken"
+    return $check_link__src_diff
+  fi
+
+  case "$mode" in
+    (given) ;;
+    (abs*) src="$(normalize "$src")";;
+    (rel*) src="$(relativize "$src" "$link_dir")";;
+    (*) fail_with "<mode> must be rel(ative), abs(olute), or given"
+  esac
+
+  if [[ "$src_from_link" != "$src" ]]; then
+    echo "$link points to $src_from_link instead of $src"
+    return $check_link__src_diff
+  fi
+
+  pushd "$link_dir" > /dev/null || exit 120
+  test -e "$src"
+  declare -ir exists=$?
+  popd > /dev/null || exit 120
+
+  if (( exists != 0 )); then
+    echo "$src does not exist"
+    return $check_link__src_dne
+  fi
+
+  return 0
+}
+
+
+# make_link <mode> <link> <src>
+# <mode> in {rel(ative), abs(olute), given}
+make_link() {
+  local src link mode link_dir
+  mode="$1"; shift
+  link="$1"; shift
+  src="$1"; shift
+
+  # location of link
+  link_dir="$(dirname "$link")"
+
+  # check directory for existance
+  [[ -d "$link_dir" ]] || fail_with "$link_dir does not exist."
+
+  # relativize if in relative mode
+  case "$mode" in
+    (rel*) src="$(relativize "$src" "$link_dir")";;
+    (abs*) src="$(normalize "$src")";;
+    (given) ;;
+    (*) fail_with "<mode> must be rel(ative), abs(olute), or given"
+  esac
+
+  # check dest from directory
+  local -i accessible
+  pushd "$link_dir" > /dev/null || exit 2
+  test -e "$src"
+  accessible=$?
+  popd > /dev/null || exit 2
+
+  if (( accessible != 0 )); then
+    fail_with "$src is not accessible from within $link_dir"
+  fi
+
+  # make link
+  # shellcheck disable=2154
+  if [[ -n "$___libzo__dry_run" ]]; then
+    echo ln -snfT "$src" "$link"
+  else
+    ln -snfT "$src" "$link"
+  fi
+}
+
+
+################################################################################
+################################################################################
+
+################################################################################
+## end "paths.bash"
+################################################################################
+
+################################################################################
+## start "ops.bash"
+################################################################################
+
+# shellcheck shell=bash
+: # noop
+
+# shellcheck disable=SC2034
+declare -g ___ops__loaded="true" ___ops__doc
+
+# shellcheck disable=SC2034
+read -r -d '' ___ops__doc <<- EOF
+EOF
+
+
+################################################################################
+## Utilities
+################################################################################
+
+# Set the library dry run flag with some parameter. Dry on -n
+set_dry() {
+  if [[ -n "$1" ]]; then
+    ___libzo__dry_run="true"
+    log_info "Doing a dry run!"
+  else
+    ___libzo__dry_run=""
+  fi
+}
+
+# Check either a given parameter for dry or for auto and the library flag
+is_dry() {
+  # shellcheck disable=2034
+  [[ "$1" == "dry" || ( "$1" != "wet" && -n "$___libzo__dry_run" ) ]]
+}
+
+################################################################################
+## API Standards
+################################################################################
+
+dz_cd() {
+  local mode; mode="$1"; shift
+  if is_dry "$mode"
+  then echo cd "$@"
+  else cd "$@" || exit 250
+  fi
+}
+
+dz_mkdir() {
+  local mode; mode="$1"; shift
+  if is_dry "$mode"
+  then echo mkdir "$@"
+  else mkdir "$@"
+  fi
+}
+
+dz_pushd() {
+  local mode; mode="$1"; shift
+  if is_dry "$mode"
+  then echo pushd "$@"
+  else pushd "$@" > /dev/null || exit 250
+  fi
+}
+
+dz_popd() {
+  local mode; mode="$1"; shift
+  if is_dry "$mode"
+  then echo popd "$@"
+  else popd "$@" > /dev/null || exit 250
+  fi
+}
+
+################################################################################
+## Special Functions
+################################################################################
+
+dz_git() {
+  local mode; mode="$1"; shift
+  local -i git_rc
+  if is_dry "$mode"
+  then echo git "$@"
+  else
+    git "$@"
+    git_rc=$?
+    if (( git_rc != 0 )); then
+      message_exed "Git operation failed with exit code: $git_rc"
+      fail_with "Failed on git command."
+    fi
+  fi
+}
+
+dz_rsync() {
+  local mode; mode="$1"; shift
+  local -i rsync_rc
+  if is_dry "$mode"
+  then rsync -avu "$@" --dry-run
+  else
+    rsync -avu "$@"
+    rsync_rc=$?
+    if (( rsync_rc != 0 )); then
+      message_exed "Rsync operation failed with exit code: $rsync_rc"
+      fail_with "Failed on rsync command."
+    fi
+  fi
+}
+
+# dz_clobber mode stash clobbered
+# Takes file [clobbered] and moves it into the [stash]
+# Assumes that [stash] is inside a directory from which a path to
+# [clobbered] can be constructed. Otherwise, the mimicry of the path
+# structure within the [stash] directory would not make sense
+dz_clobber() {
+  local mode stash clobbered
+  mode="$1"; shift
+  stash="$1"; shift
+  clobbered="$1"; shift
+
+  local clob_dir stash_root stash_dir clob_from
+  stash_root="$(dirname "$stash")"
+  clob_dir="$(dirname "$clobbered")"
+  clob_from="$(relativize "$clob_dir" "$stash_root")"
+
+  if [[ ( "$clob_from" =~ ^\.\. ) || ( "$clob_from" =~ ^/ ) ]]; then
+    log_error "[$clobbered] must be under the root of [$stash]"
+    return 1
+  fi
+
+  stash_dir="$stash/$clob_from"
+
+  if is_dry "$mode"
+  then
+    echo mkdir -p "$stash_dir"
+    echo mv "$clobbered" "$stash_dir/"
+  else
+    if [[ ! -d "$stash" ]]; then
+      log_error "[$stash] does not exist."
+      return 1
+    fi
+    mkdir -p "$stash_dir"
+    mv "$clobbered" "$stash_dir/"
+  fi
+}
+
+################################################################################
+################################################################################
+
+################################################################################
+## end "ops.bash"
+################################################################################
+
+################################################################################
+## start "parser.bash"
+################################################################################
+
+# shellcheck shell=bash
+: # noop
+
+# shellcheck disable=SC2034
+declare -g ___parser__loaded="true" ___parser__doc
+
+# shellcheck disable=SC2034
+{ read -r -d '' ___parser__doc || true; } <<- EOF
+  This module contains a parser that parses options from a toml-like format
+  into global variables.
+
+  The format of the config file consists of sections with assignments
+
+    [section.x.y]
+    parameter_a = value_a
+    parameter_b = value_b
+    ...
+
+  which will be assigned as though
+
+    params__section__x__y__parameter_a=value_a
+    params__section__x__y__parameter_b=value_b
+
+  to the named globals.
+
+  The special format
+
+    [section.x.list:]
+    value_a
+    value_b
+    ...
+
+  ending in a ':' will construct an array
+
+    params__section__x__list=(value_a value_b)
+
+  values are either quoted with single or double quotes and stripped
+  of surrounding spaces.
+EOF
+
+
+################################################################################
+# Matching regexes
+################################################################################
+
+# Fragments
+rpre_sp='^[[:space:]]*'
+rasg='([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*'
+rend_idq='"(.*)"[[:space:]]*$'
+rend_isq="'"'(.*)'"'"'[[:space:]]*$'
+rend_iun='([A-Za-z0-9_./]+)[[:space:]]*$'
+
+# Line matches
+regex_whitespace="$rpre_sp"'$'
+regex_section="$rpre_sp"'\[[[:space:]]*([A-Za-z0-9_:.]+)[[:space:]]*\]'
+regex_assign_dq="$rpre_sp$rasg$rend_idq"
+regex_assign_sq="$rpre_sp$rasg$rend_isq"
+regex_assign_un="$rpre_sp$rasg$rend_iun"
+regex_item_dq="$rpre_sp$rend_idq"
+regex_item_sq="$rpre_sp$rend_isq"
+regex_item_un="$rpre_sp$rend_iun"
+
+################################################################################
+# Config Parser
+################################################################################
+
+config_parser() {
+  local prefix mode section setting_var listoid
+  local -a list_register
+  prefix="${1}"; shift
+
+  mode=''
+  section=''
+  while IFS= read -r cline; do
+    # remove comments
+    cline=${cline%%\#*}
+
+    # skip empty lines
+    [[ "$cline" =~ $regex_whitespace ]] && continue
+
+    # check for section switch
+    if [[ "$cline" =~ $regex_section ]]; then
+
+      # ending
+      if [[ "$mode" == "list" ]]; then
+        setting_var="${prefix}__${section//./__}"
+        IFS='|' listoid="${list_register[*]}"
+        declare -g "$setting_var=$listoid"
+      fi
+
+      # switch section
+      section="${BASH_REMATCH[1]}"
+      case "$section" in
+        (*::) # list sections
+          mode="list"
+          section="${section%%::}"
+          list_register=()
+          ;;
+        (*) # regular sections
+          mode="assign"
+          ;;
+      esac
+      continue
+    fi
+
+    # handle section lines
+    local setting value
+    case "$mode" in
+      (list)
+        if [[ "$cline" =~ $regex_item_dq ]] \
+        || [[ "$cline" =~ $regex_item_sq ]] \
+        || [[ "$cline" =~ $regex_item_un ]]
+        then list_register+=("${BASH_REMATCH[1]}")
+        fi
+        ;;
+
+      (assign)
+        if [[ "$cline" =~ $regex_assign_dq ]] \
+        || [[ "$cline" =~ $regex_assign_sq ]] \
+        || [[ "$cline" =~ $regex_assign_un ]]
+        then
+          setting=${BASH_REMATCH[1]}
+          value=${BASH_REMATCH[2]}
+          setting_var="${prefix}__${section//./__}__${setting}"
+          declare -g "$setting_var=$value"
+        fi
+        ;;
+
+      ('') ;;
+      (*) ;;
+    esac
+  done
+
+  # ending tail
+  if [[ "$mode" == "list" ]]; then
+    setting_var="${prefix}__${section//./__}"
+    IFS='|' listoid="${list_register[*]}"
+    declare -g "$setting_var=$listoid"
+  fi
+}
+
+################################################################################
+# ".dot" Parser
+################################################################################
+
+# global registers for parser output
+typeset -ga dot_parser__mapping
+
+# parser cannot be called in a recursive context without saving what is
+# in the above register local to the calling frame
+dot_parser() {
+  local infile mode section
+  infile="$1"; shift
+  [[ -f "$infile" ]] || fail_with "File '$infile' does not exist."
+
+  # clear registers
+  dot_parser__mapping=()
+
+  mode=''
+  section=''
+  while IFS= read -r cline; do
+    # remove comments and skip empty lines
+    cline=${cline%%\#*}
+    [[ "$cline" =~ $regex_whitespace ]] && continue
+
+    # check for section switch
+    if [[ "$cline" =~ $regex_section ]]; then
+      section="${BASH_REMATCH[1]}"
+      case "$section" in
+        (*) mode="mappings" ;;
+      esac
+      continue
+    fi
+
+    case "$mode" in
+      (mappings)
+        if [[ "$cline" =~ $regex_assign_dq ]] \
+        || [[ "$cline" =~ $regex_assign_sq ]] \
+        || [[ "$cline" =~ $regex_assign_un ]]
+        then
+          dot_parser__mapping+=("${section}:${BASH_REMATCH[1]}:${BASH_REMATCH[2]}")
+        elif [[ "$cline" =~ $regex_item_dq ]] \
+        ||   [[ "$cline" =~ $regex_item_sq ]] \
+        ||   [[ "$cline" =~ $regex_item_un ]]
+        then
+          dot_parser__mapping+=("${section}:${BASH_REMATCH[1]}:")
+        fi
+        ;;
+
+      ('') ;;
+      (*) ;;
+    esac
+  done < "$infile"
+}
+
+################################################################################
+################################################################################
+
+################################################################################
+## end "parser.bash"
+################################################################################
+
+################################################################################
+## end "lib.bash"
+################################################################################
+
+################################################################################
+# RC Writing
+################################################################################
+
+write_rc() {
+  echo "# Config file for dotzo"
+  echo
+  echo "[dot] # primary variables"
+  echo "root=$root"
+  echo "repo=$opt__dotfiles__repo"
+}
+
+################################################################################
+# Utility Functions
+################################################################################
+
+est_dir() {
+  local base context
+  base="$(basename "$1")"
+  context="$(dirname "$1")"
+  if [[ ! -d "$1" ]]; then
+    log_info "$base not found in $context."
+    if prompt_confirm "Create $base in $context?"; then
+      mkdir "$1"
+      message_checked "Created $base in $context"
+      return 0
+    fi
+    return 1
+  fi
+  log_info "Found $base in $context"
+  return 0
+}
+
+# Get the current git remote origin
+# if no origin exists just echo empty and return 0
+# if not a git repo return 1
+get_git_origin() {
+  local -r path="${1:-.}"
+  if git -C "$path" rev-parse >/dev/null 2>&1
+  then git -C "$path" config --get remote.origin.url; return 0
+  else return 1
+  fi
+}
+
+# Clone repo with git using dz mode and select flags
+clone_repo() {
+  local -r mode="$1"; shift
+  dz_git "$mode" clone --recursive --shallow-submodules "$@"
+}
+
+dotzo_info() {
+  dotzo_init strict
+  show_options
+}
+
+################################################################################
+# Init
+################################################################################
+
+find_dotrc() {
+  local dotrc rc; dotrc=""
+  for rc in "$__dotrc" "${default_dotrc_locations[@]}"; do
+    if [[ -f "$rc" ]]; then
+      dotrc="$rc"
+      break
+    fi
+  done
+
+  if [[ -z $dotrc ]]
+  then log_info "Did not find dotrc."
+  else log_info "Will read dotrc from [$dotrc]."
+  fi
+
+  echo "$dotrc"
+}
+
+dotzo_init() {
+  local mode dotrc
+  mode=${1:-strict}
+  dotrc=$(find_dotrc)
+  if [[ -z "$dotrc" ]]; then
+    if [[ "$mode" == "ask" ]] \
+      && prompt_confirm "No dotrc file found. Use defaults?"
+    then message_checked "Using defaults."
+    else
+      message_exed "Need a 'dotrc' file."
+      fail_with "Conditions unsatisfied."
+    fi
+  else
+    log_info "Parsing dotrc"
+    config_parser "opt" < "$dotrc"
+  fi
+
+  log_info "Initializing options"
+  load_options
+
+  log_info "Dotzo initialized."
+}
+
+################################################################################
+# Setup
+################################################################################
+
+check_root_repo() {
+  local origin root remote
+  root="$1"; shift
+  remote="$opt__dotfiles__repo"
+
+  log_info "Checking [$root]."
+  if [[ ! -d "$root" ]]; then
+    message_exed "Root does not exist."
+    return 1
+  fi
+
+  if ! origin=$(get_git_origin "$root"); then
+    if prompt_confirm "Root is not a git repo. Is this okay?"; then
+      message_checked "Using non-repo root."
+      return 0
+    fi
+    message_exed "Non-repo root rejected."
+    return 1
+  fi
+
+  log_info "Checking origin [$origin]."
+  if [[ -z "$origin" ]]; then
+    if prompt_confirm "Root is not linked to an origin. Is this okay?"; then
+      message_checked "Using local-only root."
+      return 0
+    fi
+    message_exed "Local-only root rejected."
+    return 1
+  fi
+
+  if ! [[ ("$remote" =~ ^https) || ("$remote" =~ ^git@) ]]; then
+    remote="$(normalize "$remote")"
+    origin="$(normalize "$origin")"
+  fi
+
+  if [[ "$origin" == "$remote" ]]; then
+    message_checked "Using root linked given origin."
+    return 0
+  fi
+
+  if prompt_confirm "Root has origin = [$origin]. Is this okay?"; then
+    message_checked "Using root with this origin. (Consider changing in dotrc)"
+    return 0
+  fi
+
+  message_exed "Nonstandard origin rejected. Consider changing in dotrc."
+  return 1
+}
+
+est_dot_root() {
+  if [[ ! -d "$root" ]]; then
+    if prompt_confirm "Root at [$root] does not exist. Clone root there?"; then
+      if [[ -z "$opt__dotfiles__repo" ]]; then
+        message_exed "No repo location given."
+        fail_with "Use '--dotfiles-repo' or create dotrc file."
+      fi
+      clone_repo auto "$opt__dotfiles__repo" "$root"
+      if ! is_dry; then
+        log_info "Checking new root."
+        check_root_repo "$root" || fail_with "Found issues with root."
+        log_info "Re-initializing newly create root."
+        dotzo_init strict
+      fi
+      message_checked "Root created at [$root]."
+    else
+      message_exed "Root must be created at [$root]."
+      fail_with "No root."
+    fi
+  else
+    message_checked "Using root at [$root]"
+    check_root_repo "$root" || fail_with "Found issues with root."
+    message_checked "Root checked."
+  fi
+}
+
+dotzo_check_repo() {
+  log_info "Initializing dotzo."
+  dotzo_init strict
+
+  log_info "Checking root."
+  check_root_repo "$root"
+}
+
+dotzo_setup() {
+  log_info "Initializing dotzo."
+  dotzo_init ask
+
+  log_info "Establishing root."
+  est_dot_root
+
+  prompt_confirm "Continue to run sync-secure?" && dotzo_sync_secure
+  prompt_confirm "Continue to run sync?" && dotzo_sync
+}
+
+################################################################################
+# Sync
+################################################################################
+
+init_home() {
+  dz_pushd auto "$home"
+  dz_mkdir auto -p "$opt__home__config" "$opt__home__clobber"
+  make_link rel "$opt__home__dot_root" "$root"
+  dz_popd auto
+  message_checked "All home structure set up."
+
+  echo "export DOT_ROOT=$root" > "$home/.dot_env"
+  message_checked "Synced envar bootstrap."
+}
+
+link_secure() {
+  local ssh_target ssh_link
+  ssh_target="$root/$opt__secure__root/$opt__secure__ssh"
+  ssh_link="$opt__secure__ssh_link"
+
+  if [[ ! -d "$ssh_target" ]]; then
+    log_info "No ssh found in secure-root. Skipping."
+    return 0
+  fi
+
+  log_info "Will create link [$ssh_link] => [$ssh_target]"
+  local -i check_link_rc
+  check_link rel "$ssh_link" "$ssh_target"
+  check_link_rc=$?
+
+  # shellcheck disable=SC2154
+  if (( check_link_rc == check_link__link_clob )); then
+    if prompt_confirm "Move existing at [$ssh_link] to clobber"; then
+      dz_clobber auto "$opt__home__clobber" "$ssh_link"
+    fi
+  fi
+
+  # shellcheck disable=SC2154
+  if (( check_link_rc == check_link__src_diff )); then
+    prompt_confirm "Overwrite existing link [$ssh_link]" || return 0
+  fi
+
+  if (( check_link_rc != 0 )); then
+    make_link rel "$ssh_link" "$ssh_target"
+    message_checked "Made ssh link [$ssh_link] => [$ssh_target]"
+  else
+    log_info "Correct ssh link already exist"
+  fi
+}
+
+# Sync action formats
+#   action = src:link:src_from_link
+#   where link is absolute and src is from root
+declare -ga \
+  sync__none \
+  sync__create \
+  sync__update \
+  sync__fix
+
+clear_link_actions() {
+  sync__create=()
+  sync__fix=()
+  sync__none=()
+  sync__update=()
+}
+
+make_link_action() {
+  local src link
+  src="$1"; shift; link="$1"; shift
+
+  if [[ ! -e "$src" ]]; then
+    log_warn "[$src] does not exist."
+    return 1
+  fi
+
+  if [[ ! -L "$link" ]]; then
+    if [[ ! -e "$link" ]]
+    then sync__create+=("$src:$dest::")
+    else sync__fix+=("$src:$dest::")
+    fi
+    return 0
+  fi
+
+  # assert => $link is a symlink to some location that may exist
+  local link_dir src_from_link src_should_be action
+  src_from_link="$(readlink "$link")"
+  link_dir="$(dirname "$link")"
+  src_should_be="$(relativize "$src" "$link_dir")"
+  action="$src:$dest:$src_should_be:$src_from_link"
+
+  if [[ "$src_from_link" == "$src_should_be" ]];
+  then sync__none+=("$action")
+  else sync__update+=("$action")
+  fi
+}
+
+traverse_kernel() {
+  local path dottr
+  path="$1"; shift
+  dottr="$path/.dot"
+
+  local -a mapping
+  local visited mapping_str item item_find src dest
+  visited=":"
+
+  # look for a .dot file
+  if [[ -f "$dottr" ]]; then
+    dot_parser "$dottr"
+
+    # shellcheck disable=2154
+    for mapping_str in "${dot_parser__mapping[@]}"; do
+      IFS=":"  read -ra mapping <<< "$mapping_str:"
+      src="${mapping[1]}"
+      dest="${mapping[2]}"
+      case "${mapping[0]}" in
+        (home)   dest="$opt__home__root/${dest:-".$src"}";;
+        (config) dest="$opt__home__config/${dest:-"$src"}";;
+        (ignore) visited+="$src:"; continue;;
+        (*) continue;;
+      esac
+      make_link_action "$path/$src" "$dest"
+    done
+  fi
+
+  for item in "$path"/*; do [[ -d "$item" ]] || continue
+    item_find=":$(basename "$item"):"
+    [[ "$visited" =~ $item_find ]] && continue
+    traverse_kernel "$item"
+  done
+}
+
+traverse() {
+  clear_link_actions
+  dz_pushd wet "$root"
+
+  log_info "Traversing etc directories and determinings sync actions."
+  traverse_kernel "etc"
+  message_checked "Scanned for sync actions."
+
+  local action
+  local -a params
+  local -i count_none count_fix count_update count_create total
+  count_none=${#sync__none[@]}
+  count_fix=${#sync__fix[@]}
+  count_update=${#sync__update[@]}
+  count_create=${#sync__create[@]}
+  total=$(( count_none + count_create + count_update + count_fix ))
+
+  if (( count_none == total )); then
+    message_checked "All links in sync."
+    dz_popd wet
+    return 0
+  fi
+
+  # No action
+  if (( count_none > 0 )); then
+    message_checked "$count_none of $total correct links already found"
+  fi
+
+  # Fix links to things that would get clobbered
+  if (( count_fix > 0 )); then
+    message_notify "$count_fix of $total links would clobber existing files"
+    for action in "${sync__fix[@]}"; do
+      IFS=":" read -ra params <<< "$action:"
+      log_info " -- Will fix: ${params[1]} <= ${params[0]}"
+    done
+    if prompt_confirm "Fix these? Will move existing to [$opt__home__clobber]."; then
+      for action in "${sync__fix[@]}"; do
+        IFS=":" read -ra params <<< "$action:"
+        dz_clobber auto "$opt__home__clobber" "${params[1]}" \
+          && make_link rel "${params[1]}" "${params[0]}"
+      done
+      message_checked "Links created and collisions moved"
+    fi
+  fi
+
+  # Repair links to wrong source
+  if (( count_update > 0 )); then
+    message_notify "$count_update of $total links need to be corrected"
+    for action in "${sync__update[@]}"; do
+      IFS=":" read -ra params <<< "$action:"
+      log_info " -- Will update: ${params[1]} <= ${params[0]}, from ${params[3]}"
+    done
+    if prompt_confirm "Update these?"; then
+      for action in "${sync__update[@]}"; do
+        IFS=":" read -ra params <<< "$action:"
+        make_link rel "${params[1]}" "${params[0]}"
+      done
+      message_checked "Links updated"
+    fi
+  fi
+
+  # Repair links to wrong source
+  if (( count_create > 0 )); then
+    message_notify "$count_create of $total links need to be created"
+    for action in "${sync__create[@]}"; do
+      IFS=":" read -ra params <<< "$action:"
+      log_info " -- Will create: ${params[1]} <= ${params[0]}"
+    done
+    if prompt_confirm "Create these?"; then
+      for action in "${sync__create[@]}"; do
+        IFS=":" read -ra params <<< "$action:"
+        make_link rel "${params[1]}" "${params[0]}"
+      done
+      message_checked "Links created"
+    fi
+  fi
+
+  dz_popd wet
+  message_checked "Completed work on links"
+}
+
+dotzo_sync() {
+  log_info "Initializing dotzo."
+  dotzo_init strict
+
+  log_info "Setting up home environment."
+  init_home
+
+  log_info "Constructing links."
+  traverse
+
+  log_info "Secure links."
+  link_secure
+}
+
+################################################################################
+# Sync Secure
+################################################################################
+
+sync_secure() {
+  local secure_root secure_source
+  secure_root="$root/$opt__secure__root"
+  secure_source="$__secure"
+
+  if [[ -z "$secure_source" ]]; then
+    fail_with "Must provide '--secure' source directory."
+  elif [[ ! -d "$secure_source" ]]; then
+    fail_with "[$secure_source] is not a valid directory."
+  fi
+
+  if prompt_confirm "Will sync secure data from [$secure_source]"; then
+    dz_mkdir auto -p "$secure_root"
+    dz_rsync auto "$secure_source/" "$secure_root/"
+  fi
+}
+
+dotzo_sync_secure() {
+  log_info "Initializing dotzo."
+  dotzo_init strict
+
+  log_info "Syncing secure data."
+  sync_secure
+}
+
+################################################################################
+# Main driver
+################################################################################
+
+# Get the subcommand and parse the rest
+subcmd="$1"; shift
+parse_cli "$@"
+
+if [[ -n "$__verbose" ]]
+then set_log_level 3
+else set_log_level 2
+fi
+set_dry "$__dry_run"
+
+log_info "Running '$subcmd'."
+case "$subcmd" in
+  # Utilities
+  (help|-h|--help) show_help;;
+
+  # Primary commands
+  (init)        dotzo_init strict;;
+  (setup)       dotzo_setup;;
+  (check-repo)  dotzo_check_repo;;
+  (sync)        dotzo_sync;;
+  (sync-secure) dotzo_sync_secure;;
+  (info)        dotzo_info;;
+
+  # Testing
+  (other) ;;
+esac
+
+################################################################################
+################################################################################

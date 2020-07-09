@@ -1,0 +1,4 @@
+# vim: ft=dosini
+[aliases]
+rename = exec mv $imv_current_file
+delete = exec rm $imv_current_file
