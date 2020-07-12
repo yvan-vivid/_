@@ -12,6 +12,9 @@ let dein_path = plugins_path . "/repos/github.com/Shougo/dein.vim"
 
 exe 'set rtp+=' . dein_path
 
+" for netrw history
+let g:netrw_home = state_path
+
 " ================ Cache/backup ====================
 
 let &directory = state_path . "/swap//"

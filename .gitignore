@@ -6,6 +6,7 @@
 
 # managed tool distributions
 /lib/distro
+/lib/node
 
 # mountpoint for filesystems
 /mount
