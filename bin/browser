@@ -3,9 +3,10 @@
 # Yvan Vivid -- Browser startup script
 ################################################################################
 
-declare log
+declare -r logname="firefox.log"
+
 mkdir -p "$DOT_LOGS_APPS"
-log="$DOT_LOGS_APPS/firefox.log"
+declare log="$DOT_LOGS_APPS/$logname"
 
 logit() { echo "$1" >> "$log"; }
 
@@ -20,8 +21,7 @@ logit() { echo "$1" >> "$log"; }
 # export LD_LIBRARY_PATH="$libpath"
 
 declare -r \
-  gtk3_schemas="/nix/store/hypvzdxqbdkc2bilp42ldbk1a9xk04h5-gtk+3-3.24.20/share/gsettings-schemas/gtk+3-3.24.20" \
-  gsettings_schemas="/nix/store/7k46faqlr4gffdyksffrhllp9vav95i5-gsettings-desktop-schemas-3.34.0/share/gsettings-schemas/gsettings-desktop-schemas-3.34.0"
+  gtk3_schemas="/nix/store/hypvzdxqbdkc2bilp42ldbk1a9xk04h5-gtk+3-3.24.20/share/gsettings-schemas/gtk+3-3.24.20" 
 
 export XDG_DATA_DIRS="$gtk3_schemas:$XDG_DATA_DIRS"
 

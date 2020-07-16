@@ -13,3 +13,6 @@
 
 # cache and temporary
 /temp
+
+# zsh compiled files
+*.zwc
