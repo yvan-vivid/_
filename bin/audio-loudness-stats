@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Helper for getting audio stats
+################################################################################
+
+declare -r audio_file="$1"
+
+if ! command -v ffmpeg > /dev/null; then
+  echo "'ffmpeg' not available."
+  exit 1
+fi
+
+ffmpeg -hide_banner \
+  -i "$audio_file" \
+  -filter:a volumedetect \
+  -f null /dev/null \
+  2>&1 >/dev/null | \grep 'volume:'

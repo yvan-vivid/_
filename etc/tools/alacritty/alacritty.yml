@@ -21,7 +21,7 @@ font:
   normal: { family: "DejaVuSansMono Nerd Font", style: Book }
   bold:   { family: "DejaVuSansMono Nerd Font", style: Bold }
   italic: { family: "DejaVuSansMono Nerd Font", style: Oblique }
-  size: 20
+  size: 14
   
   offset: { x: 0, y: 0 }
   glyph_offset: { x: 0, y: 0 }
@@ -73,7 +73,7 @@ colors:
     cyan:    '#5c8482'
     white:   '#828282'
 
-visual_bell:
+bell:
   animation: EaseOutExpo
   duration: 0
 
@@ -92,12 +92,10 @@ selection:
   semantic_escape_chars: ",│`|:\"' ()[]{}<>"
   save_to_clipboard: false
 
-
 cursor:
   style: Block
   unfocused_hollow: true
 
-dynamic_title: true
 live_config_reload: true
 
 # Key bindings

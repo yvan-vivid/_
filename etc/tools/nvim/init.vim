@@ -8,12 +8,15 @@ endif
 let config_path = expand(getenv("DOT_ETC")) . "/tools/nvim"
 let state_path = expand(getenv("DOT_STATE")) . "/nvim"
 let plugins_path = state_path . "/plugins"
-let dein_path = plugins_path . "/repos/github.com/Shougo/dein.vim"
-
-exe 'set rtp+=' . dein_path
 
 " for netrw history
 let g:netrw_home = state_path
+
+
+"let detected_pypath = system("which python")
+"if detected_pypath != ""
+"  let g:python3_host_prog = detected_pypath
+"endif
 
 " ================ Cache/backup ====================
 
@@ -53,40 +56,43 @@ set foldenable
 
 " ================ Plugins ====================
 
-"let g:dein#auto_recache = 1
+call plug#begin(plugins_path)
 
-if dein#load_state(plugins_path)
-  call dein#begin(plugins_path)
-  call dein#add(dein_path)
-  call dein#add('christoomey/vim-tmux-navigator')
-  call dein#add('itchyny/lightline.vim')
-  call dein#add('flazz/vim-colorschemes')
-  call dein#add('ryanoasis/vim-devicons')
-  call dein#add('godlygeek/tabular')
-  "call dein#add('plasticboy/vim-markdown', { 'depends': 'tabular' })
-  call dein#add('neoclide/coc.nvim', {'merged': 0, 'rev': 'release'})
-  call dein#add('rhysd/vim-grammarous')
-  call dein#add('ron89/thesaurus_query.vim')
-  call dein#add('masukomi/vim-markdown-folding')
-  call dein#add('Shougo/denite.nvim')
-  call dein#add('Shougo/defx.nvim')
-  call dein#add('kristijanhusak/defx-git')
-  call dein#add('kristijanhusak/defx-icons')
-  call dein#add('t9md/vim-choosewin')
-  if !has('nvim')
-    call dein#add('roxma/nvim-yarp')
-    call dein#add('roxma/vim-hug-neovim-rpc')
-  endif
-  call dein#add('LnL7/vim-nix')
-  call dein#end()
-  call dein#save_state()
-endif
-filetype plugin indent on
-syntax enable
+" environment
+Plug 'itchyny/lightline.vim'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'flazz/vim-colorschemes'
+Plug 'Shougo/denite.nvim'
 
-if dein#check_install()
-  call dein#install()
-endif
+" filebrowser
+Plug 'Shougo/defx.nvim'
+Plug 'kristijanhusak/defx-git'
+Plug 'kristijanhusak/defx-icons'
+Plug 'ryanoasis/vim-devicons'
+  
+" langs
+Plug 'hail2u/vim-css3-syntax'
+Plug 'cakebaker/scss-syntax.vim'
+Plug 'masukomi/vim-markdown-folding'
+Plug 'LnL7/vim-nix'
+Plug 'vmchale/dhall-vim'
+Plug 'cespare/vim-toml'
+Plug 'evanleck/vim-svelte'
+Plug 'rhysd/vim-grammarous'
+Plug 'ron89/thesaurus_query.vim'
+Plug 'kevinoid/vim-jsonc'
+  
+" other tools
+Plug 'godlygeek/tabular'
+Plug 't9md/vim-choosewin'
+Plug 'chrisbra/Recover.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+call plug#end()
+
+" ============ Other Options ==============
+
+let g:svelte_preprocessors = ['typescript', 'scss']
 
 " ============ Lightline Options ==============
 
@@ -101,20 +107,6 @@ let g:vim_markdown_conceal = 0
 let g:tex_conceal = ""
 let g:vim_markdown_math = 1
 
-" ============ Coc Options ==============
-
-let g:coc_explorer_global_presets = {
-\   'floating': {
-\      'position': 'floating',
-\   },
-\   'right': {
-\      'position': 'right',
-\   },
-\   'left': {
-\      'position': 'right',
-\   }
-\ }
-
 " ============ Lightline Options ==============
 
 colorscheme molokai_dark
@@ -125,35 +117,6 @@ set autoindent smartindent smarttab
 set nolist wrap linebreak breakindent
 set tabstop=2 shiftwidth=2 softtabstop=2 expandtab shiftround
 set virtualedit=block
-
-fu CodingIndents()
-	set nowrap list listchars=tab:\|\ 
-	set tabstop=2 softtabstop=2 shiftwidth=2 noexpandtab
-endfu
-
-fu LatexIndents()
-	set wrap list linebreak listchars=tab:\|\ 
-	set tabstop=2 softtabstop=2 shiftwidth=2 noexpandtab
-endfu
-
-fu WritingIndents()
-	set nolist wrap linebreak
-endfu
-
-" ================ Completion =======================
-
-set wildmode=list:longest
-set wildmenu                "enable ctrl-n and ctrl-p to scroll thru matches
-set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
-set wildignore+=*vim/backups*
-set wildignore+=*sass-cache*
-set wildignore+=*DS_Store*
-set wildignore+=vendor/rails/**
-set wildignore+=vendor/cache/**
-set wildignore+=*.gem
-set wildignore+=log/**
-set wildignore+=tmp/**
-set wildignore+=*.png,*.jpg,*.gif
 
 " ================ Scrolling ========================
 
@@ -181,6 +144,8 @@ augroup rc_extras
 augroup END
 
 autocmd FileType markdown set foldexpr=NestedMarkdownFolds()
+
+set statusline^=%{coc#status()}
 
 runtime! defx.vim
 runtime! grammarous.vim
