@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+declare -a options
+options=(
+  -auto_identifiers
+  +header_attributes
+  +line_blocks
+  +blank_before_blockquote
+  +space_in_atx_header
+  +backtick_code_blocks
+  +fenced_code_attributes
+  +line_blocks
+  +fancy_lists
+  +startnum
+  +task_lists
+  +definition_lists
+  +example_lists
+  +yaml_metadata_block
+  +tex_math_dollars
+)
+
+declare format
+IFS='' format="markdown${options[*]}"
+
+declare infile
+declare -i dobib=0 dry_run=0
+while (( $# > 0 )); do
+  case "$1" in
+    --bib*)
+      dobib=1
+      shift
+      ;;
+
+    --dry-run)
+      dry_run=1
+      shift
+      ;;
+
+    *.md)
+      infile="$1"
+      shift
+      ;;
+
+    --*)
+      echo "Invalid option: $1" >&2
+      exit 1
+      ;;
+
+    *)
+      echo "File must have md extension: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [[ -z "$infile" ]]; then
+  echo "Input file with .md extension must be given" >&2
+  exit 1
+fi
+
+declare -r infile_stem="${infile%%.md}"
+declare -r outfile="$infile_stem.pdf"
+
+declare -a pandoc_options
+(( dobib == 1 )) && pandoc_options+="--citeproc"
+
+if (( dry_run == 1 )); then
+  echo pandoc -f "$format" "${pandoc_options[@]}" -o "$outfile" "$infile"
+else
+  pandoc -f "$format" "${pandoc_options[@]}" -o "$outfile" "$infile"
+fi

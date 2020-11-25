@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Mounting utility
+################################################################################
+
+declare -r \
+  oak="/dev/disk/by-uuid/f185035f-a3b7-42f1-b738-9fec78729748"
+
+declare -r com="$1" device="$2"
+
+if [[ -z "$com" ]]; then
+  echo "Command must be provided: {'mount', 'unmount', 'unpower', 'eject'}"
+  exit 1
+fi
+
+if [[ -z "$device" ]]; then
+  echo "Must provide a device"
+  exit 1
+fi
+
+declare -r device_path="${!device}"
+if [[ -z "$device_path" ]]; then
+  echo "Device undefined: $device"
+  exit 1
+fi
+
+if ! test -e "$device_path"; then
+  echo "$device is unavailable"
+  exit 0
+fi
+
+case "$com" in
+  (mount)
+    echo "Mounting $device"
+    udisksctl mount --block-device "$device_path" 
+    ;;
+  
+  (unmount)
+    echo "Unmounting $device"
+    udisksctl unmount --block-device "$device_path" 
+    ;;
+  
+  (unpower)
+    echo "Powering off $device"
+    udisksctl power-off --block-device "$device_path" 
+    ;;
+  
+  (eject)
+    echo "Ejecting $device (unmount + power-off)"
+    udisksctl unmount --block-device "$device_path"
+    sleep 3
+    udisksctl power-off --block-device "$device_path" 
+    echo "Powered off $device"
+    ;;
+esac
