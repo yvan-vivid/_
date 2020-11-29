@@ -6,6 +6,32 @@
 declare -r \
   oak="/dev/disk/by-uuid/f185035f-a3b7-42f1-b738-9fec78729748"
 
+declare -ar usb_vols=("oak")
+
+
+declare -r \
+  sky="sky" \
+  sky_point="/mnt/sky"
+
+
+mount_usb() {
+  echo "Mounting $device"
+  udisksctl mount --block-device "$device_path" 
+}
+
+
+
+mount_rclone() {
+  rclone mount "${sky}:" "$sky_point"\
+    --daemon \
+    --vfs-cache-mode full
+}
+
+unmount_rclone() {
+  fusermount -u "$sky_point" 
+}
+
+
 declare -r com="$1" device="$2"
 
 if [[ -z "$com" ]]; then
@@ -18,38 +44,51 @@ if [[ -z "$device" ]]; then
   exit 1
 fi
 
-declare -r device_path="${!device}"
-if [[ -z "$device_path" ]]; then
-  echo "Device undefined: $device"
-  exit 1
-fi
+if [[ "$device" != "all" ]]; then
+  declare -r device_path="${!device}"
+  if [[ -z "$device_path" ]]; then
+    echo "Device undefined: $device"
+    exit 1
+  fi
 
-if ! test -e "$device_path"; then
-  echo "$device is unavailable"
-  exit 0
+  if ! test -e "$device_path"; then
+    echo "$device is unavailable"
+    exit 0
+  fi
 fi
 
 case "$com" in
-  (mount)
+  mount)
     echo "Mounting $device"
     udisksctl mount --block-device "$device_path" 
     ;;
   
-  (unmount)
+  unmount)
     echo "Unmounting $device"
     udisksctl unmount --block-device "$device_path" 
     ;;
   
-  (unpower)
+  unpower)
     echo "Powering off $device"
     udisksctl power-off --block-device "$device_path" 
     ;;
   
-  (eject)
+  eject)
     echo "Ejecting $device (unmount + power-off)"
     udisksctl unmount --block-device "$device_path"
     sleep 3
     udisksctl power-off --block-device "$device_path" 
     echo "Powered off $device"
+    ;;
+
+  remotes)
+    echo "Mounting remotes."
+    mount_rclone
+    echo "Sky mounted at $sky_point"
+    ;;
+
+  unremotes)
+    echo "Unmounting remotes."
+    unmount_rclone
     ;;
 esac

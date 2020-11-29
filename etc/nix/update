@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+echo "Updating nixos config"
+rsync -ltr --progress \
+  --exclude fstab --exclude update \
+  ./ /etc/nixos/
+echo "Updated"
