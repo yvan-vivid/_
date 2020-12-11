@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Wrapper for zathura
+################################################################################
+# This adds some functionality to zathura
+
+declare -A locations
+locations["papers"]="/data/media/texts/papers"
+locations["books"]="/data/media/texts/books"
+
+prompter() {
+  declare decision
+  read -rp "$1" decision
+  case "$decision" in
+    y|Y|yes|Yes) return 0;;
+    *) return 1;;
+  esac
+}
+
+declare zathura
+if ! zathura="$(command -v "zathura")"; then
+  echo "Could not find 'zathura' command" >&2
+  exit 1
+fi
+
+declare viewer
+zrunner() {
+  "$zathura" "$@" >/dev/null &
+  viewer="$!"
+}
+
+declare name dest
+declare -i commit
+choose() {
+  tput sc
+  tput civis
+  echo "File = $name"
+  echo "Action:"
+  echo "(r) Rename"
+  echo "(p) Move to <papers>"
+  echo "(b) Move to <books>"
+  echo "(c) Commit (a) Abort"
+  tput cuu1; tput cuu1; tput cuu1
+  tput cuu1; tput cuu1; tput cuu1
+ 
+  local choice
+  while true; do
+    read -rsn 1 choice
+    case "$choice" in
+      r)
+        tput el
+        tput cnorm
+        read -rp "New name = " name
+        tput civis
+        tput cuu1
+        ;;
+      p) dest="papers";;
+      b) dest="books";;
+      c)
+        tput el
+        prompter "Commit change (y/n)? "
+        commit=$?
+        tput cuu1
+        break
+        ;;
+      a)
+        commit=1
+        break
+        ;;
+    esac
+    tput el
+    if [[ -z "$dest" ]]; then
+      echo "File = $name"
+    else
+      echo "File = $name -> <$dest>"
+    fi
+    tput cuu1
+  done
+  tput rc
+  tput cnorm
+}
+
+view() {
+  declare -r path="$1"
+  declare -r oname="$(basename "$path")"
+  name="$oname"
+  dest="_"
+
+  zrunner "$path"
+  choose
+  kill "$viewer"
+
+  declare new_path
+  if (( commit == 0 )); then
+    new_path="${locations["$dest"]:-"$(dirname "$path")"}/$name"
+    if [[ "$path" == "$new_path" ]]; then
+      echo "Nothing to change."
+      return
+    fi
+
+    echo "$path => $new_path"
+    mv "$path" "$new_path"
+  fi
+}
+
+for path in "$@"; do
+  view "$path"
+done
