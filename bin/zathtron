@@ -2,107 +2,187 @@
 ################################################################################
 # Yvan Vivid -- Wrapper for zathura
 ################################################################################
-# This adds some functionality to zathura
+# This script uses zathura to do pdf sorting and renaming
 
+################################################################################
+# General constants
+declare -r _tui=0
+
+################################################################################
+# Locations for pdfs
 declare -A locations
 locations["papers"]="/data/media/texts/papers"
 locations["books"]="/data/media/texts/books"
+locations["scores"]="/data/media/texts/scores"
+locations["delete"]="$HOME/_/var/shunt"
+################################################################################
 
-prompter() {
-  declare decision
-  read -rp "$1" decision
-  case "$decision" in
-    y|Y|yes|Yes) return 0;;
-    *) return 1;;
-  esac
-}
-
+################################################################################
+# Check requirements and get zathura
 declare zathura
-if ! zathura="$(command -v "zathura")"; then
+zathura="$(command -v "zathura")"
+if [[ -z "$zathura" ]]; then
   echo "Could not find 'zathura' command" >&2
   exit 1
 fi
+################################################################################
 
+################################################################################
+# General functions
+msg() { echo "${1}" >&2; }
+die() { msg "$1"; exit 1; }
+
+save_term() {
+  if (( _tui == 0 )); then
+    tput smcup
+  fi
+}
+
+restore_term() {
+  if (( _tui == 0 )); then
+    tput cnorm
+    tput rmcup
+  fi
+}
+
+reset_tui() {
+  if (( _tui == 0 )); then
+    tput clear
+    tput civis
+  fi
+}
+
+reset_tui_state() {
+  if (( _tui == 0 )); then
+    tput cnorm
+  fi
+}
+################################################################################
+
+################################################################################
+# Viewer
 declare viewer
+
 zrunner() {
   "$zathura" "$@" >/dev/null &
   viewer="$!"
 }
 
-declare name dest
-declare -i commit
-choose() {
-  tput sc
-  tput civis
-  echo "File = $name"
+zclose() {
+  local -i num_jobs=0
+  if [[ -n "$viewer" ]]; then
+    num_jobs=$(jobs -r | wc -l)
+    (( num_jobs > 0 )) && kill "$viewer"
+    viewer=""
+  fi
+}
+################################################################################
+
+################################################################################
+# Chooser
+menu() {
   echo "Action:"
   echo "(r) Rename"
   echo "(p) Move to <papers>"
   echo "(b) Move to <books>"
-  echo "(c) Commit (a) Abort"
-  tput cuu1; tput cuu1; tput cuu1
-  tput cuu1; tput cuu1; tput cuu1
- 
+  echo "(d) Delete (to shunt)"
+  echo "(c) Commit (a) Skip (q) Quit"
+}
+
+declare name dest
+declare -i commit
+choose() {
   local choice
   while true; do
-    read -rsn 1 choice
-    case "$choice" in
-      r)
-        tput el
-        tput cnorm
-        read -rp "New name = " name
-        tput civis
-        tput cuu1
-        ;;
-      p) dest="papers";;
-      b) dest="books";;
-      c)
-        tput el
-        prompter "Commit change (y/n)? "
-        commit=$?
-        tput cuu1
-        break
-        ;;
-      a)
-        commit=1
-        break
-        ;;
-    esac
-    tput el
+    reset_tui
     if [[ -z "$dest" ]]; then
       echo "File = $name"
     else
       echo "File = $name -> <$dest>"
     fi
-    tput cuu1
+    menu
+    read -rsn 1 choice
+    reset_tui_state
+    case "$choice" in
+      r) read -rp "New name = " name;;
+      p) dest="papers";;
+      b) dest="books";;
+      s) dest="scores";;
+      d) dest="delete";;
+      c) commit=0; break;;
+      a) commit=1; break;;
+      q) exit 0;
+    esac
   done
-  tput rc
-  tput cnorm
 }
+################################################################################
 
+################################################################################
+# Driver
+declare -a summary
+declare -i dry_run
+summary=()
+dry_run=1
 view() {
-  declare -r path="$1"
-  declare -r oname="$(basename "$path")"
+  declare path oname
+  path="$1"
+  oname="$(basename "$path")"
   name="$oname"
   dest="_"
 
   zrunner "$path"
   choose
-  kill "$viewer"
+  zclose
 
   declare new_path
   if (( commit == 0 )); then
     new_path="${locations["$dest"]:-"$(dirname "$path")"}/$name"
-    if [[ "$path" == "$new_path" ]]; then
-      echo "Nothing to change."
-      return
-    fi
+    [[ "$path" == "$new_path" ]] && return
 
-    echo "$path => $new_path"
-    mv "$path" "$new_path"
+    summary+=("mv '$path' '$new_path'")
+    (( dry_run == 0 )) || mv "$path" "$new_path"
   fi
 }
 
-for path in "$@"; do
-  view "$path"
-done
+leave() {
+  zclose
+  restore_term
+  if (( ${#summary[@]} > 0 )); then
+    echo
+    echo "Summary:"
+    for s in "${summary[@]}"; do echo "$s"; done
+    echo ""
+  fi
+  exit 0
+}
+################################################################################
+
+################################################################################
+# CLI
+declare -a args
+args=()
+parse_params() {
+  while (( $# > 0 )); do
+    case "$1" in
+    -h | --help) usage ;;
+    --dry-run) dry_run=0 ;;
+    -?*) die "Unknown option: $1" ;;
+    *) args+=("$1");;
+    esac
+    shift
+  done
+
+  [[ ${#args[@]} -eq 0 ]] && die "Missing pdf files to run."
+  return 0
+}
+################################################################################
+
+################################################################################
+# Main
+
+parse_params "$@"
+
+save_term
+trap "leave" EXIT
+
+for path in "${args[@]}"; do view "$path"; done

@@ -3,28 +3,66 @@
 # Yvan Vivid -- Mounting utility
 ################################################################################
 
-declare -r \
-  oak="/dev/disk/by-uuid/f185035f-a3b7-42f1-b738-9fec78729748"
-
-declare -ar usb_vols=("oak")
-
+declare -A uuids
+uuids["oak"]="f185035f-a3b7-42f1-b738-9fec78729748"
+uuids["finger"]="ed8988f8-f396-49e7-a6bb-5f6a058e5901"
 
 declare -r \
   sky="sky" \
   sky_point="/mnt/sky"
 
+get_path() {
+  declare -r drive="$1"
+  declare -r uuid="${uuids["$drive"]}"
 
-mount_usb() {
-  echo "Mounting $device"
-  udisksctl mount --block-device "$device_path" 
+  if [[ -z "$uuid" ]]; then
+    echo "drive [$drive] is not defined." >&2
+    exit 1
+  fi
+
+  declare -r path="/dev/disk/by-uuid/$uuid"
+  if [[ ! -e "$path" ]]; then
+    echo "drive [$drive] is not available." >&2
+    return 1
+  fi
+
+  echo "$path"
 }
 
+get_device() { echo "/dev/$(lsblk -no pkname "$1")"; }
 
+mount_usb() {
+  declare -r drive="$1"
+  declare path
+  path="$(get_path "$drive")" || return
+
+  if findmnt "$path"; then
+    echo "drive [$drive] already mounted."
+    return
+  fi
+
+  echo "mounting drive [$drive]."
+  mount "$path"
+  echo "mounted"
+}
+
+unmount_usb() {
+  declare -r drive="$1"
+  declare path
+  path="$(get_path "$drive")" || return
+
+  if ! findmnt "$path"; then
+    echo "drive [$drive] is not mounted."
+    return
+  fi
+
+  echo "unmounting drive [$drive]."
+  umount "$path"
+  echo "unmounted"
+}
 
 mount_rclone() {
-  rclone mount "${sky}:" "$sky_point"\
-    --daemon \
-    --vfs-cache-mode full
+  rclone mount "${sky}:" "$sky_point" --daemon --vfs-cache-mode full
 }
 
 unmount_rclone() {
