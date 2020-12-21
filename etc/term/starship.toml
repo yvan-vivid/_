@@ -1,0 +1,136 @@
+################################################################################
+## Yvan Vivid - Starship Prompt Config
+################################################################################
+
+add_newline = false
+
+# prompt_order = []
+
+[character]
+use_symbol_for_status = true
+
+[directory]
+truncate_to_repo = true
+
+[time]
+style = "fg:blue"
+disabled = false
+
+[python]
+symbol = " "
+
+################################################################################
+# Git related
+################################################################################
+# {{{
+
+[git_branch]
+symbol = ""
+style = "yellow"
+format = "[$symbol $branch]($style)"
+
+[git_commit]
+style = "white"
+only_detached = true
+
+[git_state]
+style = "bg:black fg:orange"
+
+[git_status]
+style = "fg:red"
+show_sync_count = true
+format = '([$all_status$ahead_behind]($style) )'
+
+ahead = " ⇡${count}"
+ahead_count.enabled = true
+
+behind = " ⇣${count}"
+behind_count.enabled = true
+
+conflicted = " =${count}"
+conflicted_count.enabled = true
+
+diverged = " ⇕${count}"
+diverged_count.enabled = true
+
+untracked = " ?${count}"
+untracked_count.enabled = true
+
+stashed = " $${count}"
+stashed_count.enabled = true
+
+staged = " +${count}"
+staged_count.enabled = true
+
+modified = " !${count}"
+modified_count.enabled = true
+
+renamed = " »${count}"
+renamed_count.enabled = true
+
+deleted = " ✘${count}"
+deleted_count.enabled = true
+
+#}}}
+################################################################################
+# Other related
+################################################################################
+# {{{
+
+[aws]
+symbol = " "
+
+[conda]
+symbol = " "
+
+[docker]
+symbol = " "
+
+[elixir]
+symbol = " "
+
+[elm]
+symbol = " "
+
+[golang]
+symbol = " "
+
+[haskell]
+symbol = " "
+
+[hg_branch]
+symbol = " "
+
+[java]
+symbol = " "
+
+[julia]
+symbol = " "
+
+[memory_usage]
+symbol = " "
+
+[nim]
+symbol = " "
+
+[nix_shell]
+symbol = " "
+
+[nodejs]
+symbol = " "
+
+[package]
+symbol = " "
+
+[php]
+symbol = " "
+
+[ruby]
+symbol = " "
+
+[rust]
+symbol = " "
+
+#}}}
+################################################################################
+# vim: ft=toml foldmethod=marker
