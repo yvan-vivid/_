@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Yvan Vivid - Toggle displays in sway
+
+declare -r displays='/tmp/displays'
+
+on() {
+  swaymsg "output * dpms on"
+  echo 1 > "$displays"
+}
+
+off() {
+  swaymsg "output * dpms off"
+  echo 0 > "$displays"
+}
+
+declare -ir UNK=2 ON=1 OFF=0
+declare -i lcd=$UNK
+get_state() {
+  if [[ -f "$displays" ]]; then
+    read lcd < "$displays"
+  fi
+}
+
+
+get_state
+if (( lcd == 1 ))
+then off
+else on
+fi
