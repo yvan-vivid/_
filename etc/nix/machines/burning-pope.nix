@@ -1,15 +1,31 @@
 # Yvan Vivid - 'burning-pope' NixOS config
 
-{ config, pkgs, ... }: {
-  imports = [
-    ./hardware-configuration.nix
-    ./lib/basis.nix
-    ./lib/boot.nix
-    ./lib/file-systems.nix
-    ./lib/system.nix
-    ./lib/term-life.nix
-    ./lib/sway-de.nix
+{ config, pkgs, ... }: let
+  nerdfontsUsed = [ 
+    "Agave"
+    "DejaVuSansMono"
+    "FantasqueSansMono"
+    "FiraCode"
+    "Hermut"
+    "Iosevka"
+    "OpenDyslexic"
   ];
+in {
+  imports = [
+    ../hardware-configuration.nix
+    ../lib/basis.nix
+    ../lib/boot.nix
+    ../lib/file-systems.nix
+    ../lib/system.nix
+    ../lib/term-life.nix
+    ../lib/sway-de.nix
+  ];
+  
+  # Overrides
+  nixpkgs.config.packageOverrides = pkgs: {
+    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+    nerdfonts = pkgs.nerdfonts.override { fonts = nerdfontsUsed; };
+  };
 
   # Boot related
   # boot.kernelParams = [

@@ -1,6 +1,6 @@
 # Yvan Vivid - General System
 
-{ ... }: {
+{ pkgs, ... }: {
   # Sound
   nixpkgs.config.pulseaudio = true;
   sound.enable = true;

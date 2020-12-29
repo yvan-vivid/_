@@ -1,6 +1,6 @@
 # Yvan Vivid - Terminal Environment
 
-{ ... }: {
+{ pkgs, ... }: {
   programs = {
     tmux.enable = true;
     zsh.enable = true;

@@ -1,6 +1,6 @@
 # Yvan Vivid - Sway Desktop Environment
 
-{ ... }: {
+{ pkgs, ... }: {
   xdg.portal.enable = true;
   hardware.brillo.enable = true;
 
