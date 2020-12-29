@@ -1,0 +1,130 @@
+# Yvan Vivid - 'burning-pope' NixOS config
+
+{ config, pkgs, ... }: {
+  imports = [
+    ./hardware-configuration.nix
+    ./lib/basis.nix
+    ./lib/boot.nix
+    ./lib/file-systems.nix
+    ./lib/system.nix
+    ./lib/term-life.nix
+    ./lib/sway-de.nix
+  ];
+
+  # Boot related
+  # boot.kernelParams = [
+  #  "i915.enable_fbc=1"
+  #  "i915.enable_psr=2"
+  # ];
+  boot.kernelPackages = pkgs.linuxPackages_5_10;
+
+  hardware = {
+    # hardware.cpu.intel.updateMicrocode = true;
+
+    opengl = {
+      enable = true;
+      driSupport = true;
+      extraPackages = with pkgs; [
+        vaapiIntel
+        vaapiVdpau
+        libvdpau-va-gl
+        intel-media-driver
+      ];
+    };
+  };
+
+  networking = {
+    networkmanager.enable = true;
+    hostName = "burning-pope";
+    hosts = {
+      "127.0.0.1"    = [ "localhost.localdomain" "localhost" ];
+      "127.0.1.1"    = [ "burning-pope" ];
+      "192.168.0.1"  = [ "router" ];
+      "192.168.0.87" = [ "wittie-box.localdomain" "wittie-box" ];
+    };
+
+    useDHCP = false;
+    interfaces = {
+      "wlp59s0" = {
+        useDHCP = true;
+      };
+    };
+  };
+
+  # Machine specific filesystems
+  fileSystems."/mnt/pred" = {
+    device = "/dev/disk/by-uuid/93d1105f-f05a-4791-b57b-61c401d5faf2";
+    fsType = "ext4";
+  };
+
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/80C8-9AF0";
+    fsType = "vfat";
+  };
+
+  fonts = {
+    enableFontDir = true;
+    enableGhostscriptFonts = true;
+    fonts = with pkgs; [
+      corefonts
+      nerdfonts
+      google-fonts
+      helvetica-neue-lt-std
+      ubuntu_font_family
+    ];
+    fontconfig = {
+      defaultFonts = {
+        sansSerif = ["Ubuntu"];
+        monospace = ["DejaVuSansMono Nerd Font"];
+      };
+      # TODO: Consider bumping this
+      dpi = 0;
+      enable = true;
+    };
+  };
+
+  environment.systemPackages = with pkgs; [
+    # system
+    wineWowPackages.stable
+    qemu libva-full libnotify
+  ];
+
+  # Thunderbolt
+  services.hardware-bolt.enable = true;
+
+  services = {
+    flatpak.enable = true;
+    lorri.enable = true;
+  };
+
+  users = {
+    defaultUserShell = pkgs.zsh;
+    extraUsers = {
+      hexxiiiz = {
+        isNormalUser = true;
+        createHome = true;
+        uid = 1000;
+        extraGroups = [
+          "audio" "video" "input" "jackaudio" # media control
+          "wheel" "network" "networkmanager" # system
+          "docker" "vboxusers" # virtualisation
+          "fuse" "sway"
+        ];
+        useDefaultShell = true;
+      };
+    };
+  };
+  nix.trustedUsers = [ "root" "hexxiiiz" ];
+
+  # Special limits for audio production
+  security.pam.loginLimits = [
+    { domain = "@audio"; item = "memlock"; type = "-"; value = "800000"; }
+    { domain = "@audio"; item = "rtprio"; type = "-"; value = "95"; }
+  ];
+
+  # Virtualization / Containerization
+  virtualisation = {
+    docker.enable = true;
+    libvirtd.enable = true;
+  };
+}

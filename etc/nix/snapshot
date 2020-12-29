@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Yvan Vivid - Snapshot nix setup
+declare -r \
+  target="/etc/nixos" \
+  snaps="snapshots"
+
+declare -r ts="$(date +%s)"
+declare -r archname="etc-nixos-${ts}.tar.xz"
+declare -r archpath="$target/$snaps/$archname"
+
+echo "Making archive snapshot [$archname]." <&2
+mkdir -p "$target/$snaps"
+cd "$target"
+tar Jcf "$archpath" --exclude="snapshots" "."
