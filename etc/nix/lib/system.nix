@@ -49,4 +49,21 @@
     font = "ter-i32b"; # HDPI
     keyMap = "us";
   };
+
+  # Networking
+  networking = {
+    networkmanager.enable = true;
+    useDHCP = false;
+    hosts = {
+      "127.0.0.1"   = [ "localhost.localdomain" "localhost" ];
+      "192.168.0.1" = [ "router" ];
+    };
+  };
+
+  # Fonts
+  fonts = {
+    enableFontDir = true;
+    enableGhostscriptFonts = true;
+    fontconfig.enable = true;
+  };
 }

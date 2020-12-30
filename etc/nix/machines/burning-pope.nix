@@ -33,37 +33,28 @@ in {
   #  "i915.enable_psr=2"
   # ];
   boot.kernelPackages = pkgs.linuxPackages_5_10;
+  # hardware.cpu.intel.updateMicrocode = true;
 
-  hardware = {
-    # hardware.cpu.intel.updateMicrocode = true;
-
-    opengl = {
-      enable = true;
-      driSupport = true;
-      extraPackages = with pkgs; [
-        vaapiIntel
-        vaapiVdpau
-        libvdpau-va-gl
-        intel-media-driver
-      ];
-    };
+  # Graphics
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+    extraPackages = with pkgs; [
+      vaapiIntel
+      vaapiVdpau
+      libvdpau-va-gl
+      intel-media-driver
+    ];
   };
 
   networking = {
-    networkmanager.enable = true;
     hostName = "burning-pope";
     hosts = {
-      "127.0.0.1"    = [ "localhost.localdomain" "localhost" ];
       "127.0.1.1"    = [ "burning-pope" ];
-      "192.168.0.1"  = [ "router" ];
       "192.168.0.87" = [ "wittie-box.localdomain" "wittie-box" ];
     };
-
-    useDHCP = false;
     interfaces = {
-      "wlp59s0" = {
-        useDHCP = true;
-      };
+      "wlp59s0" = { useDHCP = true; };
     };
   };
 
@@ -79,8 +70,6 @@ in {
   };
 
   fonts = {
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
     fonts = with pkgs; [
       corefonts
       nerdfonts
@@ -95,7 +84,6 @@ in {
       };
       # TODO: Consider bumping this
       dpi = 0;
-      enable = true;
     };
   };
 

@@ -1,6 +1,12 @@
 # Yvan Vivid - 'wittie-box' NixOS config
 
-{ config, pkgs, ... }: {
+{ config, pkgs, ... }: let
+  nerdfontsUsed = [ 
+    "DejaVuSansMono"
+    "FiraCode"
+    "OpenDyslexic"
+  ];
+in {
   imports = [
     ../hardware-configuration.nix
     ../lib/basis.nix
@@ -14,6 +20,7 @@
   # Overrides
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+    nerdfonts = pkgs.nerdfonts.override { fonts = nerdfontsUsed; };
   };
 
   # Kernel Version
@@ -31,29 +38,20 @@
   };
 
   networking = {
-    networkmanager.enable = true;
     hostName = "wittie-box";
     hosts = {
-      "127.0.0.1"    = [ "localhost.localdomain" "localhost" ];
-      "127.0.1.1"    = [ "wittie-box" ];
-      "192.168.0.1"  = [ "router" ];
+      "127.0.1.1" = [ "wittie-box" ];
     };
-
-    useDHCP = false;
     interfaces = {
-      "wlp2s0" = {
-        useDHCP = true;
-      };
+      "wlp2s0" = { useDHCP = true; };
     };
   };
 
   fonts = {
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
     fonts = with pkgs; [
       helvetica-neue-lt-std
       ubuntu_font_family
-      (nerdfonts.override { fonts = ["DejaVuSansMono"]; })
+      nerdfonts
     ];
     fontconfig = {
       defaultFonts = {
@@ -62,7 +60,6 @@
       };
       # TODO: Consider bumping this
       dpi = 0;
-      enable = true;
     };
   };
 

@@ -88,6 +88,9 @@ Plug 't9md/vim-choosewin'
 Plug 'chrisbra/Recover.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+" colab
+Plug 'floobits/floobits-neovim'
+
 call plug#end()
 
 " ============ Other Options ==============
