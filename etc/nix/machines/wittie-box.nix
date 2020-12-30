@@ -8,7 +8,6 @@
   ];
 in {
   imports = [
-    ../hardware-configuration.nix
     ../lib/basis.nix
     ../lib/boot.nix
     ../lib/file-systems.nix

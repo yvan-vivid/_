@@ -6,13 +6,11 @@
     "DejaVuSansMono"
     "FantasqueSansMono"
     "FiraCode"
-    "Hermut"
     "Iosevka"
     "OpenDyslexic"
   ];
 in {
   imports = [
-    ../hardware-configuration.nix
     ../lib/basis.nix
     ../lib/boot.nix
     ../lib/file-systems.nix
@@ -94,7 +92,7 @@ in {
   ];
 
   # Thunderbolt
-  services.hardware-bolt.enable = true;
+  services.hardware.bolt.enable = true;
 
   services = {
     flatpak.enable = true;
