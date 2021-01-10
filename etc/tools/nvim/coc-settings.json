@@ -9,7 +9,9 @@
     "single-title": false,
     "blanks-around-lists": false,
     "blanks-around-fences": false,
-    "no-multiple-blanks": false
+    "no-multiple-blanks": false,
+    "ul-style": false,
+    "no-duplicate-header": false
   },
   "python.linting.enabled": true,
   "python.linting.mypyEnabled": true,

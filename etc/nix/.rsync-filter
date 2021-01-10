@@ -1,5 +1,7 @@
 # vim: ft=dosini
-- *
-+ /configuration.nix
++ /lib
 + /lib/*.nix
++ /machines
 + /machines/*.nix
++ /configuration.nix
+- *

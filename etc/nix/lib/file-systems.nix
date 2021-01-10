@@ -10,6 +10,12 @@ in {
     options = usbFsOps;
   };
 
+  fileSystems."/mnt/pine" = {
+    device = "/dev/disk/by-uuid/334bc975-e46d-402a-ac00-b113be9d386c";
+    fsType = "ext4";
+    options = usbFsOps;
+  };
+
   fileSystems."/mnt/finger" = {
     device = "/dev/disk/by-uuid/ed8988f8-f396-49e7-a6bb-5f6a058e5901";
     fsType = "f2fs";

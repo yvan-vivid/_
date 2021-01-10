@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
-# Yvan Vivid - Update nix setup
-declare -r \
-  target="/etc/nixos" \
-  namefile="/etc/nixos/name.nix" \
-  filter=".rsync-filter" \
-  src="."
+# Yvan Vivid - Update Nixos configuration
+source "$(dirname "${BASH_SOURCE[0]}")/lib.bash"
 
-if [[ ! -e "$namefile" ]]; then
-  echo "No namefile [$namefile]." <&2
-  echo "Please create file with machine name." <&2
-  exit 1
-fi
+assert_namefile
 
-echo "Updating nixos config"
-rsync -ltr --progress --filter="- $filter" "$@" "$src/" "$target/"
-echo "Updated"
+log "Updating nixos config"
+rsyncr -ltr --filter="merge $filter" "$@" "$src/" "$target/"
+log "Updated"

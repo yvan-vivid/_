@@ -25,12 +25,8 @@ in {
     nerdfonts = pkgs.nerdfonts.override { fonts = nerdfontsUsed; };
   };
 
-  # Boot related
-  # boot.kernelParams = [
-  #  "i915.enable_fbc=1"
-  #  "i915.enable_psr=2"
-  # ];
-  boot.kernelPackages = pkgs.linuxPackages_5_10;
+  boot.kernelPackages = pkgs.linuxPackages_5_9;
+  # book.kernelParams = [ "i915.enable_fbc=1" ];
   # hardware.cpu.intel.updateMicrocode = true;
 
   # Graphics
