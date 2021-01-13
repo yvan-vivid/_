@@ -1,0 +1,6 @@
+# vim: ft=toml
+[ignore]
+system
+
+[config]
+nixpkgs

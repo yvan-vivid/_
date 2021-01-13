@@ -78,4 +78,14 @@ export LESSHISTSIZE=5000
 export LESSHISTFILE="$LESS_STATE/history"
 
 # =============================================================================
+# Firefox Settings
+# =============================================================================
+
+# Use Wayland
+export MOZ_ENABLE_WAYLAND=1
+
+# Needed to open things in firefox
+export MOZ_DBUS_REMOTE=1
+
+# =============================================================================
 # vim: ft=sh et fenc=utf-8 sts=4 sw=4 ts=8 tw=80 fdm=marker
