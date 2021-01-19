@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# Yvan Vivid - Update nix setup
+declare -r \
+  target="/etc/nixos" \
+  namefile="/etc/nixos/name.nix" \
+  filter=".rsync-filter" \
+  snaps="snapshots" \
+  src="." \
+  mounts="$DOT_SECURE/mounts.json"
+
+declare -i dry_run
+dry_run=1
+
+log()   { echo "LOG: $1" <&2; }
+error() { echo "ERROR: $1" <&2; exit 1; }
+
+assert_namefile() {
+  [[ -e "$namefile" ]] || error "No namefile [$namefile]. Please create."
+}
+
+check_namefile() {
+  [[ -e "$namefile" ]] || log "No namefile [$namefile]. Please create."
+}
+
+rsyncr() {                                               
+  local dry_flag                                         
+  dry_flag=""                                            
+  (( dry_run == 0 )) && dry_flag="--dry-run"             
+  rsync "$dry_flag" --progress "$@"
+}
+
+sync_mounts() {
+  if (( dry_run == 0 )); then
+    echo cp -f "$mounts" "$target/"
+  else
+    [[ -e "$mounts" ]] && cp -f "$mounts" "$target/"
+  fi
+}
+
+make_snapshot() {
+  if (( dry_run == 0 )); then
+    echo mkdir -p "$target/$snaps"
+    (cd "$target"; echo tar Jcf "$1" --exclude="snapshots" ".")
+  else
+    mkdir -p "$target/$snaps"
+    (cd "$target"; tar Jcf "$1" --exclude="snapshots" ".")
+  fi
+}
+
+update() {
+  assert_namefile
+
+  log "Updating nixos config"
+  rsyncr -ltr --filter="merge $filter" "$@" "$src/" "$target/"
+  sync_mounts
+  log "Updated"
+}
+
+snapshot() {
+  local -r ts="$(date +%s)"
+  local -r archname="etc-nixos-${ts}.tar.xz"
+  local -r archpath="$target/$snaps/$archname"
+
+  log "Making archive snapshot [$archname]."
+  make_snapshot "$archpath"
+  log "Done making snapshot."
+}
+
+# Get command
+declare -r com="$1"; shift
+
+# Get --dry-run flag                                     
+for param in "$@"; do                                    
+  [[ "$param" == "--dry-run" ]] && dry_run=0             
+done                                                     
+
+case "$com" in
+  update)   update;;
+  snapshot) snapshot;;
+  *)
+    echo "Not a command"
+    exit 1
+    ;;
+esac
+
+# vim: ft=sh
