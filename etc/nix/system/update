@@ -6,4 +6,5 @@ assert_namefile
 
 log "Updating nixos config"
 rsyncr -ltr --filter="merge $filter" "$@" "$src/" "$target/"
+sync_mounts
 log "Updated"
