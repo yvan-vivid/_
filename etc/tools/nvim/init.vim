@@ -81,7 +81,10 @@ Plug 'evanleck/vim-svelte'
 Plug 'rhysd/vim-grammarous'
 Plug 'ron89/thesaurus_query.vim'
 Plug 'kevinoid/vim-jsonc'
-  
+Plug 'vim-scripts/bash-support.vim'
+Plug 'vim-scripts/bats.vim'
+
+
 " other tools
 Plug 'godlygeek/tabular'
 Plug 't9md/vim-choosewin'

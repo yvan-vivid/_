@@ -6,6 +6,10 @@
 
 BRILLO="brillo"
 case $1 in
-  (up)   $BRILLO -A 5 ;;
-  (down) $BRILLO -U 5 ;;
+  up)      $BRILLO -A 5 ;;
+  down)    $BRILLO -U 5 ;;
+  current) $BRILLO -G ;;
+  min)     $BRILLO -S 5 ;;
+  half)    $BRILLO -S 50 ;;
+  max)     $BRILLO -S 100 ;;
 esac

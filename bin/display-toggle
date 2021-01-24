@@ -2,28 +2,28 @@
 # Yvan Vivid - Toggle displays in sway
 
 declare -r displays='/tmp/displays'
+declare -ir UNK=2 ON=1 OFF=0
 
 on() {
   swaymsg "output * dpms on"
-  echo 1 > "$displays"
+  echo $ON > "$displays"
 }
 
 off() {
   swaymsg "output * dpms off"
-  echo 0 > "$displays"
+  echo $OFF > "$displays"
 }
 
-declare -ir UNK=2 ON=1 OFF=0
 declare -i lcd=$UNK
 get_state() {
   if [[ -f "$displays" ]]; then
-    read lcd < "$displays"
+    read -r lcd < "$displays"
   fi
 }
 
 
 get_state
-if (( lcd == 1 ))
+if (( lcd == ON ))
 then off
 else on
 fi

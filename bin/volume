@@ -3,11 +3,17 @@
 # Yvan Vivid -- Audio toggle control script
 ################################################################################
 
-# Need a better way of doing this.
+mix() { amixer set Master "$@"; }
+
 case $1 in
-  (up)   pactl set-sink-volume @DEFAULT_SINK@ +5%    ;;
-  (down) pactl set-sink-volume @DEFAULT_SINK@ -5%    ;;
-  (mute) pactl set-sink-mute   @DEFAULT_SINK@ toggle ;;
+  up)   mix "5%+" ;;
+  down) mix "5%-" ;;
+  max)  mix "100%" ;;
+  half) mix "50%" ;;
+  min)  mix "0%" ;;
+  mute) mix toggle ;;
+  off)  mix mute ;;
+  on)   mix unmute ;;
 esac
 
 # Notification
