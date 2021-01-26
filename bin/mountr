@@ -1,0 +1,328 @@
+#!/usr/bin/env python3 
+################################################################################
+# Yvan Vivid -- Mounting utility
+################################################################################
+"""Utility to handle mounting removable storage using a json config.
+
+    It is assumed that a json config is available with information about
+    removable volumes that are reflected in noauto entries in fstab.
+"""
+
+from argparse import ArgumentParser
+import json
+import logging
+from pathlib import Path
+import sys
+import subprocess
+from functools import cache
+from typing import Optional, Sequence, Tuple, ClassVar, Set, Dict
+
+
+_default_config = Path("/etc/nixos/mounts.json")
+_uuid_dev_root = Path("/dev/disk/by-uuid")
+_mount_root = Path("/mnt")
+_sys_block_root = Path("/sys/class/block")
+
+def _find_mount_uuid_cmd(uuid: str) -> Sequence[str]:
+    return (
+        "findmnt", "-n", "--raw", "--evaluate", "--output=target",
+        f"UUID='{uuid}'"
+    )
+
+
+def _runcmd(*args: str):
+    return subprocess.run(args, capture_output=True, text=True)
+
+
+def find_mount(uuid: str) -> Optional[Path]:
+    result = _runcmd(*_find_mount_uuid_cmd(uuid))
+    if result.returncode != 0:
+        logging.debug("No mount found for %s", uuid)
+        return None
+
+    path = Path(result.stdout.strip())
+    logging.debug("Found mount %s for %s", path, uuid)
+    return path
+
+
+def do_sync(dry_run: bool = False):
+    if dry_run:
+        print("sync")
+        return
+    result = _runcmd("sync")
+    if result.returncode != 0:
+        logging.error("Problem syncing: %s", result.stderr)
+
+
+class Mount:
+    name: str
+    uuid: str
+    device: Path
+    mount_point: Path
+
+    def __init__(
+        self, name: str, uuid: str,
+        device: Optional[Path] = None,
+        mount_point: Optional[Path] = None
+    ):
+        self.name = name
+        self.uuid = uuid
+        self.device = (_uuid_dev_root / uuid) if device is None else device
+        self.mount_point = (_mount_root / name) if mount_point is None else mount_point
+
+
+    def __str__(self):
+        return (
+            f"{self.name}: {self.uuid}\n"
+            f"    @ {self.device} => {self.mount_point}"
+        )
+
+    def assert_block_device(self):
+        if not self.device.is_block_device():
+            logging.error("Device is not a block device.")
+            raise EnvironmentError()
+
+    def can_mount(self) -> bool:
+        if not self.device.exists():
+            logging.debug("Device %s not found at %s.", self.name, self.device)
+            return False
+
+        self.assert_block_device()
+        return True
+
+    def assert_mountable(self):
+        if not self.can_mount():
+            logging.error("Device is not mountable.")
+            raise EnvironmentError()
+
+
+class Device:
+    devices: ClassVar[Dict[Path, 'Device']] = {}
+    path: Path
+    volumes: Set['Mountable']
+    
+    def __init__(self, path):
+        self.path = path
+        self.volumes = set()
+
+    def do_unmount(self, ejecting: bool = False, dry_run: bool = False):
+        for volume in self.volumes:
+            volume.do_unmount(dry_run)
+            if ejecting and not dry_run:
+                volume.exists = False
+
+    def do_eject(self, dry_run: bool = False):
+        logging.info("Unmounting volumes.")
+        self.do_unmount(True, dry_run)
+        
+        logging.info("Powering off device.")
+        if dry_run:
+            print(f"udisksctl power-off --block-device {self.path!s}")
+        else:
+            results = _runcmd("udisksctl", "power-off", "--block-device", str(self.path))
+
+    @classmethod
+    def get_device(cls, mountable: 'Mountable') -> 'Device':
+        sys_path = (_sys_block_root / mountable.standard_path.name).resolve()
+        device_path = Path("/dev") / sys_path.parent.name
+        if not device_path.is_block_device():
+            logging.error("Attempt to construct parent path failed: %s", device_path)
+            raise EnvironmentError()
+
+        if device_path in cls.devices:
+            device = cls.devices[device_path]
+        else:
+            device = Device(device_path)
+            cls.devices[device_path] = device
+
+        device.volumes.add(mountable)
+        return device
+
+
+class Mountable:
+    mount: Mount
+    standard_path: Path
+    device: Device
+    mounted: Optional[Path] = None
+    exists: bool = False
+
+    def get_mounted(self):
+        self.mounted = find_mount(self.mount.uuid)
+        if self.mounted is None:
+            return
+
+        if self.mounted != self.mount.mount_point:
+            logging.warning(
+                "Mount for %s found at %s different than given %s.",
+                self.mount.name, self.mounted, self.mount.mount_point
+            )
+
+    def __init__(self, mount: Mount):
+        mount.assert_mountable()
+        self.exists = True
+        self.mount = mount
+        self.standard_path = mount.device.resolve()
+        self.get_mounted()
+        self.device = Device.get_device(self)
+
+    def __str__(self):
+        return (
+            f"{self.mount!s}\n"
+            f"    {self.standard_path}\n"
+            f"    {self.device!s}\n"
+            f"    {self.mounted}"
+        )
+
+    @classmethod
+    def from_mount(cls, mount: Mount) -> Optional['Mountable']:
+        if not mount.can_mount(): return None
+        return cls(mount)
+
+    def do_mount(self, dry_run: bool = False):
+        if not self.exists:
+            logging.error("Mount no longer exists.")
+            return
+
+        if self.mounted is not None:
+            logging.info("Already mounted at %s", self.mounted)
+            return
+
+        mount_point_str = str(self.mount.mount_point)
+        if dry_run:
+            print(f"mount --target {mount_point_str}")
+            return
+
+        result = _runcmd("mount", "--target", mount_point_str)
+        if result.returncode != 0:
+            logging.error("Problem mounting: %s", result.stderr)
+        
+        self.get_mounted()
+        if self.mounted is None:
+            logging.error("Problem mounting %s", self.mount.name)
+
+    def do_unmount(self, dry_run: bool = False):
+        if not self.exists:
+            logging.error("Mount no longer exists.")
+            return
+
+        if self.mounted is None:
+            logging.info("%s is already unmounted", self.mount.name)
+            return
+        
+        mount_point_str = str(self.mount.mount_point)
+        if dry_run:
+            print(f"umount {mount_point_str}")
+            return
+
+        result = _runcmd("umount", mount_point_str)
+        if result.returncode != 0:
+            logging.error("Problem unmounting: %s", result.stderr)
+        
+        self.get_mounted()
+        if self.mounted is not None:
+            logging.error("Still mounted %s", self.mount.name)
+
+
+def load_config(config_path: Path = _default_config):
+    if not config_path.exists():
+        logging.error("Config {config_path!s} not found.")
+        raise EnvironmentError()
+
+    with config_path.open("r") as handle:
+        raw_config = json.load(handle)
+
+    return {m['name']: Mount(m['name'], m['uuid']) for m in raw_config}
+
+
+def mount(mountables: Sequence[Mountable], dry_run: bool = False):
+    for mountable in mountables:
+        logging.info("Mounting %s to %s", mountable.mount.name, mountable.mount.mount_point)
+        mountable.do_mount(dry_run)
+
+
+def unmount(mountables: Sequence[Mountable], dry_run: bool = False):
+    logging.info("Syncing disk caches.")
+    do_sync(dry_run)
+    for mountable in mountables:
+        logging.info("Unmounting %s from %s", mountable.mount.name, mountable.mount.mount_point)
+        mountable.do_unmount(dry_run)
+
+
+def eject(mountables: Sequence[Mountable], dry_run: bool = False):
+    logging.info("Syncing disk caches.")
+    do_sync(dry_run)
+    devices = set(mountable.device for mountable in mountables)
+    for device in devices:
+        logging.info("Ejecting device %s", device.path)
+        device.do_eject(dry_run)
+
+
+_cmds = (mount, unmount, eject)
+
+
+def argparser() -> ArgumentParser:
+    parser = ArgumentParser(description="")
+    parser.add_argument(
+        "-c", "--config", default=_default_config, type=Path,
+        help="Configuration json file with available mounts."
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true",
+        help="Verbose logging."
+    )
+
+    subparsers = parser.add_subparsers(help="")
+
+    for call in _cmds:
+        name = call.__name__
+        cmd = subparsers.add_parser(name, help=f"{name} volumes.")
+        cmd.add_argument(
+            "name", default="all", type=str, nargs="?", metavar="mount",
+            help="name of volume."
+        )
+        cmd.add_argument(
+            "--dry-run", action="store_true", help="do dry run."
+        )
+        cmd.set_defaults(call=call)
+
+    return parser
+
+
+def main():
+    parser = argparser()
+    args = parser.parse_args()
+    logging.root.setLevel(logging.INFO if args.verbose else logging.WARN)
+
+    try:
+        logging.debug("Loading config.")
+        config = load_config(args.config)
+        mount_keys = tuple(config.keys()) if args.name == "all" else (args.name,)
+        mountables = []
+        for key in mount_keys:
+            if key not in config:
+                logging.error("'%s' is not a valid mount.", args.name)
+                raise ValueError()
+
+            mount = config[key]
+            mountable = Mountable.from_mount(mount)
+            if mountable is None:
+                continue
+            
+            mountables.append(mountable)
+
+        if len(mountables) == 0:
+            logging.info("No mounts available. Nothing to do.")
+        else:
+            if args.dry_run:
+                logging.info("Doing DRY-RUN")
+            args.call(mountables, args.dry_run)
+
+    except (ValueError, EnvironmentError) as ex:
+        logging.error(ex)
+        sys.exit(1)
+
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+   main()
