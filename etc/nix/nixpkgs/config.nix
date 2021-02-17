@@ -28,24 +28,29 @@
         gnome3.cheese
         fluidsynth
         soundfont-fluid
+        lame
+        mediainfo
 
         # Visual
         gimp
         shotwell
         imagemagick
+        inkscape
+
+        # Writing Tools
+        pdftk
+        languagetool
+        texlive.combined.scheme-medium
 
         # General Dev
         niv
         nix-diff
-        texlive.combined.scheme-medium
         shellcheck
-        languagetool
         nodejs
         html-tidy
         pandoc
         hexyl
         dfeet
-        mediainfo
 
         # Apps
         firefox-devedition-bin
@@ -55,6 +60,10 @@
         font-manager
         tdesktop # telegram desktop
         beets
+        foot
+        lxappearance
+        breeze-icons
+        breeze-gtk
 
         # Shell Env
         starship
@@ -62,6 +71,7 @@
         nnn
         duff
         mime-types
+        xdg_utils
       ];
     };
   };

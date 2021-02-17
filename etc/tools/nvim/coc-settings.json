@@ -11,7 +11,8 @@
     "blanks-around-fences": false,
     "no-multiple-blanks": false,
     "ul-style": false,
-    "no-duplicate-header": false
+    "no-duplicate-header": false,
+    "list-marker-space": false
   },
   "python.linting.enabled": true,
   "python.linting.mypyEnabled": true,

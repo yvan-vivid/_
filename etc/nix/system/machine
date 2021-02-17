@@ -66,6 +66,27 @@ snapshot() {
   log "Done making snapshot."
 }
 
+compare() {
+  local diff_text
+  assert_namefile
+
+  log "Diffing nixos config against current system."
+  for conf in *.nix **/*.nix; do
+    [[ "$conf" == "name.nix" ]] && continue
+    if [[ ! -e "$target/$conf" ]]; then
+      echo "[$conf]: Not in [$target]."
+      continue
+    fi
+    
+    diff_text="$(diff "./$conf" "$target/$conf")";
+    if (( $? != 0 )); then
+      echo
+      echo "[$conf]:"
+      echo "$diff_text"
+    fi
+  done
+}
+
 # Get command
 declare -r com="$1"; shift
 
@@ -77,6 +98,7 @@ done
 case "$com" in
   update)   update;;
   snapshot) snapshot;;
+  compare)  compare;;
   *)
     echo "Not a command"
     exit 1

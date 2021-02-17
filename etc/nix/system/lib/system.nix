@@ -25,7 +25,6 @@
 
   # Power / thermal
   services = {
-    acpid.enable = true;
     thermald.enable = true;
     upower.enable = true;
   };

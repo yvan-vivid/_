@@ -25,7 +25,7 @@ in {
     nerdfonts = pkgs.nerdfonts.override { fonts = nerdfontsUsed; };
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_5_9;
+  boot.kernelPackages = pkgs.linuxPackages_5_10;
   # book.kernelParams = [ "i915.enable_fbc=1" ];
   # hardware.cpu.intel.updateMicrocode = true;
 
@@ -89,6 +89,14 @@ in {
 
   # Thunderbolt
   services.hardware.bolt.enable = true;
+
+  # Logind tweaks
+  services.logind = {
+    extraConfig =
+      ''HandlePowerKey=suspend
+        HandleLidSwitchExternalPower=ignore
+      '';
+  };
 
   services = {
     flatpak.enable = true;
