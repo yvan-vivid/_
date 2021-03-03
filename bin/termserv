@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Startup for terminal server
+################################################################################
+
+declare -r logname="foot.log"
+
+mkdir -p "$DOT_LOGS_APPS"
+declare -r log="$DOT_LOGS_APPS/$logname"
+
+logit() { echo "$1" >> "$log"; }
+
+# Timestamp run
+logit ""
+logit "------------------------------------------------------------"
+logit "$(date -Is): running 'foot'..."
+logit "------------------------------------------------------------"
+
+# Entry
+foot --server >> "$log" 2>&1
+ex=$?
+
+# Exit
+logit "------------------------------------------------------------"
+logit "$(date -Is): ended 'foot' with = $ex"
+logit "------------------------------------------------------------"
+logit ""
