@@ -12,7 +12,8 @@
     "no-multiple-blanks": false,
     "ul-style": false,
     "no-duplicate-header": false,
-    "list-marker-space": false
+    "list-marker-space": false,
+    "no-trailing-punctuation": false
   },
   "python.linting.enabled": true,
   "python.linting.mypyEnabled": true,
