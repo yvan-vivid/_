@@ -20,6 +20,8 @@
       name = "yvan-local";
       extraOutputsToInstall = [ "man" ];
       paths = with pkgs; [
+        (python39.withPackages (py: with py; [ipython pynvim]))
+
         # Audio / Video
         bitwig
         audacity
@@ -44,7 +46,6 @@
 
         # General Dev
         niv
-        nix-diff
         shellcheck
         nodejs
         html-tidy
@@ -53,11 +54,9 @@
         dfeet
 
         # Apps
-        firefox-devedition-bin
         zoom-us
         zotero
         youtube-dl
-        font-manager
         tdesktop # telegram desktop
         beets
         foot

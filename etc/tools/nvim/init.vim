@@ -18,6 +18,8 @@ let g:netrw_home = state_path
 "  let g:python3_host_prog = detected_pypath
 "endif
 
+let g:python3_host_prog = "/home/hexxiiiz/.nix-profile/bin/python"
+
 " ================ Cache/backup ====================
 
 let &directory = state_path . "/swap//"
@@ -84,7 +86,6 @@ Plug 'kevinoid/vim-jsonc'
 Plug 'vim-scripts/bash-support.vim'
 Plug 'vim-scripts/bats.vim'
 
-
 " other tools
 Plug 'godlygeek/tabular'
 Plug 't9md/vim-choosewin'
@@ -92,7 +93,7 @@ Plug 'chrisbra/Recover.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " colab
-Plug 'floobits/floobits-neovim'
+"Plug 'floobits/floobits-neovim'
 
 call plug#end()
 

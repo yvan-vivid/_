@@ -6,7 +6,7 @@
 
 _direnv_hook() {
   trap -- '' SIGINT;
-  eval "$("/nix/store/0y1yv2vd57d9432y9yndvjqazbc3bm93-direnv-2.22.0/bin/direnv" export zsh)";
+  eval "$("/run/current-system/sw/bin/direnv" export zsh)";
   trap - SIGINT;
 }
 typeset -ag precmd_functions;
