@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Tagging photos to a file for imv
+################################################################################
+
+declare file
+file="$1"
+
+if [[ ! -e "$file" ]]; then
+  echo "$file not coherent." >&2
+  exit 1
+fi
+
+echo "$file" >> ./imv-tagged.log

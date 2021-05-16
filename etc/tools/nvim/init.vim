@@ -60,6 +60,16 @@ set foldenable
 
 call plug#begin(plugins_path)
 
+" new system
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/playground'
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-compe'
+
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
 " environment
 Plug 'itchyny/lightline.vim'
 Plug 'christoomey/vim-tmux-navigator'
@@ -90,7 +100,7 @@ Plug 'vim-scripts/bats.vim'
 Plug 'godlygeek/tabular'
 Plug 't9md/vim-choosewin'
 Plug 'chrisbra/Recover.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " colab
 "Plug 'floobits/floobits-neovim'
@@ -129,6 +139,37 @@ set virtualedit=block
 
 set scrolloff=1 sidescrolloff=5 sidescroll=1
 
+" ================ Lsp settings ========================
+
+lua << EOF
+require'lspconfig'.rust_analyzer.setup{}
+require'lspconfig'.svelte.setup{}
+require'lspconfig'.tsserver.setup{}
+
+require'lspconfig'.yamlls.setup{
+  cmd = { "/home/hexxiiiz/_/lib/node/npm-packages/bin/yaml-language-server", "--stdio" }
+}
+require'lspconfig'.vimls.setup{
+  cmd = { "/home/hexxiiiz/_/lib/node/npm-packages/bin/vim-language-server", "--stdio" }
+}
+require'lspconfig'.jsonls.setup{
+  cmd = { "/home/hexxiiiz/_/lib/node/npm-packages/bin/vscode-json-languageserver", "--stdio" }
+}
+
+require'lspconfig'.rnix.setup{}
+require'lspconfig'.cssls.setup{}
+
+--Enable (broadcasting) snippet capability for completion
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+require'lspconfig'.html.setup {
+  capabilities = capabilities,
+}
+
+EOF
+
+
 " ================ Custom Settings ========================
 "for fpath in split(globpath($DOT_VIM.'/settings', '*.vim'), '\n')
 ""	exe 'source' fpath
@@ -152,7 +193,6 @@ augroup END
 
 autocmd FileType markdown set foldexpr=NestedMarkdownFolds()
 
-set statusline^=%{coc#status()}
 
 runtime! defx.vim
 runtime! grammarous.vim
