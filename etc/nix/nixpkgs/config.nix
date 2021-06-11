@@ -1,4 +1,27 @@
-{ 
+let
+  python-packages = py: with py; [
+    mypy pynvim pylint pytest ipython
+    python-language-server
+    pyls-mypy pyls-black
+  ];
+
+  node-packages = pkgs: with pkgs.nodePackages; [
+    pkgs.nodejs
+    eslint
+    typescript
+
+    # language servers
+    typescript-language-server
+    svelte-language-server
+    vscode-css-languageserver-bin
+    vscode-html-languageserver-bin
+    bash-language-server
+    dockerfile-language-server-nodejs
+    vscode-json-languageserver-bin
+    vim-language-server
+    yaml-language-server
+  ];
+in { 
   allowUnfree = true;
   
   packageOverrides = pkgs: with pkgs; rec {
@@ -6,21 +29,13 @@
       inherit (pkgs.gnome3) zenity;
       libxkbcommon = pkgs.libxkbcommon_7;
     };
-    
-    pidgin-with-plugins = pkgs.pidgin-with-plugins.override {
-      plugins = with pkgs; [
-        purple-facebook
-        purple-hangouts
-        purple-slack
-        telegram-purple
-      ];
-    };
 
     yvan-local = pkgs.buildEnv {
       name = "yvan-local";
       extraOutputsToInstall = [ "man" ];
       paths = with pkgs; [
-        (python39.withPackages (py: with py; [ipython pynvim]))
+        # Default Python
+        (python38.withPackages python-packages)
 
         # Audio / Video
         bitwig
@@ -31,7 +46,6 @@
         fluidsynth
         soundfont-fluid
         lame
-        mediainfo
 
         # Visual
         gimp
@@ -47,7 +61,6 @@
         # General Dev
         niv
         shellcheck
-        nodejs
         html-tidy
         pandoc
         hexyl
@@ -71,7 +84,7 @@
         duff
         mime-types
         xdg_utils
-      ];
+      ] ++ (node-packages pkgs);
     };
   };
 }

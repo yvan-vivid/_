@@ -1,9 +1,15 @@
 { pkgs ? import <nixpkgs> {} }:
-
-pkgs.mkShell {
-  buildInputs = with pkgs; [
-    python39
-    python39Packages.mypy
-    python39Packages.ipython
+with pkgs; let
+  py-pkgs = pp: with pp; [
+    mypy
+    neovim
+    pytest
+    pylint
+    ipython
   ];
+  python-with-packages = python39.withPackages py-pkgs;
+in pkgs.mkShell {
+  buildInputs = [
+    python-with-packages 
+  ]; 
 }

@@ -26,7 +26,7 @@ rsyncr() {
   local dry_flag                                         
   dry_flag=""                                            
   (( dry_run == 0 )) && dry_flag="--dry-run"             
-  rsync "$dry_flag" --progress "$@"
+  echo rsync "$dry_flag" --progress "$@"
 }
 
 sync_mounts() {

@@ -2,23 +2,15 @@
 
 { pkgs, ... }: {
   # Sound
-  nixpkgs.config.pulseaudio = true;
-  sound.enable = true;
-  hardware.pulseaudio = {
+  security.rtkit.enable = true;
+  services.pipewire = {
     enable = true;
-    extraConfig = ''
-      # Automatically switch to newly connected devices.
-      load-module module-switch-on-connect
-    '';
-    zeroconf.discovery.enable = true;
-
-    # bluetooth support
-    extraModules = [ pkgs.pulseaudio-modules-bt ];
-
-    # bluetooth and other support
-    package = pkgs.pulseaudioFull;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+    media-session.enable = true;
   };
-  services.pipewire.enable = true;
 
   # Bluetooth
   hardware.bluetooth.enable = true;
@@ -61,7 +53,7 @@
 
   # Fonts
   fonts = {
-    enableFontDir = true;
+    fontDir.enable = true;
     enableGhostscriptFonts = true;
     fontconfig.enable = true;
   };

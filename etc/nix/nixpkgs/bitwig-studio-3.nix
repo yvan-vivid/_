@@ -1,6 +1,6 @@
 { stdenv, fetchurl, alsaLib, bzip2, cairo, dpkg, freetype, gdk-pixbuf
 , wrapGAppsHook, gtk2, gtk3, harfbuzz, lib, xorg
-, libbsd, libjack2, libpng, ffmpeg_3, pulseaudio
+, libbsd, libjack2, libpng, ffmpeg, pulseaudio
 , libxkbcommon
 , makeWrapper, pixman, autoPatchelfHook
 , xdg_utils, zenity, zlib }:
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
   ];
 
   binPath = lib.makeBinPath [
-    xdg_utils zenity ffmpeg_3
+    xdg_utils zenity ffmpeg
   ];
 
   runtimeDependencies = [ pulseaudio libjack2 ];
