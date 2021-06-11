@@ -16,3 +16,6 @@
 
 # zsh compiled files
 *.zwc
+
+# other transients
+.vim/
