@@ -25,7 +25,7 @@ in {
     nerdfonts = pkgs.nerdfonts.override { fonts = nerdfontsUsed; };
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_5_12;
+  boot.kernelPackages = pkgs.linuxPackages_5_13;
   # book.kernelParams = [ "i915.enable_fbc=1" ];
   # hardware.cpu.intel.updateMicrocode = true;
 
@@ -112,7 +112,7 @@ in {
         uid = 1000;
         extraGroups = [
           "audio" "video" "input" "jackaudio" # media control
-          "wheel" "network" "networkmanager" # system
+          "wheel" "network" "networkmanager" "nordvpn" # system
           "docker" "vboxusers" # virtualisation
           "fuse" "sway"
         ];

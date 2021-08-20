@@ -23,7 +23,7 @@ in {
   };
 
   # Kernel Version
-  boot.kernelPackages = pkgs.linuxPackages_5_9;
+  boot.kernelPackages = pkgs.linuxPackages_5_13;
 
   # OpenGL Settings
   hardware.opengl = {

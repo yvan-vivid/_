@@ -14,7 +14,6 @@ import logging
 from pathlib import Path
 import sys
 import subprocess
-from functools import cache
 from typing import Optional, Sequence, Tuple, ClassVar, Set, Dict
 
 

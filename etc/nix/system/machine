@@ -26,7 +26,7 @@ rsyncr() {
   local dry_flag                                         
   dry_flag=""                                            
   (( dry_run == 0 )) && dry_flag="--dry-run"             
-  echo rsync "$dry_flag" --progress "$@"
+  echo rsync "$dry_flag" -ltr --progress --filter="merge $filter" "$@"
 }
 
 sync_mounts() {
@@ -51,7 +51,7 @@ update() {
   assert_namefile
 
   log "Updating nixos config"
-  rsyncr -ltr --filter="merge $filter" "$@" "$src/" "$target/"
+  rsyncr "$@" "$src/" "$target/"
   sync_mounts
   log "Updated"
 }

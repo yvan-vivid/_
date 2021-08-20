@@ -17,4 +17,6 @@
   };
   # hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   boot.initrd.kernelModules = [ "i915" ];
+
+  boot.kernelModules = [ "tun" ];
 }

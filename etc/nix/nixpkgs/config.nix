@@ -82,8 +82,6 @@ in {
         fish
         nnn
         duff
-        mime-types
-        xdg_utils
       ] ++ (node-packages pkgs);
     };
   };

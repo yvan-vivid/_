@@ -1,7 +1,11 @@
 # Yvan Vivid - Sway Desktop Environment
 
 { pkgs, ... }: {
-  xdg.portal.enable = true;
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+  };
+  
   hardware.brillo.enable = true;
 
   programs.sway = {
@@ -22,7 +26,10 @@
       wev wob 
       
       # DE Apps
-      alacritty gparted mpv imv zathura jack2
+      alacritty gparted mpv imv zathura
+
+      # Other
+      xdg-utils
     ];
   };
 }

@@ -12,6 +12,13 @@
     media-session.enable = true;
   };
 
+  environment.systemPackages = with pkgs; [
+    alsaUtils
+
+    # just for utilities
+    pulseaudio
+  ];
+
   # Bluetooth
   hardware.bluetooth.enable = true;
 
@@ -44,6 +51,7 @@
   # Networking
   networking = {
     networkmanager.enable = true;
+    iproute2.enable = true;
     useDHCP = false;
     hosts = {
       "127.0.0.1"   = [ "localhost.localdomain" "localhost" ];

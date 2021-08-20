@@ -1,3 +1,7 @@
+# Yvan Vivid
+# This little library parses external volume records out of a json file and
+# generates mounts for nixos to put into fstab
+
 let
   optionsSets = {
     usb = [

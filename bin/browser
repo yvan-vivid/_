@@ -35,7 +35,7 @@ logit "$(date -Is): running 'firefox'..."
 logit "------------------------------------------------------------"
 
 # Entry
-firefox >> "$log" 2>&1
+firefox-devedition >> "$log" 2>&1
 ex=$?
 
 # Exit
