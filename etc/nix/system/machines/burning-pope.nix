@@ -50,6 +50,7 @@ in {
     interfaces = {
       "wlp59s0" = { useDHCP = true; };
     };
+    firewall.allowedTCPPortRanges = [ { from = 13900; to = 13999; } ];
   };
 
   # Machine specific filesystems
