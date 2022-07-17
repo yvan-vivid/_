@@ -33,7 +33,7 @@ custom_cursor_colors: false
 # Standard (iterm defaults)
 colors:
   primary:
-    background: '0x350000'
+    background: '0x280008'
     foreground: '0x10ff10'
 
   cursor:

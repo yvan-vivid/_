@@ -20,6 +20,7 @@
 
       # A/V Settings
       pavucontrol kanshi redshift qjackctl cadence
+      pamixer
 
       # Utilities
       slurp grim wl-clipboard

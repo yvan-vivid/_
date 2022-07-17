@@ -1,44 +1,65 @@
-let
+{ pkgs }: let
+  inherit (pkgs) buildEnv;
+
   python-packages = py: with py; [
-    mypy pynvim pylint pytest ipython
-    python-language-server
-    pyls-mypy pyls-black
+    mypy pynvim pylint pytest ipython cython jupyter poetry
+    python-lsp-server
+    pylsp-mypy
+    python-lsp-black
   ];
 
   node-packages = pkgs: with pkgs.nodePackages; [
     pkgs.nodejs
     eslint
     typescript
+    prettier
+    prettier-plugin-toml
 
     # language servers
-    typescript-language-server
-    svelte-language-server
-    vscode-css-languageserver-bin
-    vscode-html-languageserver-bin
     bash-language-server
+    diagnostic-languageserver
     dockerfile-language-server-nodejs
+    svelte-language-server
+    typescript-language-server
+    vscode-css-languageserver-bin
     vscode-json-languageserver-bin
-    vim-language-server
+    vscode-html-languageserver-bin
+    
+    # vim-language-server
     yaml-language-server
   ];
 in { 
   allowUnfree = true;
-  
+
+  nixpkgs.overlays = [
+    (import (builtins.fetchTarball {
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+    }))
+  ];
+
   packageOverrides = pkgs: with pkgs; rec {
-    bitwig = pkgs.callPackage ./bitwig-studio-3.nix {
-      inherit (pkgs.gnome3) zenity;
-      libxkbcommon = pkgs.libxkbcommon_7;
+    bitwig = callPackage ./bitwig-studio-3.nix {
+      inherit (gnome3) zenity;
+      libxkbcommon = libxkbcommon_7;
     };
 
-    yvan-local = pkgs.buildEnv {
-      name = "yvan-local";
-      extraOutputsToInstall = [ "man" ];
-      paths = with pkgs; [
-        # Default Python
-        (python38.withPackages python-packages)
+    yvan-python-env = buildEnv {
+      name = "yvan-python-env";
+      paths = [
+        ((python310.withPackages python-packages).override (args: { ignoreCollisions = true; }))
+      ];
+    };
 
-        # Audio / Video
-        bitwig
+    yvan-node-env = buildEnv {
+      name = "yvan-node-env";
+      paths = node-packages pkgs;
+    };
+
+    yvan-production = buildEnv {
+      name = "yvan-production";
+      paths = [
+        # Audio
+        # bitwig
         audacity
         cadence
         mediainfo
@@ -46,18 +67,19 @@ in {
         fluidsynth
         soundfont-fluid
         lame
-
+        
         # Visual
         gimp
         shotwell
         imagemagick
         inkscape
+        blender
+      ];
+    };
 
-        # Writing Tools
-        pdftk
-        languagetool
-        texlive.combined.scheme-medium
-
+    yvan-dev-tools = buildEnv {
+      name = "yvan-dev-tools";
+      paths = [
         # General Dev
         niv
         shellcheck
@@ -65,24 +87,66 @@ in {
         pandoc
         hexyl
         dfeet
+        socat
+        gita
 
-        # Apps
+        gcc
+
+        # Language Servers
+        asls
+        # cmake-language-server
+        dhall-lsp-server
+        erlang-ls
+        haskell-language-server
+        java-language-server
+        rnix-lsp
+        sumneko-lua-language-server
+        terraform-ls
+        texlab
+        
+        # Writing Tools
+        pdftk
+        languagetool
+        texlive.combined.scheme-medium
+        
+        # Shell Env
+        neovim
+        starship
+        fish
+        nnn
+        duff
+      ];
+    };
+    
+    yvan-apps = buildEnv {
+      name = "yvan-apps";
+      paths = [
         zoom-us
         zotero
         youtube-dl
         tdesktop # telegram desktop
         beets
         foot
+        nyxt
+      ];
+    };
+
+    yvan-local = buildEnv {
+      name = "yvan-local";
+      extraOutputsToInstall = [ "man" ];
+      paths = with pkgs; [
+        # Default dev environments
+        yvan-python-env
+        yvan-node-env
+
+        yvan-production
+        yvan-dev-tools
+
+        # System
         lxappearance
         breeze-icons
         breeze-gtk
-
-        # Shell Env
-        starship
-        fish
-        nnn
-        duff
-      ] ++ (node-packages pkgs);
+      ];
     };
   };
 }

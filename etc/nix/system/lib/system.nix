@@ -9,7 +9,6 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
-    media-session.enable = true;
   };
 
   environment.systemPackages = with pkgs; [
@@ -35,6 +34,12 @@
     irqbalance.enable = true;
   };
 
+  # udev rule additions
+  services.udev.extraRules = ''
+    ### ATmega32U4
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2ff4", TAG+="uaccess"
+  '';
+
   # Security
   security = {
     sudo.enable = true;
@@ -54,8 +59,11 @@
     iproute2.enable = true;
     useDHCP = false;
     hosts = {
-      "127.0.0.1"   = [ "localhost.localdomain" "localhost" ];
-      "192.168.0.1" = [ "router" ];
+      "127.0.0.1"    = [ "localhost.localdomain" "localhost" ];
+      "192.168.68.88" = [ "burning-pope.localdomain" "burning-pope" ];
+      "192.168.68.77" = [ "pinkey.localdomain" "pinkey" ];
+      "192.168.68.87" = [ "wittie-box.localdomain" "wittie-box" ];
+      "192.168.69.88" = [ "yvone.localdomain" "yvone" ];
     };
   };
 

@@ -25,7 +25,7 @@ in {
     nerdfonts = pkgs.nerdfonts.override { fonts = nerdfontsUsed; };
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_5_13;
+  boot.kernelPackages = pkgs.linuxPackages_5_17;
   # book.kernelParams = [ "i915.enable_fbc=1" ];
   # hardware.cpu.intel.updateMicrocode = true;
 
@@ -43,10 +43,6 @@ in {
 
   networking = {
     hostName = "burning-pope";
-    hosts = {
-      "127.0.1.1"    = [ "burning-pope" ];
-      "192.168.0.87" = [ "wittie-box.localdomain" "wittie-box" ];
-    };
     interfaces = {
       "wlp59s0" = { useDHCP = true; };
     };
@@ -77,15 +73,13 @@ in {
         sansSerif = ["Ubuntu"];
         monospace = ["DejaVuSansMono Nerd Font"];
       };
-      # TODO: Consider bumping this
-      dpi = 0;
     };
   };
 
   environment.systemPackages = with pkgs; [
     # system
     wineWowPackages.stable
-    qemu libva-full libnotify
+    qemu libva libnotify
   ];
 
   # Thunderbolt
@@ -100,7 +94,6 @@ in {
   };
 
   services = {
-    flatpak.enable = true;
     lorri.enable = true;
   };
 

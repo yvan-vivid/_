@@ -3,20 +3,20 @@
 # Yvan Vivid -- Audio toggle control script
 ################################################################################
 
-mix() { amixer set Master "$@"; }
+declare -r step=5
+declare -r sock_root="$(dirname "$SWAYSOCK")"
 
 case $1 in
-  up)   mix "5%+" ;;
-  down) mix "5%-" ;;
-  max)  mix "100%" ;;
-  half) mix "50%" ;;
-  min)  mix "0%" ;;
-  mute) mix toggle ;;
-  off)  mix mute ;;
-  on)   mix unmute ;;
+  up)   pamixer -i "${step}" ;;
+  down) pamixer -d "${step}" ;;
+  max)  pamixer --set-volume "100" ;;
+  half) pamixer --set-volume "50" ;;
+  min)  pamixer --set-volume "0" ;;
+  mute) pamixer -t ;;
+  off)  pamixer -m ;;
+  on)   pamixer -u ;;
 esac
 
-# Notification
-if command -v notify-send
-then notify-send --category xmedia "Volume Action: $1"
-fi
+for ws in $sock_root/wob-sway.*.sock; do
+  pamixer --get-volume > $ws
+done

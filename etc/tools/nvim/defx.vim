@@ -1,7 +1,3 @@
-" Derived from
-" https://github.com/SpaceVim/SpaceVim
-" https://github.com/kristijanhusak/neovim-config
-
 augroup vimrc_defx
   autocmd!
   autocmd FileType defx call s:defx_init()
@@ -45,11 +41,6 @@ call defx#custom#column('filename', { 'max_width': -90  })
 
 function! s:defx_inv() abort
   Defx -split=floating -winrow=0 -wincol=`&columns - g:yv#browser_width` -winheight=`&lines`
-endfunction
-
-function! s:defx_inv_fixed() abort
-  Defx
-  wincmd =
 endfunction
 
 function! s:defx_init()

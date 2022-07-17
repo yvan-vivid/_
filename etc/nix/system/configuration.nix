@@ -1,4 +1,5 @@
-# Yvan Vivid - 'burning-pope' NixOS config
+# Yvan Vivid - generic NixOS config
+# dependent on a file `name.nix` which contains the name
 
 { config, pkgs, ... }: let
   name = import ./name.nix;

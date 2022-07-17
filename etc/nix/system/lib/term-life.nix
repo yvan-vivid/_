@@ -9,7 +9,7 @@
   
   environment.systemPackages = with pkgs; [
     # Base Utilities
-    bat file lsd exa tree fd ripgrep ag findutils ncurses fzf
+    bat file lsd exa tree fd ripgrep silver-searcher findutils ncurses fzf
 
     # Editor
     neovim vim
