@@ -3,9 +3,9 @@
 
   python-packages = py: with py; [
     mypy pynvim pylint pytest ipython cython jupyter poetry
-    python-lsp-server
-    pylsp-mypy
-    python-lsp-black
+    #python-lsp-server
+    #pylsp-mypy
+    #python-lsp-black
   ];
 
   node-packages = pkgs: with pkgs.nodePackages; [
@@ -16,30 +16,24 @@
     prettier-plugin-toml
 
     # language servers
-    bash-language-server
-    diagnostic-languageserver
-    dockerfile-language-server-nodejs
-    svelte-language-server
-    typescript-language-server
-    vscode-css-languageserver-bin
-    vscode-json-languageserver-bin
-    vscode-html-languageserver-bin
+    #bash-language-server
+    #diagnostic-languageserver
+    #dockerfile-language-server-nodejs
+    #svelte-language-server
+    #typescript-language-server
+    #vscode-css-languageserver-bin
+    #vscode-json-languageserver-bin
+    #vscode-html-languageserver-bin
     
     # vim-language-server
-    yaml-language-server
+    #yaml-language-server
   ];
 in { 
   allowUnfree = true;
 
-  nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
-  ];
-
   packageOverrides = pkgs: with pkgs; rec {
     bitwig = callPackage ./bitwig-studio-3.nix {
-      inherit (gnome3) zenity;
+      inherit (gnome) zenity;
       libxkbcommon = libxkbcommon_7;
     };
 
@@ -63,7 +57,7 @@ in {
         audacity
         cadence
         mediainfo
-        gnome3.cheese
+        gnome.cheese
         fluidsynth
         soundfont-fluid
         lame
@@ -89,20 +83,25 @@ in {
         dfeet
         socat
         gita
-
+        tree-sitter
         gcc
+        luarocks
+        rustup
+        qmk
 
         # Language Servers
-        asls
+        #asls
         # cmake-language-server
-        dhall-lsp-server
-        erlang-ls
-        haskell-language-server
-        java-language-server
-        rnix-lsp
-        sumneko-lua-language-server
-        terraform-ls
+        #dhall-lsp-server
+        #erlang-ls
+        #haskell-language-server
+        #java-language-server
+        #rnix-lsp
+        #sumneko-lua-language-server
+        #terraform-ls
+        
         texlab
+        stylua
         
         # Writing Tools
         pdftk
@@ -115,6 +114,9 @@ in {
         fish
         nnn
         duff
+        joshuto
+        broot
+        traceroute
       ];
     };
     
@@ -122,12 +124,14 @@ in {
       name = "yvan-apps";
       paths = [
         zoom-us
-        zotero
-        youtube-dl
+        yt-dlp
         tdesktop # telegram desktop
         beets
         foot
         nyxt
+        bottom
+        signal-desktop
+        sioyek
       ];
     };
 
@@ -141,6 +145,7 @@ in {
 
         yvan-production
         yvan-dev-tools
+        yvan-apps
 
         # System
         lxappearance

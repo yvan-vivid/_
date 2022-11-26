@@ -12,6 +12,7 @@ window:
   decorations: none
   startup_mode: Maximized
   class: Alacritty
+  opacity: 0.95
 
 scrolling:
   history: 10000
@@ -76,9 +77,6 @@ colors:
 bell:
   animation: EaseOutExpo
   duration: 0
-
-# Nopacity
-background_opacity: 1.0
 
 # Nothing particular
 mouse_bindings: []
