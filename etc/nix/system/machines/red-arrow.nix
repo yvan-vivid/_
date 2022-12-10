@@ -2,18 +2,15 @@
 
 { config, pkgs, ... }: let
   nerdfontsUsed = [ 
-    "Agave"
     "DejaVuSansMono"
     "FantasqueSansMono"
     "FiraCode"
     "Iosevka"
     "OpenDyslexic"
   ];
-
 in {
   imports = [
     ../lib/basis.nix
-    ../lib/boot.nix
     ../lib/file-systems.nix
     ../lib/system.nix
     ../lib/term-life.nix
@@ -26,9 +23,17 @@ in {
     nerdfonts = pkgs.nerdfonts.override { fonts = nerdfontsUsed; };
   };
 
+  # Boot specifics
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi = {
+      canTouchEfiVariables = true;
+      efiSystemMountPoint = "/boot/efi"
+    };
+  };
+
   boot.kernelPackages = pkgs.linuxPackages_6_0;
   hardware.cpu.intel.updateMicrocode = true;
-  # book.kernelParams = [ "i915.enable_fbc=1" ];
 
   # Graphics
   hardware.opengl = {
@@ -43,26 +48,12 @@ in {
   };
 
   networking = {
-    hostName = "burning-pope";
-    interfaces = { "wlp59s0" = { useDHCP = true; }; };
-  };
-
-  # Machine specific filesystems
-  fileSystems."/mnt/pred" = {
-    device = "/dev/disk/by-uuid/93d1105f-f05a-4791-b57b-61c401d5faf2";
-    fsType = "ext4";
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/80C8-9AF0";
-    fsType = "vfat";
+    hostName = "red-arrow";
   };
 
   fonts = {
     fonts = with pkgs; [
-      corefonts
       nerdfonts
-      google-fonts
       helvetica-neue-lt-std
       ubuntu_font_family
     ];
@@ -76,12 +67,8 @@ in {
 
   environment.systemPackages = with pkgs; [
     # system
-    wineWowPackages.stable
-    qemu libva libnotify
+    libva libnotify
   ];
-
-  # Thunderbolt
-  services.hardware.bolt.enable = true;
 
   # Logind tweaks
   services.logind = {
@@ -113,12 +100,6 @@ in {
     };
   };
   nix.trustedUsers = [ "root" "hexxiiiz" ];
-
-  # Special limits for audio production
-  security.pam.loginLimits = [
-    { domain = "@audio"; item = "memlock"; type = "-"; value = "800000"; }
-    { domain = "@audio"; item = "rtprio"; type = "-"; value = "95"; }
-  ];
 
   # Virtualization / Containerization
   virtualisation = {

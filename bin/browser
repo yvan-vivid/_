@@ -12,10 +12,6 @@ logit() { echo "$1" >> "$log"; }
 
 [[ -z "$DISPLAY" ]] && export DISPLAY=":0"
 
-# Workaround for a bug in the nix setup
-#declare -r gtk3_schemas="/nix/store/avn6d3n6m453ryf7zbb0zyb04vdcy815-gtk+3-3.24.20/share/gsettings-schemas/gtk+3-3.24.20"
-#export XDG_DATA_DIRS="$gtk3_schemas:$XDG_DATA_DIRS"
-
 # GTK3 Scaling
 export GDK_SCALE=2
 

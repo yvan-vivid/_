@@ -5,6 +5,13 @@
     tmux.enable = true;
     zsh.enable = true;
     less.enable = true;
+    nix-ld.enable = true;
+    git.enable = true;
+    htop.enable = true;
+    iotop.enable = true;
+    usbtop.enable = true;
+    iftop.enable = true;
+    neovim.enable = true;
   };
   
   environment.systemPackages = with pkgs; [
@@ -12,13 +19,13 @@
     bat file lsd exa tree fd ripgrep silver-searcher findutils ncurses fzf
 
     # Editor
-    neovim vim
+    vim
 
     # TUI Apps
     ranger ncdu
 
     # System
-    htop lshw ctop iotop lsof pciutils usbutils libva-utils
+    lshw ctop lsof pciutils usbutils libva-utils
 
     # Tools
     zip unzip jq tmuxp entr pandoc graphviz gnupg mime-types ffmpeg
@@ -27,12 +34,12 @@
     curl wget rclone nmap openssh netcat netcat-gnu websocat
 
     # VS
-    git git-lfs
+    git-lfs
     gitAndTools.git-annex
     gitAndTools.git-annex-remote-rclone
 
     # Development
-    python39 nodejs
+    python nodejs
     binutils gnumake direnv
     bats niv
   ];

@@ -2,10 +2,8 @@
   inherit (pkgs) buildEnv;
 
   python-packages = py: with py; [
-    mypy pynvim pylint pytest ipython cython jupyter poetry
-    #python-lsp-server
-    #pylsp-mypy
-    #python-lsp-black
+    mypy pynvim pylint pytest ipython cython jupyter 
+    # poetry
   ];
 
   node-packages = pkgs: with pkgs.nodePackages; [
@@ -14,19 +12,6 @@
     typescript
     prettier
     prettier-plugin-toml
-
-    # language servers
-    #bash-language-server
-    #diagnostic-languageserver
-    #dockerfile-language-server-nodejs
-    #svelte-language-server
-    #typescript-language-server
-    #vscode-css-languageserver-bin
-    #vscode-json-languageserver-bin
-    #vscode-html-languageserver-bin
-    
-    # vim-language-server
-    #yaml-language-server
   ];
 in { 
   allowUnfree = true;
@@ -61,6 +46,7 @@ in {
         fluidsynth
         soundfont-fluid
         lame
+        zrythm
         
         # Visual
         gimp
@@ -68,6 +54,7 @@ in {
         imagemagick
         inkscape
         blender
+        darktable
       ];
     };
 
@@ -89,17 +76,6 @@ in {
         rustup
         qmk
 
-        # Language Servers
-        #asls
-        # cmake-language-server
-        #dhall-lsp-server
-        #erlang-ls
-        #haskell-language-server
-        #java-language-server
-        #rnix-lsp
-        #sumneko-lua-language-server
-        #terraform-ls
-        
         texlab
         stylua
         
@@ -132,6 +108,7 @@ in {
         bottom
         signal-desktop
         sioyek
+        chromium
       ];
     };
 
