@@ -2,7 +2,7 @@
   # Nix command
   nix = {
     extraOptions = "experimental-features = flakes";
-  }
+  };
 
   # Nix setup
   nixpkgs.config.allowUnfree = true;

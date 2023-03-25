@@ -28,7 +28,7 @@
     lshw ctop lsof pciutils usbutils libva-utils
 
     # Tools
-    zip unzip jq tmuxp entr pandoc graphviz gnupg mime-types ffmpeg
+    zip unzip jq tmuxp entr graphviz gnupg mime-types ffmpeg
 
     # Networking
     curl wget rclone nmap openssh netcat netcat-gnu websocat

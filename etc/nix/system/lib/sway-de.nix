@@ -27,7 +27,7 @@
       wev wob 
       
       # DE Apps
-      alacritty gparted mpv imv zathura
+      alacritty gparted mpv imv zathura foot
 
       # Other
       xdg-utils

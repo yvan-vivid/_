@@ -61,7 +61,7 @@
     hosts = {
       "127.0.0.1"     = [ "localhost.localdomain" "localhost" ];
       "192.168.68.88" = [ "burning-pope.localdomain" "burning-pope" ];
-      "192.168.68.77" = [ "pinkey.localdomain" "pinkey" ];
+      "192.168.68.77" = [ "pinky.localdomain" "pinky" ];
       "192.168.68.87" = [ "wittie-box.localdomain" "wittie-box" ];
       "192.168.69.88" = [ "yvone.localdomain" "yvone" ];
     };

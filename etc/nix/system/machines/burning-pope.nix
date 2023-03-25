@@ -90,6 +90,8 @@ in {
         HandleLidSwitchExternalPower=ignore
       '';
   };
+  
+  console.font = "ter-i32b"; # HDPI
 
   services = {
     lorri.enable = true;

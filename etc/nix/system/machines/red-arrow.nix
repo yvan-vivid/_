@@ -1,14 +1,16 @@
-# Yvan Vivid - 'burning-pope' NixOS config
+# Yvan Vivid - 'red-arrow' NixOS config
 
-{ config, pkgs, ... }: let
-  nerdfontsUsed = [ 
+{ config, pkgs, ... }:
+let
+  nerdfontsUsed = [
     "DejaVuSansMono"
     "FantasqueSansMono"
     "FiraCode"
     "Iosevka"
     "OpenDyslexic"
   ];
-in {
+in
+{
   imports = [
     ../lib/basis.nix
     ../lib/file-systems.nix
@@ -16,7 +18,7 @@ in {
     ../lib/term-life.nix
     ../lib/sway-de.nix
   ];
-  
+
   # Overrides
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
@@ -28,10 +30,12 @@ in {
     systemd-boot.enable = true;
     efi = {
       canTouchEfiVariables = true;
-      efiSystemMountPoint = "/boot/efi"
+      efiSystemMountPoint = "/boot/efi";
     };
   };
 
+  console.font = "ter-i32b"; # HDPI
+  
   boot.kernelPackages = pkgs.linuxPackages_6_0;
   hardware.cpu.intel.updateMicrocode = true;
 
@@ -59,15 +63,16 @@ in {
     ];
     fontconfig = {
       defaultFonts = {
-        sansSerif = ["Ubuntu"];
-        monospace = ["DejaVuSansMono Nerd Font"];
+        sansSerif = [ "Ubuntu" ];
+        monospace = [ "DejaVuSansMono Nerd Font" ];
       };
     };
   };
 
   environment.systemPackages = with pkgs; [
     # system
-    libva libnotify
+    libva
+    libnotify
   ];
 
   # Logind tweaks
@@ -90,10 +95,17 @@ in {
         createHome = true;
         uid = 1000;
         extraGroups = [
-          "audio" "video" "input" "jackaudio" # media control
-          "wheel" "network" "networkmanager" "nordvpn" # system
-          "docker" "vboxusers" # virtualisation
-          "fuse" "sway"
+          "audio"
+          "video"
+          "input"
+          "jackaudio" # media control
+          "wheel"
+          "network"
+          "networkmanager"
+          "nordvpn" # system
+          "docker"
+          "fuse"
+          "sway"
         ];
         useDefaultShell = true;
       };
@@ -104,6 +116,5 @@ in {
   # Virtualization / Containerization
   virtualisation = {
     docker.enable = true;
-    libvirtd.enable = true;
   };
 }

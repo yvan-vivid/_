@@ -1,8 +1,15 @@
-{ pkgs }: let
+{ pkgs }:
+let
   inherit (pkgs) buildEnv;
 
   python-packages = py: with py; [
-    mypy pynvim pylint pytest ipython cython jupyter 
+    mypy
+    pynvim
+    pylint
+    pytest
+    ipython
+    cython
+    jupyter
     # poetry
   ];
 
@@ -13,7 +20,8 @@
     prettier
     prettier-plugin-toml
   ];
-in { 
+in
+{
   allowUnfree = true;
 
   packageOverrides = pkgs: with pkgs; rec {
@@ -25,7 +33,8 @@ in {
     yvan-python-env = buildEnv {
       name = "yvan-python-env";
       paths = [
-        ((python310.withPackages python-packages).override (args: { ignoreCollisions = true; }))
+        ((python310.withPackages python-packages).override
+          (args: { ignoreCollisions = true; }))
       ];
     };
 
@@ -47,7 +56,7 @@ in {
         soundfont-fluid
         lame
         zrythm
-        
+
         # Visual
         gimp
         shotwell
@@ -75,15 +84,16 @@ in {
         luarocks
         rustup
         qmk
+        go
 
         texlab
         stylua
-        
+
         # Writing Tools
         pdftk
         languagetool
         texlive.combined.scheme-medium
-        
+
         # Shell Env
         neovim
         starship
@@ -95,7 +105,7 @@ in {
         traceroute
       ];
     };
-    
+
     yvan-apps = buildEnv {
       name = "yvan-apps";
       paths = [
