@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Notification bar setup
+################################################################################
+
+die() { echo "$1" >&2; exit 1; }
+
+declare -r sway_tag_regex='^sway-ipc\.(.*)\.sock$'
+
+[[ -n "$SWAYSOCK" ]] || die "$$SWAYSOCK not defined"
+
+declare sock_path sway_sock sway_tag
+sock_path="$(dirname "$SWAYSOCK")"
+sway_sock="$(basename "$SWAYSOCK")"
+[[ $sway_sock =~ $sway_tag_regex ]] && sway_tag="${BASH_REMATCH[1]}"
+[[ -n "$sway_tag" ]] || die "malformed sway socket path: $SWAYSOCK"
+
+declare -r wob_file="wob-sway.${sway_tag}.sock"
+declare -r wob_path="$sock_path/$wob_file"
+[[ -e "$wob_path" ]] || mkfifo "$wob_path"
+[[ -p "$wob_path" ]] || die "$wob_path is not a named pipe"
+
+tail -f "$wob_path" | wob \
+  -W 800 -H 200 -b 10 -p 20 -a center \
+  --bar-color "#ff4000e0" \
+  --background-color "#00000000" \
+  --border-color "#ff8000f0"

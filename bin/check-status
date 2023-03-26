@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+# Written mostly by AI
+# Customizations by Yvan Vivid
+
+from collections import defaultdict
+import os
+import subprocess
+
+# get the current directory
+rootdir = os.getcwd()
+
+repos_checked = []
+
+# loop through the immediate subdirectories of the current directory
+for subdir in next(os.walk(rootdir))[1]:
+    # construct the path to the subdirectory
+    path = os.path.join(rootdir, subdir)
+    
+    # check if the path is a git repository
+    if os.path.isdir(os.path.join(path, ".git")):
+        # run git status and capture the output
+        output = subprocess.check_output(
+            ["git", "status", "--porcelain"], 
+            cwd=path, 
+            universal_newlines=True)
+
+        repos_checked.append(subdir)
+
+        changes = defaultdict(list)
+        untracked = []
+        for line in output.split("\n"):
+            line = line.strip()
+            if line == "":
+                continue
+
+            code = line[0]
+            name = line[3:]
+            
+            if code == "?":
+                untracked.append(name)
+            else:
+                changes[code].append(name)
+
+        # check if the repository has active changes
+        if len(changes) > 0:
+            # print the repository name and the git status output
+            print(f"Repository '{subdir}' has active changes:")
+            for k, v in changes.items():
+                print(k, v)
+            print()
+
+        if len(untracked) > 0:
+            # print the repository name and the git status output
+            print(f"Repository '{subdir}' has untracked files:")
+            print(output.strip())
+            print()
+
+print(f"Checked {len(repos_checked)} repos.")
