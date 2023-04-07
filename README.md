@@ -9,3 +9,5 @@ These are meant to be used with a tool called *dotzo* that I have made elsewhere
 Otherwise, things can be pulled *a la carte*.
 
 This is still a bit of a WIP.
+
+There are some important additions needed here.
