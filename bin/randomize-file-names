@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Function to generate a random filename
+generate_random_name() {
+  local length=10
+  tr -dc 'a-zA-Z0-9' </dev/urandom | head -c $length
+}
+
+# Loop through all files in the directory
+for file in *$@*; do
+  if [[ -f "$file" ]]; then
+    # Get the file extension
+    ext="${file##*.}"
+    # Generate a new random name
+    new_name=$(generate_random_name)
+    # Ensure the new name does not collide with existing names
+    while [[ -e "$new_name.$ext" ]]; do
+      new_name=$(generate_random_name)
+    done
+    # Rename the file
+    mv "$file" "$new_name.$ext"
+  fi
+done
+

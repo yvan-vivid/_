@@ -4,7 +4,7 @@
 
 color=201018
 scaling=fit
-indicator-radius=200
-indicator-thickness=80
+indicator-radius=100
+indicator-thickness=40
 
 # vim: ft=dosini

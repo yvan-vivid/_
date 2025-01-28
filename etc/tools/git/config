@@ -6,15 +6,17 @@
   path = ./modules/aliases.gitconfig
   path = ./modules/colors.gitconfig
   path = ./modules/urls.gitconfig
-  path = ~/._/var/secure/git/user.gitconfig
 
 [status]
-	submoduleSummary = true
+  submoduleSummary = true
 
+[user]
+  name = "yvan-vivid"
+  email = "hexxiiiz@gmail.com"
+
+# vim: ft=gitconfig sw=2 et
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-
-# vim: ft=gitconfig

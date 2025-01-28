@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Check IP info
+################################################################################
+
+# '{ip: "\(.ip) => \(.hostname)", org, location: "\(.city), \(.region), \(.country) (\(.timezone))"}'
+
+curl -s "https://ipinfo.io" | jq -r '"\(.ip) => \(.hostname)\n\(.org) - \(.city), \(.region), \(.country) (\(.timezone))"'
+

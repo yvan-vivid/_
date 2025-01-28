@@ -2,7 +2,7 @@
 # Yvan Vivid - dotfiles - Zsh RC
 # =============================================================================
 
-echo "Welcome, Yvan!"
+# Anything here will mess with the p10k instant prompt
 
 # =============================================================================
 # vim: et fenc=utf-8 ft=zsh sts=4 sw=4 ts=8 tw=80 fdm=marker

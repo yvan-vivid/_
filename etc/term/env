@@ -12,23 +12,17 @@ ENV_DOT="$HOME/.dot_env"
 test -s "$ENV_DOT" && . "$ENV_DOT"
 
 # Dot paths
-export DOT_STATE="$DOT_ROOT/var/state"
-export DOT_CACHE="$DOT_ROOT/var/cache"
-export DOT_SHUNT="$DOT_ROOT/var/shunt"
-export DOT_LOGS="$DOT_ROOT/var/log"
-export DOT_LOGS_APPS="$DOT_LOGS/apps"
-export DOT_SECURE="$DOT_ROOT/var/secure"
-
-export DOT_LIB="$DOT_ROOT/lib"
-export DOT_TOOLS="$DOT_ROOT/lib/tools"
-export DOT_IMAGES="$DOT_ROOT/lib/images"
-
 export DOT_ETC="$DOT_ROOT/etc"
 export DOT_BIN="$DOT_ROOT/bin"
 
 # Other important variables
 export USER="$(whoami)"
 export SHELL="$(command -v zsh)"
+
+# Standards
+export DOT_STD_CONFIG="$HOME/.config"
+export DOT_STD_CACHE="$HOME/.cache"
+export DOT_STD_LOCAL="$HOME/.local"
 
 # =============================================================================
 # Local
@@ -44,7 +38,7 @@ export LANGUAGE='en_US.UTF-8'
 # =============================================================================
 
 # Set firefox as the default browser
-export BROWSER="firefox"
+export BROWSER="firefox-beta"
 
 # Set neovim as the default editor
 export EDITOR="nvim"
@@ -60,8 +54,6 @@ export MANPAGER="less"
 
 # This makes QT apps use the qt5ct spec theme (which defers to gtk)
 export QT_QPA_PLATFORMTHEME=qt5ct
-export QT_AUTO_SCREEN_SCALE_FACTOR=0
-export QT_FONT_DPI=144
 
 # =============================================================================
 # Less Settings
@@ -70,12 +62,7 @@ export QT_FONT_DPI=144
 # Less settings
 export LESS="-iqRFMJ -x4 -j.5 -#5"
 export LESSEDIT="$VISUAL"
-export LESS_STATE="$DOT_STATE/less"
-mkdir -p "$LESS_STATE"
-
-# History
 export LESSHISTSIZE=5000
-export LESSHISTFILE="$LESS_STATE/history"
 
 # =============================================================================
 # Firefox Settings
