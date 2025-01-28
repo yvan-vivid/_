@@ -1,0 +1,45 @@
+# Yvan Vivid
+# Sheldon config
+# https://github.com/rossmacarthur/sheldon
+#
+# Notes:
+#   Update plugins:
+#     > sheldon lock [--update] [--reinstall]
+#
+#   Used in profiles:
+#     profiles = ["a", "b"]
+
+shell = "zsh"
+
+[plugins]
+
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+[templates]
+defer = "{{ hooks | get: \"pre\" | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks | get: \"post\" | nl }}"
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+use = ["{{ name }}.zsh"]
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+
+[plugins.base16]
+github = "chriskempson/base16-shell"
+
+[plugins.powerlevel10k]
+github = "romkatv/powerlevel10k"
+
+[plugins.zvm]
+github = "jeffreytse/zsh-vi-mode"
+
+[plugins.zsh-docker-completions]
+github = "greymd/docker-zsh-completion"
+
+# [plugins.enhancd]
+# github = "b4b4r07/enhancd"
+
+# TODO: eza, fd, docker
+# Maybe https://github.com/atuinsh/atuin

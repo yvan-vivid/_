@@ -1,0 +1,5 @@
+style: "dark"
+local: false
+mouse: true
+pager: true
+width: 120

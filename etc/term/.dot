@@ -5,3 +5,6 @@ profile
 
 [ignore]
 README.md
+
+[config]
+sheldon
