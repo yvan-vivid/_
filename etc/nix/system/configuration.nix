@@ -6,6 +6,7 @@
   machines = {
     "burning-pope" = ./machines/burning-pope.nix;
     "wittie-box" = ./machines/wittie-box.nix;
+    "red-arrow" = ./machines/red-arrow.nix;
   };
   machine = machines.${name};
 in {

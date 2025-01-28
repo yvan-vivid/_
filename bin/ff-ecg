@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Yvan Vivid - Move FF ECG data to archive
+# Fleshed out by AI
+
+fail() {
+  echo "$1" >&2
+  exit 1
+}
+
+format_dir_date() {
+  sed -E 's/([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})([0-9]{2})/\1-\2-\3T\4:\5:\6/' <<<"$1"
+}
+
+parse_timestamp() {
+  echo "Parsing timestamp from $file"
+  grep -oP '\d{8}_\d{6}' <<<"$1"
+}
+
+unzip_into() {
+  mkdir -p "$2"
+  unzip -q "$1" -d "$2"
+  echo "Unzipped $1 to $2"
+}
+
+declare -r data_dir="/data/media/Bio/measured/ff"
+
+set -euo pipefail
+
+for file in Activity_on_*.zip; do
+  [[ -f "$file" ]] || fail "'$file' is not a file"
+
+  timestamp=$(parse_timestamp "$file")
+  [[ -z "$timestamp" ]] && fail "'$file' does not have a valid timestamp"
+
+  unzip_into "$file" "$data_dir/$(format_dir_date "$timestamp")"
+done

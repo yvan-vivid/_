@@ -30,13 +30,13 @@ in
     systemd-boot.enable = true;
     efi = {
       canTouchEfiVariables = true;
-      efiSystemMountPoint = "/boot/efi";
+      efiSysMountPoint = "/boot/efi";
     };
   };
 
-  console.font = "ter-i32b"; # HDPI
+  console.font = "ter-i16b";
   
-  boot.kernelPackages = pkgs.linuxPackages_6_0;
+  boot.kernelPackages = pkgs.linuxPackages_6_5;
   hardware.cpu.intel.updateMicrocode = true;
 
   # Graphics
@@ -53,10 +53,11 @@ in
 
   networking = {
     hostName = "red-arrow";
+    networkmanager.enable = true;
   };
 
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       nerdfonts
       helvetica-neue-lt-std
       ubuntu_font_family
@@ -64,7 +65,7 @@ in
     fontconfig = {
       defaultFonts = {
         sansSerif = [ "Ubuntu" ];
-        monospace = [ "DejaVuSansMono Nerd Font" ];
+        monospace = [ "DejaVuSansM Nerd Font Mono" ];
       };
     };
   };
@@ -87,6 +88,10 @@ in
     lorri.enable = true;
   };
 
+  programs = {
+    adb.enable = true;
+  };
+
   users = {
     defaultUserShell = pkgs.zsh;
     extraUsers = {
@@ -95,6 +100,7 @@ in
         createHome = true;
         uid = 1000;
         extraGroups = [
+          "adbusers"
           "audio"
           "video"
           "input"
@@ -102,7 +108,6 @@ in
           "wheel"
           "network"
           "networkmanager"
-          "nordvpn" # system
           "docker"
           "fuse"
           "sway"
@@ -111,7 +116,7 @@ in
       };
     };
   };
-  nix.trustedUsers = [ "root" "hexxiiiz" ];
+  nix.settings.trusted-users = [ "root" "hexxiiiz" ];
 
   # Virtualization / Containerization
   virtualisation = {

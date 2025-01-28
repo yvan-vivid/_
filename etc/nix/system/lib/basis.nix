@@ -1,7 +1,9 @@
 { ... }: {
   # Nix command
   nix = {
-    extraOptions = "experimental-features = flakes";
+    extraOptions = ''
+      experimental-features = nix-command flakes repl-flake
+    ''; 
   };
 
   # Nix setup
@@ -12,5 +14,5 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Config format version (not release version)
-  system.stateVersion = "20.03";
+  system.stateVersion = "22.11";
 }

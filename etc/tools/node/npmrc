@@ -1,6 +1,2 @@
-# YV - npm config
-
-prefix = ${DOT_LIB}/node/npm-packages
-cache  = ${DOT_CACHE}/npm
-
-# vim: ft=toml
+prefix=/home/hexxiiiz/.local/lib/npm-global
+cache=/home/hexxiiiz/.cache/npm

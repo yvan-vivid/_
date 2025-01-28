@@ -13,7 +13,7 @@ logit() { echo "$1" >> "$log"; }
 [[ -z "$DISPLAY" ]] && export DISPLAY=":0"
 
 # GTK3 Scaling
-export GDK_SCALE=2
+export GDK_SCALE=1
 
 # Use Wayland
 export MOZ_ENABLE_WAYLAND=1
@@ -24,7 +24,7 @@ export MOZ_USE_XINPUT2=1
 # Needed to open things in firefox
 export MOZ_DBUS_REMOTE=1
 
-declare profile="/home/hexxiiiz/.mozilla/firefox/1km6whs8.yvan-vivid"
+#declare profile="/home/hexxiiiz/.mozilla/firefox/1km6whs8.yvan-vivid"
 
 # Timestamp run
 logit ""
@@ -33,7 +33,8 @@ logit "$(date -Is): running 'firefox'..."
 logit "------------------------------------------------------------"
 
 # Entry
-firefox-devedition --profile "$profile" >> "$log" 2>&1
+firefox-beta >> "$log" 2>&1
+#firefox-devedition --profile "$profile" >> "$log" 2>&1
 ex=$?
 
 # Exit

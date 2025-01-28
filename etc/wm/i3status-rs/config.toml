@@ -1,11 +1,10 @@
 ################################################################################
 # Yvan Vivid -- i3status bar config for i3status-rs
 ################################################################################
-
-icons = "material-nf"
+icons_format = "{icon}"
 
 [theme]
-name = "slick"
+theme = "slick"
 [theme.overrides]
 idle_bg = "#700000"
 idle_fg = "#00ff10"
@@ -18,47 +17,38 @@ warning_fg = "#f0ff10"
 alternating_tint_fg = "#400000"
 alternating_tint_bg = "#004050"
 
-#[[block]]
-#block = "custom"
-#command = "bar-vivid-time"
-#interval = 5
+[icons]
+icons = "material-nf"
 
-# cycle = -- cycle with regular time
-
+[[block]]
+block = "custom"
+command = "/usr/local/bin/vivid-time now --precision 2"
+interval = 5
 
 [[block]]
 block = "time"
-interval = 60
-format = "%a %F %R"
+interval = 5
+[block.format]
+full = " $icon $timestamp.datetime(f:'%Y-%m-%d / %R') "
+short = " $icon $timestamp.datetime(f:%R) "
 
 [[block]]
 block = "cpu"
-interval = 3
-info = 40
-warning = 65
-critical = 90
-format = "{utilization} {barchart}"
+format = " $icon $utilization $barchart "
 
 [[block]]
 block = "memory"
-display_type = "memory"
-icons = true
-clickable = true
-interval = 5
-critical_mem = 95
-critical_swap = 80
-format_mem = "{mem_free;M}({mem_total_used_percents})"
-
-[[block]]
-block = "load"
-interval = 5
-format = "{5m}/5s"
+format = " $icon $mem_used_percents.eng(w:1) "
 
 [[block]]
 block = "net"
-device = "wlp59s0"
+format = " $icon  $ssid $signal_strength "
 interval = 5
-format = " {ssid} {signal_strength}"
+
+[[block]]
+block = "temperature"
+format = " $icon $average/$max "
+interval = 10
 
 [[block]]
 block = "sound"
@@ -74,4 +64,4 @@ block = "battery"
 driver = "upower"
 device = "DisplayDevice"
 interval = 10
-format = "{percentage} {percentage:6#100} ({time}) {power}W"
+format = " $icon $percentage - $time $power "

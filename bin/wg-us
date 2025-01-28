@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid -- Toggle Wireguard VPN
+################################################################################
+
+declare -r WG_CONFIG_DIR="/etc/wireguard"
+declare -r WG_PREFIX="US-FREE"
+declare -r CURRENT_CONFIG_FILE="/tmp/current_wg_config"
+
+wg_quick_up() {
+    wg-quick up "$1"
+}
+
+wg_quick_down() {
+    wg-quick down "$1"
+}
+
+wg_up() {
+    local configs=("$WG_CONFIG_DIR/$WG_PREFIX"*)
+    if [ ${#configs[@]} -eq 0 ]; then
+        echo "No configuration files found with prefix $WG_PREFIX in $WG_CONFIG_DIR"
+        exit 1
+    fi
+    local random_config=${configs[RANDOM % ${#configs[@]}]}
+    wg_quick_up "$random_config"
+    echo "$random_config" > "$CURRENT_CONFIG_FILE"
+    echo "WireGuard configuration $random_config started."
+}
+
+wg_down() {
+    if [ -f "$CURRENT_CONFIG_FILE" ]; then
+        local current_config
+        current_config=$(cat "$CURRENT_CONFIG_FILE")
+        wg_quick_down "$current_config"
+        rm -f "$CURRENT_CONFIG_FILE"
+        echo "WireGuard configuration $current_config stopped."
+    else
+        echo "No WireGuard configuration is currently running."
+    fi
+}
+
+wg_toggle() {
+    [ -f "$CURRENT_CONFIG_FILE" ] && wg_down || wg_up
+}
+
+case "$1" in
+    (up) wg_up;;
+    (down) wg_down;;
+    (*) wg_toggle;;
+esac
+
+

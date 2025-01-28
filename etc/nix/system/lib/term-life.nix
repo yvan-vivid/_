@@ -12,23 +12,21 @@
     usbtop.enable = true;
     iftop.enable = true;
     neovim.enable = true;
+    direnv.enable = true;
   };
   
   environment.systemPackages = with pkgs; [
     # Base Utilities
-    bat file lsd exa tree fd ripgrep silver-searcher findutils ncurses fzf
-
-    # Editor
-    vim
+    bat file lsd eza tree fd ripgrep silver-searcher findutils ncurses fzf
 
     # TUI Apps
-    ranger ncdu
+    ncdu powertop
 
     # System
-    lshw ctop lsof pciutils usbutils libva-utils
+    lshw ctop lsof pciutils usbutils libva-utils udisks f2fs-tools
 
     # Tools
-    zip unzip jq tmuxp entr graphviz gnupg mime-types ffmpeg
+    zip unzip jq tmuxp entr graphviz gnupg mime-types ffmpeg sheldon
 
     # Networking
     curl wget rclone nmap openssh netcat netcat-gnu websocat
@@ -39,8 +37,6 @@
     gitAndTools.git-annex-remote-rclone
 
     # Development
-    python nodejs
-    binutils gnumake direnv
-    bats niv
+    binutils gnumake direnv bats niv
   ];
 }

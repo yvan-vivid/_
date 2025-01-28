@@ -19,12 +19,10 @@
       mako wofi
 
       # A/V Settings
-      pavucontrol kanshi redshift qjackctl cadence
-      pamixer
+      pavucontrol kanshi redshift qjackctl pamixer
 
       # Utilities
-      slurp grim wl-clipboard
-      wev wob 
+      slurp grim wl-clipboard wev wob 
       
       # DE Apps
       alacritty gparted mpv imv zathura foot
