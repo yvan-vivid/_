@@ -1,3 +1,3 @@
 # vim: ft=yaml
 home:
- - bashrc
+  - p10k.zsh

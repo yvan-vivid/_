@@ -1,10 +1,10 @@
-# vim: ft=toml
-[home]
-env
-profile
+# vim: ft=yaml
+home:
+  - env
+  - profile
 
-[ignore]
-README.md
+ignore:
+  - README.md
 
-[config]
-sheldon
+config:
+  - sheldon

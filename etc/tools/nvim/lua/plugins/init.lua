@@ -22,12 +22,27 @@ return {
     "mrcjkb/rustaceanvim",
     version = "^5",
     lazy = false,
+    server = {
+      on_attach = require "configs.lsp_keys",
+    },
   },
   {
     "neovim/nvim-lspconfig",
     config = function()
       require("nvchad.configs.lspconfig").defaults()
       require "configs.lspconfig"
+    end,
+  },
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require "configs.neotest"
     end,
   },
   {

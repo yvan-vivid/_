@@ -1,11 +1,10 @@
-# vim: ft=toml
+# vim: ft=yaml
+config:
+  - gtk-3.0
+  - i3status-rs
+  - mako
+  - sway
+  - swaylock
 
-[config]
-gtk-3.0
-i3status-rs
-mako
-sway
-swaylock
-
-[home]
-gtkrc-2.0
+home:
+  - gtkrc-2.0

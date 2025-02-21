@@ -1,5 +1,5 @@
-# vim: ft=toml
-[home]
-editrc
-inputrc
-selected_editor
+# vim: ft=yaml
+home:
+  - editrc
+  - inputrc
+  - selected_editor

@@ -1,6 +1,7 @@
-[config]
-alacritty
-git
-mpv
-nvim
-glow
+# vim: ft=yaml
+config:
+  - alacritty
+  - git
+  - mpv
+  - nvim
+  - glow

@@ -1,6 +1,6 @@
-# vim: ft=toml
-[ignore]
-system
+# vim: ft=yaml
+ignore:
+- system
 
-[config]
-nixpkgs
+config:
+- nixpkgs

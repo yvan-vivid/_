@@ -1,6 +1,6 @@
-# vim: ft=toml
-[home]
-zlogin
-zlogout
-zshenv
-zshrc
+# vim: ft=yaml
+home:
+  - zlogin
+  - zlogout
+  - zshenv
+  - zshrc

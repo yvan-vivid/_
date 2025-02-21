@@ -1,4 +1,4 @@
-[home]
-npmrc
+home:
+  - npmrc
 
-# vim: ft=toml
+# vim: ft=yaml

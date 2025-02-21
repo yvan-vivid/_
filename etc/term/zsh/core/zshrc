@@ -1,82 +1,67 @@
-# shellcheck shell=/usr/bin/zsh
-# =============================================================================
-# Yvan Vivid - dotfiles - Zsh RC
-# =============================================================================
-emulate zsh
-print "Loading zshrc."
+# Yvan Vivid
+# Simple zshrc that defers to sheldon
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# =============================================================================
-# Paths for zsh - exported - and for zinit
-# =============================================================================
-
-# Exported variables
-typeset -gx ZSH_STATE ZSH_CACHE ZSH_LIB ZSH_ETC
-ZSH_STATE="$DOT_STATE/zsh"
-ZSH_CACHE="$DOT_CACHE/zsh"
-ZSH_LIB="$DOT_LIB/zsh"
-ZSH_ETC="$DOT_ETC/term/zsh"
-mkdir -p "$ZSH_STATE" "$ZSH_CACHE"
-
-# Internal `zinit` variables
-declare -A ZINIT
-ZINIT[BIN_DIR]="$DOT_TOOLS/zinit"
-ZINIT[HOME_DIR]="$ZSH_STATE/zinit"
-ZINIT[PLUGINS_DIR]="$ZSH_LIB/zinit/plugins"
-ZINIT[COMPLETIONS_DIR]="$ZSH_LIB/zinit/completions"
-ZINIT[SNIPPETS_DIR]="$ZSH_LIB/zinit/snippets"
-ZINIT[ZCOMPDUMP_PATH]="$ZSH_STATE/zcompdump"
-
-
-
-# =============================================================================
-# Foundation -- utility functions
-# =============================================================================
-
-function tryrun {
-  if [[ -f "$1" ]]
-  then source "$1"
-  else print "$1 not found." >&2
-  fi
+function source-if() {
+  [[ -r "$1" ]] && source "$1" 
 }
 
-## =============================================================================
-## loading
-## =============================================================================
+function source-it() {
+  source-if "$1" || echo "Cannot load source [$1]" >&2
+}
 
-# Zinit
-tryrun "$ZSH_ETC/modules/zinit.zsh"
+function timestamp() {
+  date +%s%N
+}
 
-# Direnv
-tryrun "$ZSH_ETC/modules/direnv.zsh"
+# Create a unique session id
+declare -r session_id="$(timestamp)"
 
-## Cursor settings
-tryrun "$ZSH_ETC/modules/cursor.zsh"
+# Definitions
+declare -r zsh_modules="$DOT_ETC/term/zsh/modules"
+declare -r prompt_name="${(%):-%n}"
+declare -r inst_path="$DOT_STD_CACHE/p10k-instant-prompt-$prompt_name.zsh"
+declare -r p10k_path="$HOME/.p10k.zsh"
 
-## Powerlevel10k
-if [[ "$TERM" == "linux" ]]
-then tryrun "$ZSH_ETC/modules/p10k-tty.zsh"
-else tryrun "$ZSH_ETC/modules/p10k-xterm.zsh"
-fi
+# Preload P10K instant prompt
+source-if "$inst_path"
 
-## Aliases
-tryrun "$ZSH_ETC/modules/aliases.zsh"
+# Load Sheldon setup
+eval "$(sheldon source)"
 
-## Paths
-tryrun "$ZSH_ETC/modules/path.zsh"
+# Load p10k
+source-it "$p10k_path"
+# eval "$(starship init zsh)"
 
-#
-## additions ...
-#
-## Options
-#jit-source "$zsh_etc/settings/shopts.zsh"
+# History
+declare -r histpath="$DOT_STD_LOCAL/state/zsh/history"
+mkdir -p "$histpath"
 
+declare -r histname="history-$session_id"
 
-# =============================================================================
-# vim: et fenc=utf-8 ft=zsh sts=2 sw=2 ts=2 tw=80
+export HISTFILE="$histpath/$histname"
+export HISTFILESIZE=1000000
+export HISTSIZE=1000000
+export SAVEHIST=10000
+
+setopt INC_APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_FIND_NO_DUPS
+
+# Additional Options
+setopt ALWAYS_TO_END
+setopt C_BASES
+setopt COMPLETE_IN_WORD
+setopt EXTENDED_GLOB
+setopt INTERACTIVE_COMMENTS
+setopt LONG_LIST_JOBS
+setopt MULTIOS
+setopt NO_BG_NICE
+setopt NO_CHECK_JOBS
+setopt NO_HUP
+setopt NOTIFY
+
+# Path
+path=(
+  "$DOT_ROOT/bin"
+  $path
+)

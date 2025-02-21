@@ -1,4 +1,4 @@
-# vim: ft=toml
-[ignore]
-functions
-settings
+# vim: ft=yaml
+ignore:
+  - functions
+  - settings
