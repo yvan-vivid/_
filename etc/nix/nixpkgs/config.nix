@@ -89,6 +89,7 @@ in {
           shfmt
           nixd
           alejandra
+          bash-language-server
 
           texlab
           stylua

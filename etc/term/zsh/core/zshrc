@@ -1,5 +1,6 @@
-# Yvan Vivid
-# Simple zshrc that defers to sheldon
+# =============================================================================
+# Yvan Vivid - Zsh RC leveraging `sheldon`
+# =============================================================================
 
 function source-if() {
   [[ -r "$1" ]] && source "$1" 
@@ -19,7 +20,7 @@ declare -r session_id="$(timestamp)"
 # Definitions
 declare -r zsh_modules="$DOT_ETC/term/zsh/modules"
 declare -r prompt_name="${(%):-%n}"
-declare -r inst_path="$DOT_STD_CACHE/p10k-instant-prompt-$prompt_name.zsh"
+declare -r inst_path="$XDG_CACHE_HOME/p10k-instant-prompt-$prompt_name.zsh"
 declare -r p10k_path="$HOME/.p10k.zsh"
 
 # Preload P10K instant prompt
@@ -33,7 +34,7 @@ source-it "$p10k_path"
 # eval "$(starship init zsh)"
 
 # History
-declare -r histpath="$DOT_STD_LOCAL/state/zsh/history"
+declare -r histpath="$XDG_STATE_HOME/zsh/history"
 mkdir -p "$histpath"
 
 declare -r histname="history-$session_id"

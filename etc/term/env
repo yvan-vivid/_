@@ -1,8 +1,22 @@
 # shellcheck shell=sh
-# shellcheck disable=SC2155
 
 # =============================================================================
 # Yvan Vivid - dotfiles - General Environment
+# =============================================================================
+
+# XDG Paths
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_CACHE_HOME="$HOME/.cache"
+
+# Other important variables
+export USER SHELL
+USER="$(whoami)"
+SHELL="$(command -v zsh)"
+
+# =============================================================================
+# Dotzo Env - (Deprecate?)
 # =============================================================================
 
 # DOT_ROOT sould be derived from a generated file
@@ -14,15 +28,6 @@ test -s "$ENV_DOT" && . "$ENV_DOT"
 # Dot paths
 export DOT_ETC="$DOT_ROOT/etc"
 export DOT_BIN="$DOT_ROOT/bin"
-
-# Other important variables
-export USER="$(whoami)"
-export SHELL="$(command -v zsh)"
-
-# Standards
-export DOT_STD_CONFIG="$HOME/.config"
-export DOT_STD_CACHE="$HOME/.cache"
-export DOT_STD_LOCAL="$HOME/.local"
 
 # =============================================================================
 # Local
@@ -38,7 +43,7 @@ export LANGUAGE='en_US.UTF-8'
 # =============================================================================
 
 # Set firefox as the default browser
-export BROWSER="firefox-beta"
+export BROWSER="firefox"
 
 # Set neovim as the default editor
 export EDITOR="nvim"

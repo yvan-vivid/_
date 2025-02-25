@@ -5,9 +5,11 @@ echo "Loading bash settings."
 env="$HOME/.env"
 
 # Try loading common variables
-if [ -f "$env" ]
-then source "$env"
-else echo "WARNING: no [$env]."
+if [ -f "$env" ]; then
+  # shellcheck disable=SC1090
+  source "$env"
+else
+  echo "WARNING: no [$env]."
 fi
 
 # Export for sh and bash to pick when not login

@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ -z "$DOT_STD_LOCAL" ]]; then
-  echo "DOT_STD_LOCAL not set!" >&2
-  exit 1
-fi
-
-# Should be able to remove this evench
-if [[ -z "$XDG_DATA_HOME" ]]; then
-  XDG_DATA_HOME="$DOT_STD_LOCAL/share"
-fi
+set -e
 
 declare -r tpm_source="https://github.com/tmux-plugins/tpm"
 declare -r tpm_plugins_path="$XDG_DATA_HOME/tmux/plugins"
@@ -22,14 +14,12 @@ install_tpm() {
   "$tpm_path/bin/install_plugins"
 }
 
-bootstrap() {
-  pull_tpm && install_tpm
-}
-
 if [[ ! -e "$tpm_path" ]]; then
   echo "TPM not found. Bootstrapping TPM."
   mkdir -p "$tpm_plugins_path"
-  bootstrap
+  pull_tpm
 else
-  echo "TPM found. Nothing to do."
+  echo "TPM found. Running install."
 fi
+
+install_tpm
