@@ -1,13 +1,7 @@
-# Yvan Vivid
-# Sheldon config
-# https://github.com/rossmacarthur/sheldon
-#
-# Notes:
-#   Update plugins:
-#     > sheldon lock [--update] [--reinstall]
-#
-#   Used in profiles:
-#     profiles = ["a", "b"]
+################################################################################
+# Yvan Vivid - Sheldon Config
+################################################################################
+# Ref: https://github.com/rossmacarthur/sheldon
 
 shell = "zsh"
 
@@ -31,6 +25,7 @@ github = "chriskempson/base16-shell"
 
 [plugins.zvm]
 github = "jeffreytse/zsh-vi-mode"
+use = ["*.plugin.zsh"]
 
 [plugins.zsh-docker-completions]
 github = "greymd/docker-zsh-completion"

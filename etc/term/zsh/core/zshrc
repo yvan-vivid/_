@@ -22,8 +22,9 @@ declare -r zsh_modules="$DOT_ETC/term/zsh/modules"
 declare -r prompt_name="${(%):-%n}"
 declare -r graphical_theme="$XDG_CONFIG_HOME/oh-my-posh/graphical-theme.yaml"
 
-# Preload P10K instant prompt
-source-if "$inst_path"
+# Plugin Settings
+## Should investigate this -- this makes sure the prompt works on init 
+ZVM_INIT_MODE=sourcing
 
 # Load Sheldon setup
 eval "$(sheldon source)"
