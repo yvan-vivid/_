@@ -35,6 +35,9 @@ local function key_bindings(bufnr)
 
   -- Module
   map("n", "<leader>=", do_format, { desc = "Format Document" })
+
+  -- Diagnostics
+  map("n", "<leader>df", vim.diagnostic.open_float, { desc = "Format Document" })
 end
 
 return function(client, bufnr)

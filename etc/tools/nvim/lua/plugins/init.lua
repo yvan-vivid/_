@@ -40,6 +40,7 @@ return {
       "nvim-lua/plenary.nvim",
       "antoinemadec/FixCursorHold.nvim",
       "nvim-treesitter/nvim-treesitter",
+      "nvim-neotest/neotest-python",
     },
     config = function()
       require "configs.neotest"

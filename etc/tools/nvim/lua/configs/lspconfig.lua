@@ -1,4 +1,4 @@
-local servers = { "html", "cssls", "ts_ls", "basedpyright", "bashls" }
+local servers = { "html", "cssls", "ts_ls", "basedpyright", "bashls", "yamlls" }
 
 local on_init = require("nvchad.configs.lspconfig").on_init
 local capabilities = require("nvchad.configs.lspconfig").capabilities

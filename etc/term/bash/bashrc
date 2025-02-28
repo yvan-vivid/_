@@ -15,3 +15,6 @@ fi
 # Export for sh and bash to pick when not login
 export ENV="$env"
 export BASH_ENV="$env"
+
+# Prompt
+eval "$(oh-my-posh init bash)"
