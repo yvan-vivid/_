@@ -60,6 +60,9 @@ setopt NO_CHECK_JOBS
 setopt NO_HUP
 setopt NOTIFY
 
+# Load zoxide
+eval "$(zoxide init zsh)"
+
 # Path
 path=(
   "$DOT_ROOT/bin"

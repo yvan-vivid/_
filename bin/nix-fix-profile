@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid - Fix for "bad meta.outputsToInstall" error
+################################################################################
+set -euo pipefail
+
+declare usage dry_run profile profile_segment
+profile=""
+dry_run=false
+usage='usage: nix-rebuild-profile [-n|--dry-run] [PROFILE]'
+
+cli() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    -n | --dry-run)
+      dry_run=true
+      shift
+      ;;
+    --help)
+      echo "$usage"
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    --*)
+      echo "Unrecongnized option '$1'" >&2
+      echo "$usage"
+      exit 64
+      ;;
+    *)
+      if [[ -n "$profile" ]]; then
+        echo "Too many arguments: only one" >&2
+        echo "$usage" >&2
+        exit 64
+      fi
+      profile="$1"
+      shift
+      break
+      ;;
+    esac
+  done
+}
+
+cli "$@"
+
+mapfile -t out_paths < <(nix-env --query --out-path --no-name |
+  sed -e '/^[^/]/s/;/\n/g' |
+  sed -e 's/^[^/=][^=]*=//')
+
+[[ "${#out_paths[@]}" -eq 0 ]] && exit 0
+
+profile_segment=$([[ -z "$profile" ]] && echo "--profile $profile")
+
+if [[ "$dry_run" == "true" ]]; then
+  echo "DRY-RUN: would have done the following"
+  echo nix-env --install --remove-all "$profile_segment" "${out_paths[@]}"
+else
+  nix-env --install --remove-all "$profile_segment" "${out_paths[@]}"
+fi

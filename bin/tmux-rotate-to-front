@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+################################################################################
+# Yvan Vivid - Rotate last tmux window to front
+################################################################################
+# This assumes
+
+[[ -z "$TMUX" ]] && {echo "This script must be run inside a tmux session." >&2 && exit 1}
+
+declare total_windows base_index renumber_status
+
+renumber_status=$(tmux show-options -g renumber-windows | awk "{print $2}")
+[[ "$renumber_status" == "on" ]] || {echo "Tmux must have renumber-windows set to on." >&2 && exit 1}
+
+total_windows="$(tmux list-windows | wc -l)"
+[[ "$total_windows" -lt 2 ]] && exit 0
+
+base_index=$(tmux show-options -g base-index | awk '{print $2}')
+
+for ((i = total_windows + base_index - 1; i > base_index; i--)); do
+  tmux swap-window -s "$i" -t "$((i - 1))"
+done
