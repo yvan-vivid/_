@@ -9,3 +9,4 @@ ignore:
 config:
   - sheldon
   - tmux
+  - oh-my-posh
