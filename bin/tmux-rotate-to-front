@@ -2,14 +2,19 @@
 ################################################################################
 # Yvan Vivid - Rotate last tmux window to front
 ################################################################################
-# This assumes
+# This assumes that `renumber-windows` is set
 
-[[ -z "$TMUX" ]] && {echo "This script must be run inside a tmux session." >&2 && exit 1}
+fail() {
+  echo "$1" >&2
+  exit 1
+}
+
+[[ -z "$TMUX" ]] && fail "This script must be run inside a tmux session."
 
 declare total_windows base_index renumber_status
 
 renumber_status=$(tmux show-options -g renumber-windows | awk "{print $2}")
-[[ "$renumber_status" == "on" ]] || {echo "Tmux must have renumber-windows set to on." >&2 && exit 1}
+[[ "$renumber_status" == "on" ]] || fail "Tmux must have renumber-windows set to on."
 
 total_windows="$(tmux list-windows | wc -l)"
 [[ "$total_windows" -lt 2 ]] && exit 0

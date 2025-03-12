@@ -1,31 +1,29 @@
-local servers = { "html", "cssls", "ts_ls", "basedpyright", "bashls", "yamlls" }
+local servers = { "html", "cssls", "ts_ls", "basedpyright", "bashls", "yamlls", "marksman" }
 
-local on_init = require("nvchad.configs.lspconfig").on_init
-local capabilities = require("nvchad.configs.lspconfig").capabilities
-local lsp_keys = require "configs.lsp_keys"
+local nvchad = require "nvchad.configs.lspconfig"
 local lspconfig = require "lspconfig"
 
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = lsp_keys,
-    on_init = on_init,
-    capabilities = capabilities,
-  }
+local defaults = {
+  on_attach = require "configs.lsp_keys",
+  on_init = nvchad.on_init,
+  capabilities = nvchad.capabilities,
+}
+
+local function setup(server, settings)
+  lspconfig[server].setup(vim.tbl_extend("force", defaults, settings))
 end
 
-lspconfig.ruff.setup {
-  on_attach = lsp_keys,
-  on_init = on_init,
-  capabilities = capabilities,
+for _, lsp in ipairs(servers) do
+  setup(lsp, {})
+end
+
+setup("ruff", {
   init_options = {
     settings = {},
   },
-}
+})
 
-lspconfig.nixd.setup {
-  on_attach = lsp_keys,
-  on_init = on_init,
-  capabilities = capabilities,
+setup("nixd", {
   settings = {
     nixd = {
       nixpkgs = {
@@ -38,4 +36,4 @@ lspconfig.nixd.setup {
       },
     },
   },
-}
+})

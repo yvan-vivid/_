@@ -14,7 +14,7 @@ M.base46 = {
     Comment = { fg = "#8090B0", italic = true },
     ["@comment"] = { fg = "#8090B0", italic = true },
     Normal = { fg = "#00FF30" },
-    Folded = { fg = "#A696A6" },
+    Folded = { fg = "#A696A6", bg = "transparent" },
     NvimTreeOpenedFolderName = { fg = "green", bold = true },
     NvimTreeGitFileIgnoredHL = { fg = "#708060" },
   },

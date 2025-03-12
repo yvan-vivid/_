@@ -10,12 +10,7 @@
       ipython
       cython
       jupyter
-      black
-      isort
-      pyls-isort
-      pylsp-mypy
-      # python-lsp-black
-      python-lsp-server
+      pylatexenc
     ];
 
   node-packages = pkgs:
@@ -33,7 +28,7 @@ in {
       yvan-python-env = buildEnv {
         name = "yvan-python-env";
         paths = [
-          ((python311.withPackages python-packages).override
+          ((python312.withPackages python-packages).override
             (args: {ignoreCollisions = true;}))
           poetry
         ];
@@ -75,7 +70,6 @@ in {
           # General Dev
           niv
           shellcheck
-          html-tidy
           pandoc
           hexyl
           socat
@@ -86,18 +80,29 @@ in {
           rustup
           qmk
           go
-          shfmt
-          nixd
-          alejandra
+
+          # LSP / Neovim support
           bash-language-server
+          typescript-language-server
+          svelte-language-server
+          yaml-language-server
+          lua-language-server
+          marksman
+          nixd
+          prettierd
+
+          # Formatters
+          shfmt
+          html-tidy
+          alejandra
+          stylua
+          csslint
 
           texlab
-          stylua
 
           # Writing Tools
           pdftk
           languagetool
-          texlive.combined.scheme-medium
         ];
       };
 
@@ -112,17 +117,18 @@ in {
           bottom
           fx
           glow
-          yazi
           ueberzugpp
+          zoxide
+          systemctl-tui
+          aerc
 
           # Shell
-          starship
+          oh-my-posh
           fish
+          sesh
 
           # File Browsers
-          broot
-          joshuto
-          nnn
+          yazi
           eza
 
           # File Management
@@ -139,6 +145,7 @@ in {
           sioyek
           yt-dlp
           sshfs-fuse
+          spacedrive
 
           # browsers
           firefox-bin
@@ -158,6 +165,11 @@ in {
 
           # Productivity
           obsidian
+
+          # Games
+          gzdoom
+          higan
+          zsnes
         ];
       };
 
@@ -172,11 +184,6 @@ in {
           yvan-dev-tools
           yvan-term-env
           yvan-apps
-
-          # System
-          lxappearance
-          breeze-icons
-          breeze-gtk
         ];
       };
     };
