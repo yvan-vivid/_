@@ -23,6 +23,7 @@
     ];
 in {
   allowUnfree = true;
+  android_sdk.accept_license = true;
   packageOverrides = pkgs:
     with pkgs; rec {
       yvan-python-env = buildEnv {
@@ -90,6 +91,10 @@ in {
           marksman
           nixd
           prettierd
+          ruff-lsp
+          basedpyright
+          harper
+          # basedmypy
 
           # Formatters
           shfmt
@@ -97,6 +102,7 @@ in {
           alejandra
           stylua
           csslint
+          ruff
 
           texlab
 
@@ -121,6 +127,7 @@ in {
           zoxide
           systemctl-tui
           aerc
+          dysk
 
           # Shell
           oh-my-posh
@@ -170,12 +177,15 @@ in {
           gzdoom
           higan
           zsnes
+
+          # AI
+          ollama
         ];
       };
 
       yvan-local = buildEnv {
         name = "yvan-local";
-        paths = with pkgs; [
+        paths = [
           # Default dev environments
           yvan-python-env
           yvan-node-env
@@ -184,6 +194,9 @@ in {
           yvan-dev-tools
           yvan-term-env
           yvan-apps
+
+          # Android development
+          android-studio
         ];
       };
     };

@@ -33,5 +33,6 @@ return {
       "nvim-telescope/telescope.nvim",
     },
     opts = opts,
+    enabled = false,
   },
 }

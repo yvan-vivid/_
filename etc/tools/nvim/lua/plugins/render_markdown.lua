@@ -37,6 +37,7 @@ local options = {
     backgrounds = heading_bg_hi,
     foregrounds = heading_fg_hi,
   },
+  latex = { enabled = false },
 }
 
 return {

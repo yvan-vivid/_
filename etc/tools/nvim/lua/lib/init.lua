@@ -26,8 +26,11 @@ function vivid_date.slug(log_date)
 end
 
 function settings.writing_settings()
-  vim.opt.linebreak = true
-  vim.opt.spell = true
+  o.linebreak = true
+  o.spell = true
+  o.shiftwidth = 2
+  o.tabstop = 2
+  o.expandtab = true
 end
 
 function insertion.vivid_log_date()

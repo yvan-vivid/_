@@ -11,24 +11,21 @@ local function opts()
   local cmp = require "cmp"
   local luasnip = require "luasnip"
   local mapping = cmp.mapping
-
-  local function confirm_replace(select)
-    cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = select }
-  end
+  local confirm = mapping.confirm
+  local window = cmp.config.window
 
   local function confirm_default(select)
-    cmp.mapping.confirm { select = select }
+    return confirm { select = select }
   end
 
-  local function confirm_modal(fallback)
-    if cmp.visible() and cmp.get_active_entry() then
-      print "Confirm intended"
-      confirm_replace(false)
-    else
-      print "Confirm fallback"
-      fallback()
-    end
-  end
+  -- Would like to fix this at some point
+  -- local function confirm_insert(fallback)
+  --   if cmp.visible() and cmp.get_active_entry() then
+  --     mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true }
+  --   else
+  --     fallback()
+  --   end
+  -- end
 
   local function selection_forward(fallback)
     if cmp.visible() then
@@ -54,6 +51,17 @@ local function opts()
     preselect = cmp.PreselectMode.None,
     completion = { completeopt = "menu,menuone,noselect" },
 
+    window = {
+      completion = window.bordered {
+        border = "single",
+        winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
+      },
+      documentation = window.bordered {
+        border = "single",
+        winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
+      },
+    },
+
     snippet = {
       expand = function(args)
         luasnip.lsp_expand(args.body)
@@ -68,9 +76,9 @@ local function opts()
       ["<C-Space>"] = mapping.complete(),
       ["<C-e>"] = mapping.close(),
       ["<CR>"] = mapping {
-        i = confirm_modal,
+        i = confirm_default(false),
         s = confirm_default(true),
-        c = confirm_replace(true),
+        c = confirm_default(true),
       },
       ["<Tab>"] = mapping(selection_forward, { "i", "s" }),
       ["<S-Tab>"] = mapping(selection_backward, { "i", "s" }),
