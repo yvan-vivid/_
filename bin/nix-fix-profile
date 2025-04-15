@@ -6,6 +6,7 @@ set -euo pipefail
 
 declare usage dry_run profile profile_segment
 profile=""
+profile_segment=""
 dry_run=false
 usage='usage: nix-rebuild-profile [-n|--dry-run] [PROFILE]'
 
@@ -51,7 +52,9 @@ mapfile -t out_paths < <(nix-env --query --out-path --no-name |
 
 [[ "${#out_paths[@]}" -eq 0 ]] && exit 0
 
-profile_segment=$([[ -z "$profile" ]] && echo "--profile $profile")
+if [[ -n "$profile" ]]; then
+  profile_segment="--profile $profile"
+fi
 
 if [[ "$dry_run" == "true" ]]; then
   echo "DRY-RUN: would have done the following"
