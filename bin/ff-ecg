@@ -12,7 +12,6 @@ format_dir_date() {
 }
 
 parse_timestamp() {
-  echo "Parsing timestamp from $file"
   grep -oP '\d{8}_\d{6}' <<<"$1"
 }
 
@@ -26,11 +25,12 @@ declare -r data_dir="/data/media/Bio/measured/ff"
 
 set -euo pipefail
 
-for file in Activity_on_*.zip; do
+for file in *_on_*.zip; do
   [[ -f "$file" ]] || fail "'$file' is not a file"
 
   timestamp=$(parse_timestamp "$file")
   [[ -z "$timestamp" ]] && fail "'$file' does not have a valid timestamp"
 
-  unzip_into "$file" "$data_dir/$(format_dir_date "$timestamp")"
+  dir_date=$(format_dir_date "$timestamp")
+  unzip_into "$file" "$data_dir/$dir_date"
 done

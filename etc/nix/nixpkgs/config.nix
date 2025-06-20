@@ -19,8 +19,11 @@
       eslint
       typescript
       prettier
-      prettier-plugin-toml
     ];
+
+  tex-setup = pkgs.texlive.combine {
+    inherit (pkgs.texlive) scheme-basic titlesec xetex collection-latexextra;
+  };
 in {
   allowUnfree = true;
   android_sdk.accept_license = true;
@@ -81,6 +84,7 @@ in {
           rustup
           qmk
           go
+          uv
 
           # LSP / Neovim support
           bash-language-server
@@ -109,6 +113,7 @@ in {
           # Writing Tools
           pdftk
           languagetool
+          tex-setup
         ];
       };
 

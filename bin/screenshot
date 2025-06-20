@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [[ "$1" == "region" ]]; then
+  shift
+  echo "Screenshot with selection to: $1"
+  grim -g "$(slurp)" "$@"
+else
+  echo "Screenshot to: $1"
+  grim "$@"
+fi

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+# Directory containing images
+IMAGE_DIR="$1"
+
+# Check if directory is provided
+if [ -z "$IMAGE_DIR" ]; then
+  echo "Usage: $0 <directory>"
+  exit 1
+fi
+
+# Create output directory
+OUTPUT_DIR="${IMAGE_DIR}/resized"
+mkdir -p "$OUTPUT_DIR"
+
+# Process each image in the directory
+for IMAGE in "$IMAGE_DIR"/*.{jpg,jpeg,png,gif}; do
+  if [ -f "$IMAGE" ]; then
+    # Get the file extension and base name
+    EXT="${IMAGE##*.}"
+    BASENAME="${IMAGE%.*}"
+
+    # Define the output file name
+    OUTPUT_FILE="${OUTPUT_DIR}/${BASENAME##*/}-1080.${EXT}"
+
+    # Resize the image
+    magick convert "$IMAGE" -resize x1080 "$OUTPUT_FILE"
+    
+    echo "Resized $IMAGE -> $OUTPUT_FILE"
+  fi
+done
+
+echo "All images have been resized."
+

@@ -13,8 +13,8 @@ fail() {
 
 declare total_windows base_index renumber_status
 
-renumber_status=$(tmux show-options -g renumber-windows | awk "{print $2}")
-[[ "$renumber_status" == "on" ]] || fail "Tmux must have renumber-windows set to on."
+renumber_status=$(tmux show-options -g renumber-windows)
+[[ "$renumber_status" == "renumber-windows on" ]] || fail "Tmux must have renumber-windows set to on."
 
 total_windows="$(tmux list-windows | wc -l)"
 [[ "$total_windows" -lt 2 ]] && exit 0

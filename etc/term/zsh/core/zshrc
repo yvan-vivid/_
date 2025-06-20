@@ -60,6 +60,14 @@ setopt NO_CHECK_JOBS
 setopt NO_HUP
 setopt NOTIFY
 
+# Aliases
+alias ls="eza --icons=always"
+alias tree="eza --tree --icons=always"
+alias ll="eza --long --icons=always"
+alias cat="bat"
+alias du="dua -x"
+alias xdu="dua interactive"
+
 # Load zoxide
 eval "$(zoxide init zsh)"
 

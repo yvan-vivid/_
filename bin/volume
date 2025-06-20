@@ -4,19 +4,20 @@
 ################################################################################
 
 declare -r step=5
-declare -r sock_root="$(dirname "$SWAYSOCK")"
+declare -r sock_root
+#sock_root="$(dirname "$SWAYSOCK")"
 
 case $1 in
-  up)   pamixer -i "${step}" ;;
-  down) pamixer -d "${step}" ;;
-  max)  pamixer --set-volume "100" ;;
-  half) pamixer --set-volume "50" ;;
-  min)  pamixer --set-volume "0" ;;
-  mute) pamixer -t ;;
-  off)  pamixer -m ;;
-  on)   pamixer -u ;;
+up) pamixer -i "${step}" ;;
+down) pamixer -d "${step}" ;;
+max) pamixer --set-volume "100" ;;
+half) pamixer --set-volume "50" ;;
+min) pamixer --set-volume "0" ;;
+mute) pamixer -t ;;
+off) pamixer -m ;;
+on) pamixer -u ;;
 esac
 
-for ws in $sock_root/wob-sway.*.sock; do
-  pamixer --get-volume > $ws
-done
+# for ws in "$sock_root"/wob-sway.*.sock; do
+#   pamixer --get-volume >"$ws"
+# done

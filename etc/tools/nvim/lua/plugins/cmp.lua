@@ -91,4 +91,5 @@ end
 return {
   "hrsh7th/nvim-cmp",
   opts = opts,
+  enabled = true,
 }

@@ -1,28 +1,17 @@
 local o = vim.opt
+local vivid_date = require "lib/vivid_time"
 
 local M = {
-  vivid_date = {},
   insertion = {},
   settings = {},
 }
 
-local vivid_date = M.vivid_date
 local insertion = M.insertion
 local settings = M.settings
 
 function settings.set_treesitter_folds()
   o.foldmethod = "expr"
   o.foldexpr = "nvim_treesitter#foldexpr()"
-end
-
-function vivid_date.today()
-  return vim.fn.system("~/_/bin/vivid-time today"):gsub("\n$", "")
-end
-
-function vivid_date.slug(log_date)
-  local format = "∆ (%d+): (%d) ∘ (%d) ∘ (%d) ∘ (%d)"
-  local year, period, spoke, arc, phase = string.match(log_date, format)
-  return year .. "_" .. period .. "-" .. spoke .. "-" .. arc .. "-" .. phase
 end
 
 function settings.writing_settings()
@@ -34,12 +23,15 @@ function settings.writing_settings()
 end
 
 function insertion.vivid_log_date()
-  vim.api.nvim_put({ "# " .. vivid_date.today(), "" }, "l", true, true)
+  vim.api.nvim_put({ "# " .. vivid_date.today_as_standard(), "" }, "l", true, true)
 end
 
 function insertion.vivid_date_slug()
-  local slug = vivid_date.slug(vivid_date.today())
-  vim.api.nvim_put({ "  - " .. slug, "" }, "l", true, true)
+  local vd = vivid_date.today()
+  if vd ~= nil then
+    local slug = vivid_date.to_slug(vd)
+    vim.api.nvim_put({ "  - " .. slug, "" }, "l", true, true)
+  end
 end
 
 return M
