@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-ncdu -x --color dark --exclude-kernfs $1

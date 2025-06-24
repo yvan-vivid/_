@@ -201,7 +201,7 @@ in {
           yvan-apps
 
           # Android development
-          android-studio
+          # android-studio
         ];
       };
     };
