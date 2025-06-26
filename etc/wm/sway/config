@@ -16,8 +16,5 @@ include modules/bar.conf
 # Startup # these do not rerun on reload (exec only runs the first time)
 exec mako
 
-# Global modules
-include /usr/local/etc/sway/config.d/*
-
 ################################################################################
 ## vim: filetype=config foldmethod=indent

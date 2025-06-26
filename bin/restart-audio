@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+declare -a services
+services=(
+  wireplumber
+  pipewire
+  pipewire-pulse
+)
+
+systemctl --user restart "${services[@]}"
