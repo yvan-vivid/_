@@ -54,7 +54,6 @@ interval = 10
 block = "sound"
 driver = "auto"
 step_width = 5
-#on_click = "volume mute"
 
 [[block]]
 block = "backlight"
