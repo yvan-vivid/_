@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+export PYTHONPATH="$DOT_ROOT/lib/bin-support"
+python -m py.apps.org_files_by "$@"
