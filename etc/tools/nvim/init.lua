@@ -1,16 +1,14 @@
-vim.g.base46_cache = vim.fn.stdpath "data" .. "/base46/"
 vim.g.mapleader = " "
 
-require "bootstrap"
-
--- load lazy
-require("lazy").setup(require "configs.lazy")
+-- startup
+(require "configs.lazy")()
 
 -- load theme
-dofile(vim.g.base46_cache .. "defaults")
-dofile(vim.g.base46_cache .. "statusline")
+local base46 = (require "lib.base46")()
+base46.load_cached "defaults"
+base46.load_cached "statusline"
 
-require "nvchad.autocmds"
+require "options"
 require "usercmds"
 require "autocmds"
 require "mappings"

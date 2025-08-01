@@ -14,13 +14,18 @@ function timestamp() {
   date +%s%N
 }
 
-# Create a unique session id
-declare -r session_id="$(timestamp)"
+function source-rc() {
+  source-it "$HOME/.zshrc"
+}
 
 # Definitions
-declare -r zsh_modules="$DOT_ETC/term/zsh/modules"
-declare -r prompt_name="${(%):-%n}"
-declare -r graphical_theme="$XDG_CONFIG_HOME/oh-my-posh/graphical-theme.yaml"
+declare session_id zsh_modules prompt_name graphical_theme histpath
+: ${session_id:="$(timestamp)"}
+zsh_modules="$DOT_ETC/term/zsh/modules"
+prompt_name="${(%):-%n}"
+graphical_theme="$XDG_CONFIG_HOME/oh-my-posh/graphical-theme.yaml"
+histpath="$XDG_STATE_HOME/zsh/history"
+histname="history-$session_id"
 
 # Plugin Settings
 ## Should investigate this -- this makes sure the prompt works on init 
@@ -33,11 +38,7 @@ eval "$(sheldon source)"
 eval "$(oh-my-posh --config="$graphical_theme" init zsh)"
 
 # History
-declare -r histpath="$XDG_STATE_HOME/zsh/history"
 mkdir -p "$histpath"
-
-declare -r histname="history-$session_id"
-
 export HISTFILE="$histpath/$histname"
 export HISTFILESIZE=1000000
 export HISTSIZE=1000000
@@ -67,9 +68,13 @@ alias ll="eza --long --icons=always"
 alias cat="bat"
 alias du="dua -x"
 alias xdu="dua interactive"
+alias df="duf -only local"
 
 # Load zoxide
 eval "$(zoxide init zsh)"
+
+# Load keychain
+eval "$(keychain --eval --quiet --noask)"
 
 # Path
 path=(

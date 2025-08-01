@@ -88,8 +88,48 @@ local function opts()
   }
 end
 
+local luasnip = {
+  "L3MON4D3/LuaSnip",
+  dependencies = "rafamadriz/friendly-snippets",
+  opts = { history = true, updateevents = "TextChanged,TextChangedI" },
+  config = function(_, options)
+    require("luasnip").config.set_config(options)
+    require("luasnip.loaders.from_vscode").lazy_load { exclude = vim.g.vscode_snippets_exclude or {} }
+    require("luasnip.loaders.from_vscode").lazy_load { paths = vim.g.vscode_snippets_path or "" }
+    require("luasnip.loaders.from_snipmate").load()
+    require("luasnip.loaders.from_snipmate").lazy_load { paths = vim.g.snipmate_snippets_path or "" }
+    require("luasnip.loaders.from_lua").load()
+    require("luasnip.loaders.from_lua").lazy_load { paths = vim.g.lua_snippets_path or "" }
+  end,
+}
+
+local autopairs = {
+  "windwp/nvim-autopairs",
+  opts = {
+    fast_wrap = {},
+    disable_filetype = { "TelescopePrompt", "vim" },
+  },
+  config = function(_, options)
+    require("nvim-autopairs").setup(options)
+    local cmp_autopairs = require "nvim-autopairs.completion.cmp"
+    require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
+  end,
+}
+
 return {
   "hrsh7th/nvim-cmp",
+  event = "InsertEnter",
+  dependencies = {
+    luasnip,
+    autopairs,
+    {
+      "saadparwaiz1/cmp_luasnip",
+      "hrsh7th/cmp-nvim-lua",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "https://codeberg.org/FelipeLema/cmp-async-path.git",
+    },
+  },
   opts = opts,
-  enabled = true,
+  enabled = false,
 }

@@ -26,14 +26,12 @@ local function init()
     conform.format { lsp_fallback = true }
   end
 
-  setkey("n", "<leader>=", format, { desc = "general format file" })
+  setkey({ "n", "x" }, "<leader>=", format, { desc = "general format file" })
 end
 
 return {
-  {
-    "stevearc/conform.nvim",
-    event = "BufWritePre",
-    opts = options,
-    init = init,
-  },
+  "stevearc/conform.nvim",
+  event = "BufWritePre",
+  opts = options,
+  init = init,
 }
