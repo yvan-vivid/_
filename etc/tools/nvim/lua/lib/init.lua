@@ -1,4 +1,3 @@
-local o = vim.opt
 local vivid_date = require "lib/vivid_time"
 
 local M = {
@@ -9,17 +8,12 @@ local M = {
 local insertion = M.insertion
 local settings = M.settings
 
-function settings.set_treesitter_folds()
-  o.foldmethod = "expr"
-  o.foldexpr = "nvim_treesitter#foldexpr()"
-end
-
 function settings.writing_settings()
-  o.linebreak = true
-  o.spell = true
-  o.shiftwidth = 2
-  o.tabstop = 2
-  o.expandtab = true
+  vim.wo.linebreak = true
+  vim.wo.spell = true
+  vim.bo.shiftwidth = 2
+  vim.bo.tabstop = 2
+  vim.bo.expandtab = true
 end
 
 function insertion.vivid_log_date()

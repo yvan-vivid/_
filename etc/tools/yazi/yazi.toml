@@ -1,0 +1,42 @@
+# Yvan Vivid - yazi config
+
+[mgr]
+ratio = [1, 4, 4]
+sort_by = "natural"
+
+[plugin]
+prepend_previewers = [
+  # Markdown
+  { name = "*.md", run = "glow" },
+  { name = "*.csv", run = "duckdb" },
+  { name = "*.tsv", run = "duckdb" },
+  { name = "*.json", run = "duckdb" },
+  { name = "*.parquet", run = "duckdb" },
+  { name = "*.txt", run = "duckdb" },
+  { name = "*.xlsx", run = "duckdb" },
+  { name = "*.db", run = "duckdb" },
+  { name = "*.duckdb", run = "duckdb" },
+  { mime = "{audio,video,image}/*", run = "mediainfo" },
+  { mime = "application/subrip", run = "mediainfo" },
+  { mime = "application/postscript", run = "mediainfo" },
+]
+
+prepend_preloaders = [
+  { name = "*.csv", run = "duckdb", multi = false },
+  { name = "*.tsv", run = "duckdb", multi = false },
+  { name = "*.json", run = "duckdb", multi = false },
+  { name = "*.parquet", run = "duckdb", multi = false },
+  { name = "*.txt", run = "duckdb", multi = false },
+  { name = "*.xlsx", run = "duckdb", multi = false },
+  { mime = "{audio,video,image}/*", run = "mediainfo" },
+  { mime = "application/subrip", run = "mediainfo" },
+  { mime = "application/postscript", run = "mediainfo" },
+]
+
+prepend_fetchers = [
+  { name = "*", id = "git", "run" = "git" },
+  { name = "*/", id = "git", "run" = "git" },
+]
+
+[tasks]
+image_alloc = 1073741824 # = 1024*1024*1024 = 1024MB

@@ -18,6 +18,14 @@ function source-rc() {
   source-it "$HOME/.zshrc"
 }
 
+function yazi-moving() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin pushd -- "$cwd" > /dev/null
+	rm -f -- "$tmp"
+}
+
 # Definitions
 declare session_id zsh_modules prompt_name graphical_theme histpath
 : ${session_id:="$(timestamp)"}
@@ -68,7 +76,7 @@ alias ll="eza --long --icons=always"
 alias cat="bat"
 alias du="dua -x"
 alias xdu="dua interactive"
-alias df="duf -only local"
+alias df="duf -hide special -hide-mp /nix/store,/boot/efi"
 
 # Load zoxide
 eval "$(zoxide init zsh)"

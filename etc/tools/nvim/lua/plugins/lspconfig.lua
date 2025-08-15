@@ -47,15 +47,14 @@ local config = function()
     lspconfig[server].setup(vim.tbl_extend("force", server_defaults, settings))
   end
 
-  local servers = { "html", "cssls", "ts_ls", "basedpyright", "bashls", "yamlls", "marksman" }
+  local servers =
+    { "html", "cssls", "ts_ls", "basedpyright", "bashls", "yamlls", "marksman", "jsonls" }
   for _, lsp in ipairs(servers) do
     setup(lsp, {})
   end
 
   setup("ruff", {
-    init_options = {
-      settings = {},
-    },
+    settings = {},
   })
 
   setup("nixd", {

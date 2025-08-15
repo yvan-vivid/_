@@ -1,7 +1,9 @@
 # vim: ft=yaml
 config:
   - alacritty
+  - bat
   - git
   - mpv
   - nvim
   - glow
+  - yazi

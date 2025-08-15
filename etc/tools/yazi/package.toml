@@ -1,0 +1,37 @@
+[[plugin.deps]]
+use = "yazi-rs/plugins:types"
+rev = "de53d90"
+hash = "1e047e1b13b5e3fc6ab1f5d0d04a14e2"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:git"
+rev = "de53d90"
+hash = "63b6c222bf2103b3023389dde5e2ecfe"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "de53d90"
+hash = "f10a14e823382d90fab5b3ee54cb38fe"
+
+[[plugin.deps]]
+use = "boydaihungst/mediainfo"
+rev = "f89605c"
+hash = "caab106cfebeb0ba45034bd0e22c0c83"
+
+[[plugin.deps]]
+use = "wylie102/duckdb"
+rev = "3f8c863"
+hash = "87b9233a74325e95011670ed20bbd0d4"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:chmod"
+rev = "de53d90"
+hash = "1adc12c2b2b025411ab61eb8f0879574"
+
+[[plugin.deps]]
+use = "Lil-Dank/lazygit"
+rev = "7a08a09"
+hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
+
+[flavor]
+deps = []

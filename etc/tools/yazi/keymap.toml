@@ -1,0 +1,47 @@
+# Yvan Vivid -- yazi key map
+
+[[mgr.prepend_keymap]]
+on = ["d"]
+run = 'yank --cut'
+
+[[mgr.prepend_keymap]]
+on = ["x"]
+run = 'remove'
+
+[[mgr.prepend_keymap]]
+on = ["X"]
+run = 'remove --permanently'
+
+[[mgr.prepend_keymap]]
+on = "H"
+run = "plugin duckdb -1"
+desc = "Scroll one column to the left"
+
+[[mgr.prepend_keymap]]
+on = "L"
+run = "plugin duckdb +1"
+desc = "Scroll one column to the right"
+
+[[mgr.prepend_keymap]]
+on = ["g", "o"]
+run = "plugin duckdb -open"
+desc = "open with duckdb"
+
+[[mgr.prepend_keymap]]
+on = ["g", "u"]
+run = "plugin duckdb -ui"
+desc = "open with duckdb ui"
+
+[[mgr.prepend_keymap]]
+on = ["c", "m"]
+run = "plugin chmod"
+desc = "Chmod on selected files"
+
+[[mgr.prepend_keymap]]
+on = "M"
+run = "plugin mount"
+
+[[mgr.prepend_keymap]]
+on = ["g", "i"]
+run = "plugin lazygit"
+desc = "run lazygit"

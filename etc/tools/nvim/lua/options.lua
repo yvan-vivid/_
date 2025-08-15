@@ -44,6 +44,11 @@ o.updatetime = 250
 -- when cursor reaches end/beginning of line
 opt.whichwrap:append "<>[]hl"
 
+-- folding - now managed with plugin
+-- o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- o.foldmethod = "expr"
+-- o.foldtext = ""
+
 -- disable some default providers
 g.loaded_node_provider = 0
 g.loaded_python3_provider = 0

@@ -7,7 +7,7 @@ generate_random_name() {
 }
 
 # Loop through all files in the directory
-for file in *$@*; do
+for file in "$@"; do
   if [[ -f "$file" ]]; then
     # Get the file extension
     ext="${file##*.}"
