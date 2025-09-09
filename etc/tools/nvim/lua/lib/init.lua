@@ -3,10 +3,12 @@ local vivid_date = require "lib/vivid_time"
 local M = {
   insertion = {},
   settings = {},
+  fragments = {},
 }
 
 local insertion = M.insertion
 local settings = M.settings
+local fragments = M.fragments
 
 function settings.writing_settings()
   vim.wo.linebreak = true
@@ -26,6 +28,13 @@ function insertion.vivid_date_slug()
     local slug = vivid_date.to_slug(vd)
     vim.api.nvim_put({ "  - " .. slug, "" }, "l", true, true)
   end
+end
+
+-- These are just incomplete fragments of things
+
+function fragments.show_capabilities()
+  -- This is just a messy fragment
+  return vim.lsp.get_clients()[1].server_capabilities
 end
 
 return M

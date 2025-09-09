@@ -12,3 +12,6 @@ require "options"
 require "usercmds"
 require "autocmds"
 require "mappings"
+require "lsp"
+
+require("lib.diagnostics").standard()

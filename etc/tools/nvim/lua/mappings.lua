@@ -38,5 +38,14 @@ map("n", "<leader>f", "za")
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("n", "<Esc>", "<cmd>noh<CR>", { desc = "general clear highlights" })
 
--- global lsp mappings
-map("n", "<leader>ds", vim.diagnostic.setloclist, { desc = "LSP diagnostic loclist" })
+--------------------------------------------------------------------------------
+-- Diagnostics
+--------------------------------------------------------------------------------
+local function open_diagnostics()
+  vim.diagnostic.open_float(nil, {
+    scope = "cursor",
+    focusable = false,
+  })
+end
+
+map("n", "<leader>ds", open_diagnostics, { desc = "LSP diagnostic loclist" })

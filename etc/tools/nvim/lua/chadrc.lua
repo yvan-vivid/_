@@ -2,11 +2,15 @@
 local M = {}
 
 M.base46 = {
-  -- Used to alter an existing theme
-  -- changed_themes = { tokyodark = { ... } },
-
   theme = "tokyonight",
-  theme_toggle = { "tokyonight", "dark_horizon", "one_light", "radium", "rosepine", "rosepine-dawn" },
+  theme_toggle = {
+    "tokyonight",
+    "dark_horizon",
+    "one_light",
+    "radium",
+    "rosepine",
+    "rosepine-dawn",
+  },
   transparency = true,
 
   hl_add = {},
