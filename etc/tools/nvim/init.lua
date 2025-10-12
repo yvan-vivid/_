@@ -1,5 +1,3 @@
-vim.g.mapleader = " "
-
 -- startup
 (require "configs.lazy")()
 

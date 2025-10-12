@@ -19,7 +19,7 @@ end
 
 M = {}
 
-function M.stardard_attach(client, bufnr)
+function M.standard_attach(client, bufnr)
   keys.key_bindings(bufnr)
   cursor_tricks(client, bufnr)
 end
@@ -31,7 +31,7 @@ end
 
 function M.attach_from_event(ev)
   local client = vim.lsp.get_client_by_id(ev.data.client_id)
-  M.stardard_attach(client, ev.buf)
+  M.standard_attach(client, ev.buf)
 end
 
 return M
