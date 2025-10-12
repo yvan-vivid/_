@@ -25,10 +25,6 @@ vim.lsp.config("*", {
   capabilities = capabilities,
 })
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = lsp.attach_from_event,
-})
-
 vim.lsp.enable {
   "basedpyright",
   "bashls",
