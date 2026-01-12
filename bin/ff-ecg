@@ -21,9 +21,18 @@ unzip_into() {
   echo "Unzipped $1 to $2"
 }
 
+move_summary() {
+  local summary_path
+  summary_path="$2/summary.csv"
+  mkdir -p "$2"
+  echo "Moving $1 to $summary_path"
+  mv "$1" "$summary_path"
+}
+
 declare -r data_dir="/data/media/Bio/measured/ff"
 
 set -euo pipefail
+shopt -s nullglob
 
 for file in *_on_*.zip; do
   [[ -f "$file" ]] || fail "'$file' is not a file"
@@ -33,4 +42,14 @@ for file in *_on_*.zip; do
 
   dir_date=$(format_dir_date "$timestamp")
   unzip_into "$file" "$data_dir/$dir_date"
+done
+
+for file in *_on_*_SUMMARY.csv; do
+  [[ -f "$file" ]] || fail "'$file' is not a file"
+
+  timestamp=$(parse_timestamp "$file")
+  [[ -z "$timestamp" ]] && fail "'$file' does not have a valid timestamp"
+
+  dir_date=$(format_dir_date "$timestamp")
+  move_summary "$file" "$data_dir/$dir_date"
 done
