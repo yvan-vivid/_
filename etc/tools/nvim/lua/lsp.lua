@@ -26,7 +26,7 @@ vim.lsp.config("*", {
 })
 
 vim.lsp.enable {
-  "basedpyright",
+  "ty",
   "bashls",
   "cssls",
   "html",
