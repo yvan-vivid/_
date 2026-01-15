@@ -87,5 +87,7 @@ eval "$(keychain --eval --quiet --noask)"
 # Path
 path=(
   "$DOT_ROOT/bin"
+  "$XDG_CACHE_HOME/.bun/bin"
+  "$HOME/.cargo/bin"
   $path
 )
