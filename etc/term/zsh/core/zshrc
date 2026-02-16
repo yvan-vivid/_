@@ -2,6 +2,7 @@
 # Yvan Vivid - Zsh RC leveraging `sheldon`
 # =============================================================================
 
+# Core helper functions (must be defined before sourcing modules)
 function source-if() {
   [[ -r "$1" ]] && source "$1" 
 }
@@ -14,93 +15,29 @@ function timestamp() {
   date +%s%N
 }
 
-function source-rc() {
-  source-it "$HOME/.zshrc"
-}
-
-function yazi-moving() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	IFS= read -r -d '' cwd < "$tmp"
-	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin pushd -- "$cwd" > /dev/null
-	rm -f -- "$tmp"
-}
-
-# Definitions
-declare session_id zsh_modules prompt_name graphical_theme histpath
-: ${session_id:="$(timestamp)"}
+# Module directory
 zsh_modules="$DOT_ETC/term/zsh/modules"
-prompt_name="${(%):-%n}"
-graphical_theme="$XDG_CONFIG_HOME/oh-my-posh/graphical-theme.yaml"
-histpath="$XDG_STATE_HOME/zsh/history"
-histname="history-$session_id"
+
+# Session identification
+session_id="$(timestamp)"
 
 # Plugin Settings
-## Should investigate this -- this makes sure the prompt works on init 
+## Required for oh-my-posh compatibility with zsh-vi-mode
 ZVM_INIT_MODE=sourcing
 
-# Load Sheldon setup
+# Load Sheldon plugins
 eval "$(sheldon source)"
 
-# Prompt
+# Load Oh My Posh prompt
+graphical_theme="$XDG_CONFIG_HOME/oh-my-posh/graphical-theme.yaml"
 eval "$(oh-my-posh --config="$graphical_theme" init zsh)"
 
-# History
-mkdir -p "$histpath"
-export HISTFILE="$histpath/$histname"
-export HISTFILESIZE=1000000
-export HISTSIZE=1000000
-export SAVEHIST=10000
+# Load modules
+source-it "$zsh_modules/functions.zsh"
+source-it "$zsh_modules/history.zsh"
+source-it "$zsh_modules/options.zsh"
+source-it "$zsh_modules/aliases.zsh"
+source-it "$zsh_modules/tools.zsh"
 
-setopt INC_APPEND_HISTORY
-setopt EXTENDED_HISTORY
-setopt HIST_FIND_NO_DUPS
-
-# Additional Options
-setopt ALWAYS_TO_END
-setopt C_BASES
-setopt COMPLETE_IN_WORD
-setopt EXTENDED_GLOB
-setopt INTERACTIVE_COMMENTS
-setopt LONG_LIST_JOBS
-setopt MULTIOS
-setopt NO_BG_NICE
-setopt NO_CHECK_JOBS
-setopt NO_HUP
-setopt NOTIFY
-
-# Directory and file options (from shops.zsh)
-setopt PUSHD_SILENT        # Don't print pushd stack
-setopt PUSHD_TO_HOME       # pushd with no args goes to ~
-setopt GLOB_DOTS           # Include dotfiles in globs
-setopt NO_CLOBBER          # Don't overwrite files with >
-setopt RM_STAR_WAIT        # Wait 10s before rm *
-
-# Aliases
-alias ls="eza --icons=always"
-alias tree="eza --tree --icons=always"
-alias ll="eza --long --icons=always"
-alias cat="bat"
-alias du="dua -x"
-alias xdu="dua interactive"
-alias df="duf -hide special -hide-mp /nix/store,/boot/efi"
-
-# Safety aliases (from aliases.zsh)
-alias cp="nocorrect \cp -vi"
-alias mv="nocorrect \mv -vi"
-alias rm="nocorrect \rm -vI"
-
-# Git aliases (from aliases.zsh)
-alias git-origin='git config --get remote.origin.url'
-
-# Load zoxide
-eval "$(zoxide init zsh)"
-
-# Load keychain
-eval "$(keychain --eval --quiet --noask)"
-
-# Path
-path=(
-  "$DOT_ROOT/bin"
-  $path
-)
+# =============================================================================
+# vim: ft=zsh et fenc=utf-8 sts=4 sw=4 ts=8 tw=80
