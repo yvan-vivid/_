@@ -29,9 +29,24 @@ use = ["*.plugin.zsh"]
 
 [plugins.zsh-docker-completions]
 github = "greymd/docker-zsh-completion"
+apply = ["defer"]
+
+[plugins.fzf-tab]
+github = "Aloxaf/fzf-tab"
+
+[plugins.zsh-eza]
+github = "z-shell/zsh-eza"
+apply = ["defer"]
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ["defer"]
+
+[plugins.fzf-zsh-plugin]
+github = "unixorn/fzf-zsh-plugin"
+apply = ["defer"]
 
 # [plugins.enhancd]
 # github = "b4b4r07/enhancd"
 
-# TODO: eza, fd, docker
 # Maybe https://github.com/atuinsh/atuin
