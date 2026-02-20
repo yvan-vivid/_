@@ -8,10 +8,6 @@ final_space: true
 terminal_background: p:t-background
 console_title_template: " {{ .Folder }} :: {{if .Root}}Admin{{end}}"
 
-# Special values
-# var:
-#  name: value
-
 secondary_prompt:
   template: "➜ "
   foreground: p:terminal-blue
@@ -23,151 +19,180 @@ transient_prompt:
   background: p:t-background
 
 blocks:
-- type: prompt
-  alignment: left
-  segments:
-  - type: os
-    style: diamond
-    template: "{{ if .WSL }}WSL at {{ end }}{{.Icon}} "
-    leading_diamond: ""
-    trailing_diamond: ""
-    background: "p:os-back"
-    foreground: "p:os-icon"
-  
-  - type: session
-    style: diamond 
-    template: " {{ if .SSHSession }}\ueba9 {{ end }} {{ .HostName }} "
-    trailing_diamond: ""
-    background: "#292929"
-    foreground: "#fb7e14"
-  
-  - type: path
-    style: diamond
-    template: " <b>{{ .Path }}</b> "
-    properties:
-      home_icon: " "
-      style: agnoster_full
-      mapped_locations: 
-        "/src/repos/me": ""
-        "/src/repos/forks": ""
-        "~/Downloads": ""
-        "/data/media": " "
-        "~/.config": "CONFIG"
-        "~/.local/share": "DATA"
-        "~/.local/state": "STATE"
-        "~/.cache": "CACHE"
-    trailing_diamond: ""
-    background: "p:dir-back"
-    foreground: "p:dir-fore"
- 
-  - type: project
-    style: diamond
-    template: " {{ if .Error }}{{ .Error }}{{ else }}{{ if .Version }} {{.Version}}{{ end }} {{ if .Name }}{{ .Name }}{{ end }}{{ end }} "
-    trailing_diamond: ""
-    foreground: "#ffeb3b"
-    background: "#193549"
+  - type: prompt
+    alignment: left
+    segments:
+      - type: os
+        style: diamond
+        template: "{{ if .WSL }}WSL at {{ end }}{{.Icon}} "
+        leading_diamond: ""
+        trailing_diamond: ""
+        background: "p:os-back"
+        foreground: "p:os-icon"
 
-  - type: git
-    style: diamond
-    properties:
-      branch_icon: "\ue725 "
-      fetch_status: true
-    template: " {{ .HEAD}} "
-    foreground: "#FF0030"
-    background: "#200070"
-    foreground_templates:
-    - "{{ if or (.Working.Changed) (.Staging.Changed) }}#FF40A0{{ end }}"
-    - "{{ if and (gt .Ahead 0) (gt .Behind 0)}}p:light-sky-blue {{ end }}"
-    - "{{ if gt .Ahead 0 }}p:terminal-blue{{ end }}"
-    - "{{ if gt .Behind 0 }}p:celeste-blue{{ end }}"
-    trailing_diamond: ""
+      - type: session
+        style: diamond
+        template: " {{ if .SSHSession }}\ueba9 {{ end }} {{ .HostName }} "
+        trailing_diamond: ""
+        background: "p:session-back"
+        foreground: "p:session-fore"
 
-- type: prompt
-  alignment: right
-  overflow: hide
-  segments:
-  - type: status
-    style: plain
-    template: " {{ if eq .Code 0 }}\uf00c{{ else }}\uf071 {{ reason .Code }}{{ end }} "
-    foreground: p:terminal-red
-    properties:
-      always_enabled: true
-  
-  - type: executiontime
-    style: diamond
-    template: " <#fefefe></> {{ .FormattedMs }} "
-    properties:
-      style: austin
-      threshold: 500
-      always_enabled: false
-    foreground: "#ffffff"
-    background: "#8800dd"
-  
-  - type: command
-    style: plain
-    properties:
-      command: git log --pretty=format:%cr -1 || date +%H:%M:%S
-      shell: bash
-    foreground: p:white-blue
+      - type: path
+        style: diamond
+        template: " <b>{{ .Path }}</b> "
+        options:
+          home_icon: " "
+          style: full
+          folder_separator_icon: "/"
+          display_root: true
+          mapped_locations:
+            "/src/repos/me": ""
+            "/src/repos/forks": ""
+            "/data/media": " "
+        trailing_diamond: ""
+        background: "p:dir-back"
+        foreground: "p:dir-fore"
 
-  - type: go
-    style: plain
-    template: ﳑ {{ .Full}}
-    foreground: p:light-sky-blue
+      - type: project
+        style: diamond
+        template: " {{ if .Error }}{{ .Error }}{{ else }}{{ if .Version }} {{.Version}}{{ end }} {{ if .Name }}{{ .Name }}{{ end }}{{ end }} "
+        trailing_diamond: ""
+        foreground: "p:project-fore"
+        background: "p:project-back"
 
-  - type: node
-    style: diamond
-    template: "\ue718 {{ .Full }} "
-    foreground: p:pistachio-green
-  
-  - type: rust
-    style: diamond
-    template: "  {{ .Full }} "
-    foreground: "#A0C0FF"
-    background: "#905030"
+      - type: git
+        style: diamond
+        options:
+          branch_icon: "\ue725 "
+        template: " {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }} "
+        foreground: "p:git-branch-fore"
+        background: "p:git-branch-back"
+        foreground_templates:
+          - "{{ if and (gt .Ahead 0) (gt .Behind 0)}}p:git-ahead-fore{{ end }}"
+          - "{{ if gt .Ahead 0 }}p:git-ahead-fore{{ end }}"
+          - "{{ if gt .Behind 0 }}p:git-behind-fore{{ end }}"
+        trailing_diamond: ""
 
-  - type: python
-    style: plain
-    template:  {{ .Full }}
-    foreground: p:terminal-yellow
+      - type: git
+        style: diamond
+        options:
+          fetch_status: true
+          fetch_stash_count: true
+        template: " {{ if .Working.Changed }}{{ .Working.String }}{{ end }}{{ if and .Working.Changed .Staging.Changed }} • {{ end }}{{ if .Staging.Changed }}{{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} 󰏗 {{ .StashCount }}{{ end }} "
+        foreground: "p:git-branch-fore"
+        background: "p:git-status-back"
+        foreground_templates:
+          - "{{ if or (.Working.Changed) (.Staging.Changed) }}p:git-working-fore{{ end }}"
+          - "{{ if and (not .Working.Changed) .Staging.Changed }}p:git-staged-fore{{ end }}"
+        trailing_diamond: ""
 
-  - type: docker
-    style: diamond
-    template: "  {{ .Context }} "
-    powerline_symbol: 
-    foreground: "#000000"
-    background: "#0B59E7"
+  - type: prompt
+    alignment: right
+    overflow: hide
+    segments:
+      - type: status
+        style: plain
+        template: " {{ if eq .Code 0 }}\uf00c{{ else }}\uf071 {{ reason .Code }}{{ end }} "
+        foreground: p:terminal-red
+        options:
+          always_enabled: true
 
-  - type: nix-shell
-    style: diamond
-    foreground: "#F0A0F0"
-    background: "#000080"
-    template: "  {{ .Type }} "
+      - type: executiontime
+        style: diamond
+        template: " <#fefefe></> {{ .FormattedMs }} "
+        options:
+          style: austin
+          threshold: 500
+          always_enabled: false
+        foreground: "p:exec-time-fore"
+        background: "p:exec-time-back"
 
-- type: prompt
-  alignment: left
-  segments:
-  - template: ▶
-    foreground: p:pistachio-green
-    type: text
-    style: plain
-  newline: true
+      - type: go
+        style: plain
+        template: ﳑ {{ .Full}}
+        foreground: p:light-sky-blue
+
+      - type: node
+        style: diamond
+        template: "\ue718 {{ .Full }} "
+        foreground: p:pistachio-green
+
+      - type: rust
+        style: diamond
+        template: "  {{ .Full }} "
+        foreground: "p:rust-fore"
+        background: "p:rust-back"
+
+      - type: python
+        style: plain
+        template:  {{ .Full }}
+        foreground: p:terminal-yellow
+
+      - type: docker
+        style: diamond
+        template: "  {{ .Context }} "
+        foreground: "p:docker-fore"
+        background: "p:docker-back"
+        trailing_diamond: ""
+
+      - type: nix-shell
+        style: diamond
+        foreground: "p:nix-fore"
+        background: "p:nix-back"
+        template: "  {{ .Type }} "
+
+  - type: prompt
+    alignment: left
+    segments:
+      - template: ▶
+        foreground: p:pistachio-green
+        type: text
+        style: plain
+    newline: true
 
 palette:
+  # OS & Session
   os-back: "166"
   os-icon: "123"
+  session-back: "#292929"
+  session-fore: "#fb7e14"
 
+  # Path & Directory
   dir-back: "88"
   dir-fore: "46"
   dir-trunc: "42"
   dir-anchor: "50"
 
-  git-clean: "52"
-  git-mod: "53"
-  git-untracked: "53"
-  git-conf: "204"
+  # Project
+  project-fore: "#ffeb3b"
+  project-back: "#193549"
 
-  status-ok-fore: "2"
-  status-ok-back: "0"
-  status-err-fore: "3"
-  status-err-back: "1"
+  # Git - Branch
+  git-branch-fore: "#FF0030"
+  git-branch-back: "#200070"
+
+  # Git - Status
+  git-status-back: "#3a3a3a"
+  git-working-fore: "#FF40A0"
+  git-staged-fore: "#00ff00"
+  git-ahead-fore: "#7AA2F7"
+  git-behind-fore: "#BB9AF7"
+
+  # Execution & Status
+  exec-time-fore: "#ffffff"
+  exec-time-back: "#8800dd"
+  terminal-red: "#FF5555"
+  terminal-blue: "#7AA2F7"
+  terminal-yellow: "#E0AF68"
+
+  # Languages
+  light-sky-blue: "#7AA2F7"
+  pistachio-green: "#9ECE6A"
+  rust-fore: "#A0C0FF"
+  rust-back: "#905030"
+
+  # Containers & Env
+  docker-fore: "#000000"
+  docker-back: "#0B59E7"
+  nix-fore: "#F0A0F0"
+  nix-back: "#000080"
