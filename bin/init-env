@@ -1,0 +1,405 @@
+#!/usr/bin/env bash
+
+set -e
+
+DOT_ROOT="${DOT_ROOT:-$HOME/_}"
+# DOT_BIN="$DOT_ROOT/bin"
+DOT_ETC="$DOT_ROOT/etc"
+
+DRY_RUN=false
+
+show_usage() {
+  cat <<EOF
+Usage: $0 [options] [component]
+
+Initialize environment components
+
+Options:
+    --dry-run       Show what would be done without doing it
+    -h, --help      Show this help
+
+Components:
+    all             Initialize all components
+    doctor          Check all components
+    yazi            Initialize yazi plugins
+    neovim          Initialize neovim plugins
+    tmux            Initialize tmux plugins
+    sheldon         Initialize zsh plugins
+    git             Initialize git LFS
+    nix             Initialize nix profiles
+    dotfiles        Sync dotfiles (link config files)
+
+Examples:
+    $0 yazi
+    $0 --dry-run neovim
+    $0 doctor
+    $0 all
+EOF
+}
+
+log() {
+  local msg="[init-env] $1"
+  if [[ "$2" == "warn" ]]; then
+    echo "$msg" >&2
+  else
+    echo "$msg"
+  fi
+}
+
+run() {
+  if [[ "$DRY_RUN" == "true" ]]; then
+    echo "[dry-run] would run: $*"
+  else
+    log "Running: $*"
+    "$@"
+  fi
+}
+
+check_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+require_cmd() {
+  if ! check_cmd "$1"; then
+    log "ERROR: Required command '$1' not found" "warn"
+    return 1
+  fi
+  return 0
+}
+
+check_yazi() {
+  local status=0
+
+  if ! require_cmd ya; then
+    status=1
+  fi
+
+  if [[ ! -f "$DOT_ETC/tools/yazi/package.toml" ]]; then
+    log "WARNING: yazi package.toml not found" "warn"
+    status=1
+  fi
+
+  if [[ $status -eq 0 ]]; then
+    log "yazi: OK"
+  else
+    log "yazi: FAILED" "warn"
+  fi
+
+  return $status
+}
+
+init_yazi() {
+  log "Initializing yazi..."
+
+  require_cmd ya || return 1
+
+  run cd "$DOT_ETC/tools/yazi" && run ya pkg install
+
+  log "yazi initialized"
+}
+
+check_neovim() {
+  local status=0
+
+  if ! require_cmd nvim; then
+    status=1
+  fi
+
+  if [[ ! -d "$DOT_ETC/tools/nvim" ]]; then
+    log "WARNING: neovim config not found" "warn"
+    status=1
+  fi
+
+  if [[ $status -eq 0 ]]; then
+    log "neovim: OK"
+  else
+    log "neovim: FAILED" "warn"
+  fi
+
+  return $status
+}
+
+init_neovim() {
+  log "Initializing neovim..."
+
+  require_cmd nvim || return 1
+
+  run nvim --headless "+Lazy! sync" +qa
+
+  log "neovim initialized"
+}
+
+check_tmux() {
+  local status=0
+
+  if ! require_cmd tmux; then
+    status=1
+  fi
+
+  if [[ ! -f "$DOT_ETC/term/tmux/tmux.conf" ]]; then
+    log "WARNING: tmux.conf not found" "warn"
+    status=1
+  fi
+
+  if [[ $status -eq 0 ]]; then
+    log "tmux: OK"
+  else
+    log "tmux: FAILED" "warn"
+  fi
+
+  return $status
+}
+
+init_tmux() {
+  log "Initializing tmux..."
+
+  require_cmd tmux || return 1
+
+  local tpm_path="${XDG_DATA_HOME:-$HOME/.local/share}/tmux/plugins/tpm"
+
+  if [[ ! -d "$tpm_path" ]]; then
+    log "Installing TPM..."
+    run git clone https://github.com/tmux-plugins/tpm "$tpm_path"
+  fi
+
+  run tmux source-file "$DOT_ETC/term/tmux/tmux.conf"
+
+  log "tmux initialized (press Prefix+I in tmux to install plugins)"
+}
+
+check_sheldon() {
+  local status=0
+
+  if ! require_cmd sheldon; then
+    status=1
+  fi
+
+  if [[ ! -f "$DOT_ETC/term/sheldon/plugins.toml" ]]; then
+    log "WARNING: sheldon plugins.toml not found" "warn"
+    status=1
+  fi
+
+  if [[ $status -eq 0 ]]; then
+    log "sheldon: OK"
+  else
+    log "sheldon: FAILED" "warn"
+  fi
+
+  return $status
+}
+
+init_sheldon() {
+  log "Initializing sheldon..."
+
+  require_cmd sheldon || return 1
+
+  run sheldon source
+
+  log "sheldon initialized"
+}
+
+check_git() {
+  local status=0
+
+  if ! require_cmd git; then
+    status=1
+  fi
+
+  if ! git lfs version >/dev/null 2>&1; then
+    log "WARNING: git-lfs not installed" "warn"
+    status=1
+  fi
+
+  if [[ $status -eq 0 ]]; then
+    log "git: OK"
+  else
+    log "git: FAILED" "warn"
+  fi
+
+  return $status
+}
+
+init_git() {
+  log "Initializing git..."
+
+  require_cmd git || return 1
+
+  if command -v git-lfs >/dev/null 2>&1; then
+    run git lfs install
+  else
+    log "WARNING: git-lfs not installed, skipping" "warn"
+  fi
+
+  log "git initialized"
+}
+
+check_nix() {
+  local status=0
+
+  if ! require_cmd nix; then
+    status=1
+  fi
+
+  if [[ $status -eq 0 ]]; then
+    log "nix: OK"
+  else
+    log "nix: FAILED" "warn"
+  fi
+
+  return $status
+}
+
+init_nix() {
+  log "Initializing nix..."
+
+  require_cmd nix || return 1
+
+  run nix profile list >/dev/null 2>&1 || true
+
+  log "nix initialized"
+}
+
+check_dotfiles() {
+  local status=0
+
+  if [[ ! -d "$DOT_ETC" ]]; then
+    log "WARNING: dotfiles etc directory not found" "warn"
+    status=1
+  fi
+
+  if [[ -f "$DOT_ETC/.dot" ]]; then
+    log "dotfiles: OK"
+  else
+    log "WARNING: .dot config not found" "warn"
+    status=1
+  fi
+
+  return $status
+}
+
+init_dotfiles() {
+  log "Initializing dotfiles..."
+
+  log "Dotfiles are managed via symlinks"
+  log "Ensure your dotfiles tool is set up and run it to sync"
+
+  log "dotfiles initialized"
+}
+
+doctor() {
+  local component="$1"
+  local status=0
+
+  if [[ -z "$component" ]]; then
+    log "Running doctor checks..."
+    check_yazi || status=1
+    check_neovim || status=1
+    check_tmux || status=1
+    check_sheldon || status=1
+    check_git || status=1
+    check_nix || status=1
+    check_dotfiles || status=1
+  else
+    case "$component" in
+    yazi) check_yazi ;;
+    neovim) check_neovim ;;
+    tmux) check_tmux ;;
+    sheldon) check_sheldon ;;
+    git) check_git ;;
+    nix) check_nix ;;
+    dotfiles) check_dotfiles ;;
+    *)
+      log "Unknown component: $component" "warn"
+      return 1
+      ;;
+    esac
+    status=$?
+  fi
+
+  return $status
+}
+
+initialize() {
+  local component="$1"
+  local status=0
+
+  if [[ -z "$component" ]] || [[ "$component" == "all" ]]; then
+    log "Initializing all components..."
+    init_yazi || status=1
+    init_neovim || status=1
+    init_tmux || status=1
+    init_sheldon || status=1
+    init_git || status=1
+    init_nix || status=1
+    init_dotfiles || status=1
+  else
+    case "$component" in
+    yazi) init_yazi ;;
+    neovim) init_neovim ;;
+    tmux) init_tmux ;;
+    sheldon) init_sheldon ;;
+    git) init_git ;;
+    nix) init_nix ;;
+    dotfiles) init_dotfiles ;;
+    *)
+      log "Unknown component: $component" "warn"
+      return 1
+      ;;
+    esac
+    status=$?
+  fi
+
+  return $status
+}
+
+main() {
+  local action=""
+  local component=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --dry-run)
+      DRY_RUN=true
+      shift
+      ;;
+    -h | --help)
+      show_usage
+      exit 0
+      ;;
+    doctor | init | all)
+      action="$1"
+      shift
+      break
+      ;;
+    -*)
+      log "Unknown option: $1" "warn"
+      show_usage
+      exit 1
+      ;;
+    *)
+      component="$1"
+      shift
+      ;;
+    esac
+  done
+
+  if [[ -z "$action" ]]; then
+    if [[ -n "$component" ]]; then
+      action="init"
+    else
+      show_usage
+      exit 0
+    fi
+  fi
+
+  case "$action" in
+  doctor)
+    doctor "$component"
+    ;;
+  init | all)
+    initialize "$component"
+    ;;
+  esac
+}
+
+main "$@"
