@@ -10,30 +10,33 @@ DRY_RUN=false
 
 show_usage() {
   cat <<EOF
-Usage: $0 [options] [component]
+Usage: $0 [options] <command> [component]
 
-Initialize environment components
+Initialize or check environment components
 
 Options:
     --dry-run       Show what would be done without doing it
     -h, --help      Show this help
 
-Components:
-    all             Initialize all components
-    doctor          Check all components
-    yazi            Initialize yazi plugins
-    neovim          Initialize neovim plugins
-    tmux            Initialize tmux plugins
-    sheldon         Initialize zsh plugins
-    git             Initialize git LFS
-    nix             Initialize nix profiles
-    dotfiles        Sync dotfiles (link config files)
+Commands:
+    init            Initialize components (default: all)
+    doctor          Check component status (default: all)
+
+Components (default: all):
+    yazi            Yazi plugins
+    neovim          Neovim plugins
+    tmux            Tmux plugins
+    sheldon         Sheldon zsh plugins
+    git             Git LFS
+    nix             Nix profiles
+    dotfiles        Dotfiles sync
 
 Examples:
-    $0 yazi
-    $0 --dry-run neovim
+    $0 init yazi
+    $0 init
     $0 doctor
-    $0 all
+    $0 doctor neovim
+    $0 --dry-run init tmux
 EOF
 }
 
@@ -290,7 +293,7 @@ doctor() {
   local component="$1"
   local status=0
 
-  if [[ -z "$component" ]]; then
+  if [[ -z "$component" ]] || [[ "$component" == "all" ]]; then
     log "Running doctor checks..."
     check_yazi || status=1
     check_neovim || status=1
@@ -353,7 +356,7 @@ initialize() {
 }
 
 main() {
-  local action=""
+  local command=""
   local component=""
 
   while [[ $# -gt 0 ]]; do
@@ -366,8 +369,8 @@ main() {
       show_usage
       exit 0
       ;;
-    doctor | init | all)
-      action="$1"
+    init | doctor)
+      command="$1"
       shift
       break
       ;;
@@ -377,26 +380,27 @@ main() {
       exit 1
       ;;
     *)
-      component="$1"
-      shift
+      log "Missing command. Use 'init' or 'doctor'" "warn"
+      show_usage
+      exit 1
       ;;
     esac
   done
 
-  if [[ -z "$action" ]]; then
-    if [[ -n "$component" ]]; then
-      action="init"
-    else
-      show_usage
-      exit 0
-    fi
+  component="${1:-all}"
+  shift -- 1 2>/dev/null || true
+
+  if [[ -n "$@" ]]; then
+    log "Unexpected arguments: $@" "warn"
+    show_usage
+    exit 1
   fi
 
-  case "$action" in
+  case "$command" in
   doctor)
     doctor "$component"
     ;;
-  init | all)
+  init)
     initialize "$component"
     ;;
   esac
