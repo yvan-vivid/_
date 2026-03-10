@@ -19,11 +19,14 @@ SHELL="$(command -v zsh)"
 # Dotzo Env - (Deprecate?)
 # =============================================================================
 
-# DOT_ROOT sould be derived from a generated file
+# DOT_ROOT should be derived from a generated file
 ENV_DOT="$HOME/.dot_env"
 
 # shellcheck disable=SC1090
 test -s "$ENV_DOT" && . "$ENV_DOT"
+
+# Fallback default if DOT_ROOT not set (e.g., ~/.dot_env missing)
+export DOT_ROOT="${DOT_ROOT:-$HOME/_}"
 
 # Dot paths
 export DOT_ETC="$DOT_ROOT/etc"

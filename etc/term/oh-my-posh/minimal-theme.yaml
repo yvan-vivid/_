@@ -7,29 +7,43 @@ version: 3
 final_space: true
 
 blocks:
-- type: prompt
-  alignment: left
-  segments:
-  - type: text
-    style: plain
-    template: $
-    foreground: "#98C379"
-  
-  - type: path
-    style: plain
-    template: " {{ .Path }} "
-    properties:
-      style: agnoster
-    foreground: "#56B6C2"
-  
-  - type: git
-    style: plain
-    template: "<#5FAAE8>git:(</>{{ .HEAD }}<#5FAAE8>)</>"
-    properties:
-      branch_icon: ""
-    foreground: "#D0666F"
-  
-  - type: status
-    style: plain
-    template: " ✗"
-    foreground: "#BF616A"
+  - type: prompt
+    alignment: left
+    segments:
+      - type: text
+        style: plain
+        template: "$"
+        foreground: p:prompt
+
+      - type: path
+        style: plain
+        template: " {{ .Path }} "
+        options:
+          style: full
+          display_root: true
+          folder_separator_icon: "/"
+          mapped_locations:
+            "/src/repos/me": "[me]"
+            "/src/repos/forks": "[fork]"
+            "/data/media": "[media]"
+        foreground: p:path-fore
+
+      - type: git
+        style: plain
+        template: "git:{{ .HEAD }} "
+        options:
+          branch_icon: ""
+        foreground: p:git-fore
+
+      - type: status
+        style: plain
+        template: " {{ if eq .Code 0 }}✓{{ else }}✗{{ end }}"
+        foreground: p:status-err
+        options:
+          always_enabled: true
+
+palette:
+  prompt: "#98C379"
+  path-fore: "#56B6C2"
+  git-fore: "#D0666F"
+  status-err: "#BF616A"
