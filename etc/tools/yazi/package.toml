@@ -33,5 +33,10 @@ use = "Lil-Dank/lazygit"
 rev = "7a08a09"
 hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
 
+[[plugin.deps]]
+use = "saumyajyoti/omp"
+rev = "32ae96c"
+hash = "ca913db57342496f96c533725a64ccc4"
+
 [flavor]
 deps = []
