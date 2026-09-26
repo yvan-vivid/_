@@ -15,6 +15,7 @@ fi
 # Path
 path=(
   "$DOT_ROOT/bin"
+  "$XDG_DATA_HOME/../bin"
   $path
 )
 

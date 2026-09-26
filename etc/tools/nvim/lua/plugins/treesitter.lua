@@ -1,23 +1,21 @@
-local base46 = (require "lib.base46")()
-pcall(function()
-  base46.load_cached "syntax"
-  base46.load_cached "treesitter"
-end)
-
+-- lua/plugins/treesitter.lua
 return {
-  "nvim-treesitter/nvim-treesitter",
+  "romus204/tree-sitter-manager.nvim",
+  dependencies = { "nvim-treesitter/nvim-treesitter" },
   event = { "BufReadPost", "BufNewFile" },
-  cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
-  build = ":TSUpdate",
   opts = {
     ensure_installed = require "configs.treesitter_parsers",
-    highlight = {
-      enable = true,
-      use_languagetree = true,
-    },
-    indent = { enable = true },
   },
   config = function(_, opts)
-    require("nvim-treesitter.configs").setup(opts)
+    require("tree-sitter-manager").setup(opts)
+
+    -- Native highlighting, indent, folding
+    vim.api.nvim_create_autocmd("FileType", {
+      callback = function()
+        pcall(vim.treesitter.start)
+        vim.wo.foldmethod = "expr"
+        vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+      end,
+    })
   end,
 }

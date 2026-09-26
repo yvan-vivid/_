@@ -41,3 +41,7 @@ source-it "$zsh_modules/tools.zsh"
 
 # =============================================================================
 # vim: ft=zsh et fenc=utf-8 sts=4 sw=4 ts=8 tw=80
+
+fpath+=~/.zfunc; autoload -Uz compinit; compinit
+
+zstyle ':completion:*' menu select
