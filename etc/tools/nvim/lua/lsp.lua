@@ -25,6 +25,44 @@ vim.lsp.config("*", {
   capabilities = capabilities,
 })
 
+-- Custom server configs (overriding nvim-lspconfig defaults)
+vim.lsp.config("lua_ls", {
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim", "mp" },
+      },
+    },
+  },
+})
+
+vim.lsp.config("ts_ls", {
+  filetypes = {
+    "javascript",
+    "javascriptreact",
+    "javascript.jsx",
+    "typescript",
+    "typescriptreact",
+    "typescript.tsx",
+  },
+})
+
+vim.lsp.config("nixd", {
+  settings = {
+    nixd = {
+      nixpkgs = {
+        expr = "",
+      },
+      options = {
+        nixos = {
+          expr = "",
+        },
+      },
+    },
+  },
+})
+
+-- nvim-lspconfig provides defaults for these; just enable them
 vim.lsp.enable {
   "ty",
   "bashls",
