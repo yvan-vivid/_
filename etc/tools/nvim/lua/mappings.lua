@@ -56,22 +56,22 @@ map("n", "<leader>ds", open_diagnostics, { desc = "LSP diagnostic loclist" })
 local snacks = require "snacks"
 
 -- Files
-map("n", "<leader>ff", snacks.picker.files, { desc = "Find files" })
-map("n", "<leader>fb", snacks.picker.buffers, { desc = "Buffers" })
-map("n", "<leader>fo", snacks.picker.recent, { desc = "Recent files" })
-map("n", "<leader>fa", function()
+map("n", "<leader><leader>f", snacks.picker.files, { desc = "Find files" })
+map("n", "<leader><leader>b", snacks.picker.buffers, { desc = "Buffers" })
+map("n", "<leader><leader>o", snacks.picker.recent, { desc = "Recent files" })
+map("n", "<leader><leader>a", function()
   snacks.picker.files { hidden = true, no_ignore = true }
 end, { desc = "Find all files" })
 
 -- Git
-map("n", "<leader>gg", snacks.picker.git_files, { desc = "Git files" })
-map("n", "<leader>gw", snacks.picker.git_log, { desc = "Git log" })
-map("n", "<leader>gk", snacks.picker.git_status, { desc = "Git status" })
+map("n", "<leader><leader>gf", snacks.picker.git_files, { desc = "Git files" })
+map("n", "<leader><leader>gl", snacks.picker.git_log, { desc = "Git log" })
+map("n", "<leader><leader>gs", snacks.picker.git_status, { desc = "Git status" })
 
 -- Editing
-map("n", "<leader>m", snacks.picker.marks, { desc = "Marks" })
-map("n", "<leader>sg", snacks.picker.grep, { desc = "Grep" })
-map("n", "<leader>h", snacks.picker.help, { desc = "Help tags" })
+map("n", "<leader><leader>m", snacks.picker.marks, { desc = "Marks" })
+map("n", "<leader><leader>g", snacks.picker.grep, { desc = "Grep" })
+map("n", "<leader><leader>h", snacks.picker.help, { desc = "Help tags" })
 
 -- Explorer
 map("n", "<leader>e", snacks.explorer.open, { desc = "File explorer" })

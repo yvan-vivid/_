@@ -13,23 +13,11 @@ local M = {}
 function M.key_bindings(bufnr)
   local map = key_mapper(bufnr)
 
-  -- Go to
-  map("n", "gD", lspbuf.declaration, { desc = "Go to Declaration" })
-  map("n", "gd", lspbuf.definition, { desc = "Go to Definition" })
-  map("n", "gi", lspbuf.implementation, { desc = "Go to Implementation" })
-  map("n", "gr", lspbuf.references, { desc = "Find References" })
-
   -- Info
   map("n", "<leader>kt", lspbuf.signature_help, { desc = "Signature Help" })
 
-  -- Refactor
-  map("n", "<leader>rr", lspbuf.rename, { desc = "Rename Symbol" })
-
-  -- Actions
-  map("n", "<leader>kl", lspbuf.code_action, { desc = "Code Action" })
-
   -- Diagnostics
-  map("n", "<leader>df", vim.diagnostic.open_float, { desc = "Format Document" })
+  map("n", "<leader>df", vim.diagnostic.open_float, { desc = "Diagnostics float" })
 end
 
 function M.rust_key_bindings(bufnr)
@@ -40,26 +28,22 @@ function M.rust_key_bindings(bufnr)
     end
   end
 
-  -- Go to
-  map("n", "gD", lspbuf.declaration, { desc = "Go to Declaration" })
-  map("n", "gd", lspbuf.definition, { desc = "Go to Definition" })
-  map("n", "gi", lspbuf.implementation, { desc = "Go to Implementation" })
-  map("n", "gr", lspbuf.references, { desc = "Find References" })
-
-  -- Hover
+  -- Hover (rustaceanvim enhanced)
   map("n", "K", rlsp { "hover", "actions" }, { desc = "Hover Documentation" })
 
   -- Info
   map("n", "<leader>kt", lspbuf.signature_help, { desc = "Signature Help" })
 
-  -- Refactor
-  map("n", "<leader>rr", lspbuf.rename, { desc = "Rename Symbol" })
-
-  -- Actions
+  -- Actions (rustaceanvim enhanced)
   map("n", "<leader>kl", rlsp "codeAction", { desc = "Code Action" })
 
   -- Diagnostics
-  map("n", "<leader>df", vim.diagnostic.open_float, { desc = "Format Document" })
+  map("n", "<leader>df", vim.diagnostic.open_float, { desc = "Diagnostics float" })
+end
+
+function M.attach_from_event(ev)
+  local client = vim.lsp.get_client_by_id(ev.data.client_id)
+  M.standard_attach(client, ev.buf)
 end
 
 return M
