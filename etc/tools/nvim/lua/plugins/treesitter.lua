@@ -1,4 +1,3 @@
--- lua/plugins/treesitter.lua
 return {
   "romus204/tree-sitter-manager.nvim",
   dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -9,7 +8,11 @@ return {
   config = function(_, opts)
     require("tree-sitter-manager").setup(opts)
 
-    -- Native highlighting, indent, folding
+    require("lib.ts_node_path").setup {
+      enabled = false,
+      debounce_ms = 75,
+    }
+
     vim.api.nvim_create_autocmd("FileType", {
       callback = function()
         pcall(vim.treesitter.start)

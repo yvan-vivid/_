@@ -2,9 +2,9 @@
 local M = {}
 
 M.base46 = {
-  theme = "tokyonight",
+  theme = "chadracula-evondev",
   theme_toggle = {
-    "tokyonight",
+    "chadracula-evondev",
     "dark_horizon",
     "one_light",
     "radium",

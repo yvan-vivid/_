@@ -18,17 +18,6 @@ map("n", "<leader>rn", "<cmd>set rnu!<CR>", { desc = "toggle relative number" })
 map("n", "<leader>ch", "<cmd>NvCheatsheet<CR>", { desc = "toggle nvcheatsheet" })
 
 -------------------------------------------------------------------------------
--- Tabs
--------------------------------------------------------------------------------
-local tabufline = require "nvchad.tabufline"
-
--- TODO: Are these good? Do I need to eager load the require?
-map("n", "<leader>b", "<cmd>enew<CR>", { desc = "buffer new" })
-map("n", "<tab>", tabufline.next, { desc = "buffer goto next" })
-map("n", "<S-tab>", tabufline.prev, { desc = "buffer goto prev" })
-map("n", "<leader>x", tabufline.close_buffer, { desc = "buffer close" })
-
--------------------------------------------------------------------------------
 -- Features
 -------------------------------------------------------------------------------
 map("n", "<leader>/", "gcc", { desc = "toggle comment", remap = true })
@@ -76,7 +65,3 @@ map("n", "<leader><leader>h", snacks.picker.help, { desc = "Help tags" })
 -- Explorer
 map("n", "<leader>e", snacks.explorer.open, { desc = "File explorer" })
 
--- UI
-map("n", "<leader>U", function()
-  require("nvchad.themes").open()
-end, { desc = "Themes" })
